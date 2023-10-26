@@ -1,4 +1,4 @@
-
+#1955
 import os
 import pymysql
 import hashlib
@@ -23,7 +23,9 @@ def safe_get(d, *keys):
 
 
 cursor = cnx.cursor()
-querySelect = "SELECT * FROM sessions WHERE event_season BETWEEN 1949 AND 1988 ORDER BY event_season DESC" #where event_season = '2023' and event_id = 'bfd8a08c-cbb4-413a-a210-6d34774ea4c5';"
+#querySelect = "SELECT * FROM sessions WHERE event_season BETWEEN 1989 AND 2023 ORDER BY event_season ASC" #where event_season = '2023' and event_id = 'bfd8a08c-cbb4-413a-a210-6d34774ea4c5';"
+querySelect = "SELECT * FROM sessions where event_season = '2023'" #and event_id = '0bb1a25b-ed29-4e93-8460-214bed97e632';"
+
 cursor.execute(querySelect)
 result = cursor.fetchall()
 for row in result:

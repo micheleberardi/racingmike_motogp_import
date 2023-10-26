@@ -8,16 +8,16 @@ cnx = pymysql.connect(host='45.56.107.211', user='michelone', passwd='Buc43sede#
 
 cursor = cnx.cursor()
 
-#querySelect = "SELECT * FROM events where season_year = '2023' "
-querySelect = "SELECT * FROM racingmike_motogp.events where season_year = 2023"
+#querySelect = "SELECT * FROM events"
+querySelect = "SELECT * FROM racingmike_motogp.events where season_year = 2023 and id = '0bb1a25b-ed29-4e93-8460-214bed97e632';"
 cursor.execute(querySelect)
 result = cursor.fetchall()
 for row in result:
     event_id = row['id']
     year = row['season_year']
     print("RUNNING YEAR "+str(year))
-    querySelect3 = "SELECT * FROM racingmike_motogp.categories_general WHERE year = "+str(year)
-    #querySelect3 = "SELECT * FROM racingmike_motogp.categories_general"
+    #querySelect3 = "SELECT * FROM racingmike_motogp.categories_general WHERE year = "+str(year)
+    querySelect3 = "SELECT * FROM racingmike_motogp.categories_general"
     #print(querySelect3)
     cursor.execute(querySelect3)
     result = cursor.fetchall()
@@ -118,11 +118,12 @@ for row in result:
                 #    print(f"Placeholders: {insert_query.count('%s')}, Values: {len(values)}")
                 #    continue  # Skip this iteration to avoid the error
 
-            try:
-                cursor.execute(insert_query, values)
-                cnx.commit()
-            except Exception as e:
-                print("Error:", e)
+                try:
+                    cursor.execute(insert_query, values)
+                    cnx.commit()
+                except Exception as e:
+                    print("Error:", e)
+                    continue
             #    #print("Query:", insert_query)
             #    #print("Values:", values)
             #    #sys.exit(0)

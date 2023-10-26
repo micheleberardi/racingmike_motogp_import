@@ -8,7 +8,7 @@ cnx = pymysql.connect(host='45.56.107.211', user='michelone', passwd='Buc43sede#
 
 cursor = cnx.cursor()
 
-querySelect = "SELECT * FROM racingmike_motogp.seasons;"
+querySelect = "SELECT * FROM racingmike_motogp.seasons where year = 2023"
 cursor.execute(querySelect)
 result = cursor.fetchall()
 for row in result:
