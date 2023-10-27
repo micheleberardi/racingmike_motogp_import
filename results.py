@@ -23,8 +23,8 @@ def safe_get(d, *keys):
 
 
 cursor = cnx.cursor()
-#querySelect = "SELECT * FROM sessions WHERE event_season BETWEEN 1989 AND 2023 ORDER BY event_season ASC" #where event_season = '2023' and event_id = 'bfd8a08c-cbb4-413a-a210-6d34774ea4c5';"
-querySelect = "SELECT * FROM sessions where event_season = '2023'" #and event_id = '0bb1a25b-ed29-4e93-8460-214bed97e632';"
+#querySelect = "SELECT * FROM sessions WHERE event_season BETWEEN 1991 AND 2022 ORDER BY event_season ASC" #where event_season = '2023' and event_id = 'bfd8a08c-cbb4-413a-a210-6d34774ea4c5';"
+querySelect = "SELECT * FROM sessions where event_season = '2023' and event_id = '874cada0-7330-44c1-aa54-d15b97d3cd62';"
 
 cursor.execute(querySelect)
 result = cursor.fetchall()
@@ -210,5 +210,5 @@ for row in result:
 # Always close the cursor and connection
 cursor.close()
 cnx.close()
-print("TIME TO SLEEP")
-time.sleep(20)
+print("DONE")
+#time.sleep(20)
