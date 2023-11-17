@@ -2,8 +2,21 @@ import pymysql
 import hashlib
 import requests
 import sys
-cnx = pymysql.connect(host='45.56.107.211', user='michelone', passwd='Buc43sede##LLMAUmichelone311walnut',
-                      db='racingmike_motogp', cursorclass=pymysql.cursors.DictCursor, use_unicode=True, charset="utf8")
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Connect to the database
+cnx = pymysql.connect(
+    host=os.getenv('DB_HOST'),
+    user=os.getenv('DB_USER'),
+    passwd=os.getenv('DB_PASSWD'),
+    db=os.getenv('DB_NAME'),
+    cursorclass=pymysql.cursors.DictCursor,
+    use_unicode=True,
+    charset=os.getenv('DB_CHARSET')
+)
 
 cursor = cnx.cursor()
 

@@ -5,6 +5,12 @@ import pymysql
 from pymysql.constants import FIELD_TYPE
 from pymysql.converters import conversions
 
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # This loads the environment variables from .env file
+
 class JsonFile:
     """ Helper class for dealing with json files """
 
@@ -53,19 +59,14 @@ conv[FIELD_TYPE.TIMESTAMP] = str
 class Connection:
     def __init__(self):
         self.con = pymysql.connect(
-            host = '45.56.107.211',
-            #host = 'localhost',
-            port = 3306,
-            user = 'michelone',
-            password = 'Buc43sede##LLMAUmichelone311walnut',
-            #user = 'bucksense_crystal_api',
-            #password = '0R1g1n4l0c4lj0st##',
-            db = 'motogpstats',
-            autocommit=True,
-            #charset = 'utf8mb4',
-            charset='utf8',
+            host=os.getenv('DB_HOST'),
+            port=int(os.getenv('DB_PORT')),
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD'),
+            db=os.getenv('DB_NAME'),
+            charset=os.getenv('DB_CHARSET'),
             conv=conv,
-            cursorclass = pymysql.cursors.DictCursor,
+            cursorclass=pymysql.cursors.DictCursor,
             use_unicode=True
 
             )
