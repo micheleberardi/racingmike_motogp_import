@@ -38,14 +38,14 @@ def safe_get(d, *keys):
 
 cursor = cnx.cursor()
 #querySelect = "SELECT * FROM sessions WHERE event_season BETWEEN 2022 AND 2022 ORDER BY event_season ASC" #where event_season = '2023' and event_id = 'bfd8a08c-cbb4-413a-a210-6d34774ea4c5';
-querySelect = "SELECT * FROM sessions where event_season = '2023' and event_id = 'f8346513-918f-4df1-a943-e2492d7835a1'"
+querySelect = "SELECT * FROM sessions where year = '2023' and event_id = 'f8346513-918f-4df1-a943-e2492d7835a1'"
 
 cursor.execute(querySelect)
 result = cursor.fetchall()
 for row in result:
     session_id = row['id']
     event_id = row['event_id']
-    event_year = row['event_season']
+    #year = row['year']
     category_id = row['category_id']  # << NEW
     track_condition = row['track_condition']# << NEW
     air_condition = row['air_condition'] # << NEW
@@ -58,7 +58,7 @@ for row in result:
     category_name = row['category_name'] # << NEW
     event_name = row['event_name']  # << NEW
     event_sponsored_name    = row['event_sponsored_name'] # << NEW
-    event_season = row['event_season'] # << NEW
+    year = row['year'] # << NEW
     circuit_id = row['circuit_id'] # << NEW
     circuit_legacy_id = row['circuit_legacy_id'] # << NEW
     circuit_place = row['circuit_place'] # << NEW
@@ -70,7 +70,7 @@ for row in result:
 
 
 
-    print("RUNNING SESSION "+str(event_year)+" "+str(session_id))
+    print("RUNNING SESSION "+str(year)+" "+str(session_id))
     print("***********************************")
     url = "https://api.motogp.pulselive.com/motogp/v1/results/session/" + str(session_id) + "/classification?test=false"
     print(url)
@@ -138,7 +138,7 @@ for row in result:
             files,  # Assuming this is directly given from somewhere else in your code
             session_id,  # Assuming this is directly given from somewhere else in your code
             event_id,  # Assuming this is directly given from somewhere else in your code
-            event_year,  # Assuming this is directly given from somewhere else in your code
+            year,  # Assuming this is directly given from somewhere else in your code
             category_id = row['category_id']  # << NEW
             track_condition = row['track_condition']  # << NEW
             air_condition = row['air_condition']  # << NEW
@@ -159,7 +159,7 @@ for row in result:
             # The remaining items seem to be directly available in your code context:
             # file, files, session_id, event_id, event_year, md5
 
-            md5 = rider_id + str(session_id) + str(event_id) + str(event_year)+str(category_id)
+            md5 = rider_id + str(session_id) + str(event_id) + str(year)+str(category_id)
             md5 = hashlib.md5(md5.encode('utf-8')).hexdigest()
             try:
                 insert_query = """
@@ -169,7 +169,7 @@ for row in result:
                     riders_api_uuid, team_id, team_name, team_legacy_id, team_season_id,
                     team_season_year, team_season_current, constructor_id, constructor_name,
                     constructor_legacy_id, average_speed, gap_first, gap_lap, total_laps, 
-                    time, points, status, file, files,session_id, event_id,event_year,md5,gap_prev,top_speed,best_lap_number,best_lap_time,track_condition,air_condition,humidity_condition,ground_condition,weather_condition,category_id,session_number,circuit_name,session_type,category_name,event_name,event_sponsored_name,event_season,circuit_id,circuit_legacy_id,circuit_place,circuit_nation,circuit_country_iso,circuit_country_name,circuit_country_region_iso,event_short_name)
+                    time, points, status, file, files,session_id, event_id,year,md5,gap_prev,top_speed,best_lap_number,best_lap_time,track_condition,air_condition,humidity_condition,ground_condition,weather_condition,category_id,session_number,circuit_name,session_type,category_name,event_name,event_sponsored_name,event_season,circuit_id,circuit_legacy_id,circuit_place,circuit_nation,circuit_country_iso,circuit_country_name,circuit_country_region_iso,event_short_name)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
                     position = VALUES(position),
@@ -201,7 +201,7 @@ for row in result:
                     files = VALUES(files),
                     session_id = VALUES(session_id),
                     event_id = VALUES(event_id),
-                    event_year = VALUES(event_year),
+                    year = VALUES(year),
                     md5 = VALUES(md5),
                     gap_prev = VALUES(gap_prev),
                     top_speed = VALUES(top_speed),
@@ -219,7 +219,7 @@ for row in result:
                     category_name = VALUES(category_name),
                     event_name = VALUES(event_name),
                     event_sponsored_name = VALUES(event_sponsored_name),
-                    event_season = VALUES(event_season),
+                    event_season = VALUES(year),
                     circuit_id = VALUES(circuit_id),
                     circuit_legacy_id = VALUES(circuit_legacy_id),
                     circuit_place = VALUES(circuit_place),
@@ -262,7 +262,7 @@ for row in result:
                     files,
                     session_id,
                     event_id,
-                    event_year,
+                    year,
                     md5,
                     gap_prev,
                     top_speed,
@@ -280,7 +280,7 @@ for row in result:
                     category_name,
                     event_name,
                     event_sponsored_name,
-                    event_season,
+                    year,
                     circuit_id,
                     circuit_legacy_id,
                     circuit_place,
@@ -319,7 +319,7 @@ for row in result:
             is_new_record = record['isNewRecord']
 
 
-            md5 = rider_id + str(session_id) + str(event_id) + str(event_year)+str(category_id)
+            md5 = rider_id + str(session_id) + str(event_id) + str(year)+str(category_id)
             md5 = hashlib.md5(md5.encode('utf-8')).hexdigest()
             print("CATEGORY ID: ", category_id)
 
@@ -328,7 +328,7 @@ for row in result:
                     INSERT INTO records (
                         record_type, rider_id, rider_full_name, rider_country_iso, 
                         rider_country_name, rider_region_iso, rider_legacy_id, bestLap_number, 
-                        bestLap_time, speed, record_year, isNewRecord, event_id, md5, category_id, category_name, event_name, event_sponsored_name, event_season, circuit_id, circuit_legacy_id, circuit_place, circuit_nation, circuit_country_iso, circuit_country_name, circuit_country_region_iso, event_short_name,session_id)
+                        bestLap_time, speed, record_year, isNewRecord, event_id, md5, category_id, category_name, event_name, event_sponsored_name, year, circuit_id, circuit_legacy_id, circuit_place, circuit_nation, circuit_country_iso, circuit_country_name, circuit_country_region_iso, event_short_name,session_id)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s ,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ON DUPLICATE KEY UPDATE
                     record_type = VALUES(record_type),
@@ -349,7 +349,7 @@ for row in result:
                     category_name = VALUES(category_name),
                     event_name = VALUES(event_name),
                     event_sponsored_name = VALUES(event_sponsored_name),
-                    event_season = VALUES(event_season),
+                    year = VALUES(year),
                     circuit_id = VALUES(circuit_id),
                     circuit_legacy_id = VALUES(circuit_legacy_id),
                     circuit_place = VALUES(circuit_place),
@@ -365,7 +365,7 @@ for row in result:
                 cursor.execute(insert_record_query, (
                     record_type, rider_id, rider_full_name, rider_country_iso,
                     rider_country_name, rider_region_iso, rider_legacy_id, best_lap_number,
-                    best_lap_time, speed, year, is_new_record, event_id, md5, category_id, category_name, event_name, event_sponsored_name, event_season, circuit_id, circuit_legacy_id, circuit_place, circuit_nation, circuit_country_iso, circuit_country_name, circuit_country_region_iso, event_short_name,session_id
+                    best_lap_time, speed, year, is_new_record, event_id, md5, category_id, category_name, event_name, event_sponsored_name, year, circuit_id, circuit_legacy_id, circuit_place, circuit_nation, circuit_country_iso, circuit_country_name, circuit_country_region_iso, event_short_name,session_id
                 ))
                 cnx.commit()
             except TypeError as e:
