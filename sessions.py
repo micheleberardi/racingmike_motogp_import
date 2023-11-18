@@ -22,7 +22,7 @@ cnx = pymysql.connect(
 cursor = cnx.cursor()
 
 #querySelect = "SELECT * FROM events"
-querySelect = "SELECT * FROM racingmike_motogp.events where season_year = 2023 and id = 'a0a97cd1-b65c-4cb0-b6c2-90bc7c1665b9';"
+querySelect = "SELECT * FROM racingmike_motogp.events where season_year = 2023 and id = 'f8346513-918f-4df1-a943-e2492d7835a1';"
 cursor.execute(querySelect)
 result = cursor.fetchall()
 for row in result:

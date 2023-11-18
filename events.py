@@ -1,10 +1,14 @@
 import pymysql
 import requests
-
+import sys
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# print load_dotenv()
+print (os.getenv('DB_HOST'))
+
 
 # Connect to the database
 cnx = pymysql.connect(
