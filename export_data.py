@@ -22,8 +22,8 @@ try:
     cursor = cnx.cursor()
 
     # SQL query to execute
-    querySelect = "SELECT cg.*, e.*, s.*, r.*, rec.*, se.* FROM events e LEFT JOIN categories_general cg ON e.year = cg.year LEFT JOIN sessions s ON e.year = s.year LEFT JOIN results r ON e.year = r.year LEFT JOIN records rec ON e.year = rec.year LEFT JOIN seasons se ON e.year = se.year WHERE e.year = 2023 and e.id = 'a08837b6-1cfb-4dfe-a7a4-d61fe970ea3d';"
-
+    #querySelect = "SELECT cg.*, e.*, s.*, r.*, rec.*, se.* FROM events e LEFT JOIN categories_general cg ON e.year = cg.year LEFT JOIN sessions s ON e.year = s.year LEFT JOIN results r ON e.year = r.year LEFT JOIN records rec ON e.year = rec.year LEFT JOIN seasons se ON e.year = se.year WHERE e.year = 2023 and e.id = 'a08837b6-1cfb-4dfe-a7a4-d61fe970ea3d';"
+    querySelect = "SELECT cg.*, e.*, s.*, r.*, rec.*, se.* FROM events e LEFT JOIN categories_general cg ON e.year = cg.year LEFT JOIN sessions s ON e.year = s.year AND e.id = s.event_id LEFT JOIN results r ON e.year = r.year AND e.id = r.event_id LEFT JOIN records rec ON e.year = rec.year LEFT JOIN seasons se ON e.year = se.year WHERE e.year = 2023 AND e.id = 'a08837b6-1cfb-4dfe-a7a4-d61fe970ea3d';"
     # Execute the SQL command
     cursor.execute(querySelect)
 
