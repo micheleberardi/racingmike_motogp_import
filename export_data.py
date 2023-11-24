@@ -29,6 +29,7 @@ try:
 
     # Fetch all the rows in a list of lists.
     result = cursor.fetchall()
+    print(result)
 
     # Write result to a JSON file
     with open('result.json', 'w') as json_file:
