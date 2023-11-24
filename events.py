@@ -45,7 +45,7 @@ for row in result:
                                 circuit_id, circuit_name, circuit_legacy_id, 
                                 circuit_place, circuit_nation, test, sponsored_name, 
                                 date_end, toad_api_uuid, date_start, name, 
-                                season_id, season_year, season_current, short_name) 
+                                season_id, year, season_current, short_name) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(insert_event_query, (

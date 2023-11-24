@@ -38,7 +38,7 @@ def safe_get(d, *keys):
 
 cursor = cnx.cursor()
 #querySelect = "SELECT * FROM sessions WHERE event_season BETWEEN 2022 AND 2022 ORDER BY event_season ASC" #where event_season = '2023' and event_id = 'bfd8a08c-cbb4-413a-a210-6d34774ea4c5';
-querySelect = "SELECT * FROM sessions where year = '2023' and event_id = 'f8346513-918f-4df1-a943-e2492d7835a1'"
+querySelect = "SELECT * FROM sessions where year = '2023' and event_id = 'a08837b6-1cfb-4dfe-a7a4-d61fe970ea3d'"
 
 cursor.execute(querySelect)
 result = cursor.fetchall()

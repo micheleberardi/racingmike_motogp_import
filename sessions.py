@@ -22,12 +22,12 @@ cnx = pymysql.connect(
 cursor = cnx.cursor()
 
 #querySelect = "SELECT * FROM events"
-querySelect = "SELECT * FROM racingmike_motogp.events where season_year = 2023 and id = 'f8346513-918f-4df1-a943-e2492d7835a1';"
+querySelect = "SELECT * FROM racingmike_motogp.events where year = 2023 and id = 'a08837b6-1cfb-4dfe-a7a4-d61fe970ea3d';"
 cursor.execute(querySelect)
 result = cursor.fetchall()
 for row in result:
     event_id = row['id']
-    year = row['season_year']
+    year = row['year']
     print("RUNNING YEAR "+str(year))
     #querySelect3 = "SELECT * FROM racingmike_motogp.categories_general WHERE year = "+str(year)
     querySelect3 = "SELECT * FROM racingmike_motogp.categories_general"
@@ -59,7 +59,7 @@ for row in result:
                     world_standing_menu_position, best_partial_time_url, best_partial_time_menu_position,
                     maximum_speed_url, maximum_speed_menu_position, combined_practice_url, combined_practice_menu_position,
                     combined_classification_url, combined_classification_menu_position, type, category_id,
-                    category_legacy_id, category_name, event_id, event_name, event_sponsored_name, event_season,
+                    category_legacy_id, category_name, event_id, event_name, event_sponsored_name, year,
                     circuit_id, circuit_legacy_id, circuit_place, circuit_nation, country_iso, country_name, 
                     country_region_iso, event_short_name, status
                 ) VALUES (
