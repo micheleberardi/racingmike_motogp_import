@@ -194,3 +194,6 @@ This project is not affiliated with, endorsed by, or in any way officially conne
 
 ## Contact and Issues
 If there are any concerns or questions regarding the use of MotoGP data in this project, or if it is believed that the data usage infringes on any rights or terms of use, please reach out to mike@hackmike.com for immediate action.
+
+
+https://api.motogp.pulselive.com/motogp/v1/timing-gateway/livetiming-lite

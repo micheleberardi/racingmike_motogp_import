@@ -38,10 +38,11 @@ def safe_get(d, *keys):
 
 cursor = cnx.cursor()
 #querySelect = "SELECT * FROM sessions WHERE event_season BETWEEN 2022 AND 2022 ORDER BY event_season ASC" #where event_season = '2023' and event_id = 'bfd8a08c-cbb4-413a-a210-6d34774ea4c5';
-querySelect = "SELECT * FROM sessions where year = '2023' and event_id = 'a08837b6-1cfb-4dfe-a7a4-d61fe970ea3d'"
+querySelect = "SELECT * FROM sessions WHERE year = '2024' AND date >= CURDATE() - INTERVAL 4 DAY AND date < CURDATE() + INTERVAL 1 DAY ORDER BY date DESC;"
 
 cursor.execute(querySelect)
 result = cursor.fetchall()
+print(result)
 for row in result:
     session_id = row['id']
     event_id = row['event_id']
@@ -83,7 +84,8 @@ for row in result:
     if 'classification' in data:
         classifications = data['classification']
         file = data.get('file', '')
-        files = data.get('files', '')
+        #files = data.get('files', '')
+        files = ""
         records = data.get('records', '')
 
         for item in classifications:
@@ -231,6 +233,7 @@ for row in result:
 
 
                 """
+                print(insert_query)
                 cursor.execute(insert_query, (
                     id,
                     position,
@@ -304,75 +307,77 @@ for row in result:
         #md5 = records[0]['rider']['id']+str(records[0]['bestLap']['number'])+str(records[0]['bestLap']['time'])+str(records[0]['speed'])+str(records[0]['year'])+str(session_id)
         #md5 = hashlib.md5(md5.encode('utf-8')).hexdigest()
         #records = [{"type": "poleLap", "rider": {"id": "3c7598e5-12ec-4e19-9311-1c0e9a017cbe", "full_name": "Diogo Moreira", "country": {"iso": "BR", "name": "Brazil", "region_iso": ""}, "legacy_id": 10257 }, "bestLap": {"number": null, "time": "01:39.0850"}, "speed": "156.2", "year": null, "isNewRecord": false } ]
-        for record in records:
-            record_type = record['type']
-            rider_id = record['rider']['id']
-            rider_full_name = record['rider']['full_name']
-            rider_country_iso = record['rider']['country']['iso']
-            rider_country_name = record['rider']['country']['name']
-            rider_region_iso = record['rider']['country']['region_iso']
-            rider_legacy_id = record['rider']['legacy_id']
-            best_lap_number = record['bestLap']['number']
-            best_lap_time = record['bestLap']['time']
-            speed = record['speed']
-            year = record['year']
-            is_new_record = record['isNewRecord']
+        print("RECORDS: ", records)
+        if records is not None:
+            for record in records:
+                record_type = record['type']
+                rider_id = record['rider']['id']
+                rider_full_name = record['rider']['full_name']
+                rider_country_iso = record['rider']['country']['iso']
+                rider_country_name = record['rider']['country']['name']
+                rider_region_iso = record['rider']['country']['region_iso']
+                rider_legacy_id = record['rider']['legacy_id']
+                best_lap_number = record['bestLap']['number']
+                best_lap_time = record['bestLap']['time']
+                speed = record['speed']
+                year = record['year']
+                is_new_record = record['isNewRecord']
 
 
-            md5 = rider_id + str(session_id) + str(event_id) + str(year)+str(category_id)
-            md5 = hashlib.md5(md5.encode('utf-8')).hexdigest()
-            print("CATEGORY ID: ", category_id)
+                md5 = rider_id + str(session_id) + str(event_id) + str(year)+str(category_id)
+                md5 = hashlib.md5(md5.encode('utf-8')).hexdigest()
+                print("CATEGORY ID: ", category_id)
 
-            try:
-                insert_record_query = """
-                    INSERT INTO records (
-                        record_type, rider_id, rider_full_name, rider_country_iso, 
-                        rider_country_name, rider_region_iso, rider_legacy_id, bestLap_number, 
-                        bestLap_time, speed, record_year, isNewRecord, event_id, md5, category_id, category_name, event_name, event_sponsored_name, year, circuit_id, circuit_legacy_id, circuit_place, circuit_nation, circuit_country_iso, circuit_country_name, circuit_country_region_iso, event_short_name,session_id)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s ,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-                ON DUPLICATE KEY UPDATE
-                    record_type = VALUES(record_type),
-                    rider_id = VALUES(rider_id),
-                    rider_full_name = VALUES(rider_full_name),
-                    rider_country_iso = VALUES(rider_country_iso),
-                    rider_country_name = VALUES(rider_country_name),
-                    rider_region_iso = VALUES(rider_region_iso),
-                    rider_legacy_id = VALUES(rider_legacy_id),
-                    bestLap_number = VALUES(bestLap_number),
-                    bestLap_time = VALUES(bestLap_time),
-                    speed = VALUES(speed),
-                    record_year = VALUES(record_year),
-                    isNewRecord = VALUES(isNewRecord),
-                    event_id = VALUES(event_id),
-                    md5 = VALUES(md5),
-                    category_id = VALUES(category_id),
-                    category_name = VALUES(category_name),
-                    event_name = VALUES(event_name),
-                    event_sponsored_name = VALUES(event_sponsored_name),
-                    year = VALUES(year),
-                    circuit_id = VALUES(circuit_id),
-                    circuit_legacy_id = VALUES(circuit_legacy_id),
-                    circuit_place = VALUES(circuit_place),
-                    circuit_nation = VALUES(circuit_nation),
-                    circuit_country_iso = VALUES(circuit_country_iso),
-                    circuit_country_name = VALUES(circuit_country_name),
-                    circuit_country_region_iso = VALUES(circuit_country_region_iso),
-                    event_short_name = VALUES(event_short_name),
-                    session_id = VALUES(session_id)
+                try:
+                    insert_record_query = """
+                        INSERT INTO records (
+                            record_type, rider_id, rider_full_name, rider_country_iso,
+                            rider_country_name, rider_region_iso, rider_legacy_id, bestLap_number,
+                            bestLap_time, speed, record_year, isNewRecord, event_id, md5, category_id, category_name, event_name, event_sponsored_name, year, circuit_id, circuit_legacy_id, circuit_place, circuit_nation, circuit_country_iso, circuit_country_name, circuit_country_region_iso, event_short_name,session_id)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s ,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    ON DUPLICATE KEY UPDATE
+                        record_type = VALUES(record_type),
+                        rider_id = VALUES(rider_id),
+                        rider_full_name = VALUES(rider_full_name),
+                        rider_country_iso = VALUES(rider_country_iso),
+                        rider_country_name = VALUES(rider_country_name),
+                        rider_region_iso = VALUES(rider_region_iso),
+                        rider_legacy_id = VALUES(rider_legacy_id),
+                        bestLap_number = VALUES(bestLap_number),
+                        bestLap_time = VALUES(bestLap_time),
+                        speed = VALUES(speed),
+                        record_year = VALUES(record_year),
+                        isNewRecord = VALUES(isNewRecord),
+                        event_id = VALUES(event_id),
+                        md5 = VALUES(md5),
+                        category_id = VALUES(category_id),
+                        category_name = VALUES(category_name),
+                        event_name = VALUES(event_name),
+                        event_sponsored_name = VALUES(event_sponsored_name),
+                        year = VALUES(year),
+                        circuit_id = VALUES(circuit_id),
+                        circuit_legacy_id = VALUES(circuit_legacy_id),
+                        circuit_place = VALUES(circuit_place),
+                        circuit_nation = VALUES(circuit_nation),
+                        circuit_country_iso = VALUES(circuit_country_iso),
+                        circuit_country_name = VALUES(circuit_country_name),
+                        circuit_country_region_iso = VALUES(circuit_country_region_iso),
+                        event_short_name = VALUES(event_short_name),
+                        session_id = VALUES(session_id)
                    
                      
-                """
-                cursor.execute(insert_record_query, (
-                    record_type, rider_id, rider_full_name, rider_country_iso,
-                    rider_country_name, rider_region_iso, rider_legacy_id, best_lap_number,
-                    best_lap_time, speed, year, is_new_record, event_id, md5, category_id, category_name, event_name, event_sponsored_name, year, circuit_id, circuit_legacy_id, circuit_place, circuit_nation, circuit_country_iso, circuit_country_name, circuit_country_region_iso, event_short_name,session_id
-                ))
-                cnx.commit()
-            except TypeError as e:
-                cnx.rollback()
-                print("CaazziA TypeError occurred:", e)
-                sys.exit(0)
-                # Log the error, and/or print more diagnostic information
+                    """
+                    cursor.execute(insert_record_query, (
+                        record_type, rider_id, rider_full_name, rider_country_iso,
+                        rider_country_name, rider_region_iso, rider_legacy_id, best_lap_number,
+                        best_lap_time, speed, year, is_new_record, event_id, md5, category_id, category_name, event_name, event_sponsored_name, year, circuit_id, circuit_legacy_id, circuit_place, circuit_nation, circuit_country_iso, circuit_country_name, circuit_country_region_iso, event_short_name,session_id
+                    ))
+                    cnx.commit()
+                except TypeError as e:
+                    cnx.rollback()
+                    print("CaazziA TypeError occurred:", e)
+                    sys.exit(0)
+                    # Log the error, and/or print more diagnostic information
 
     print("TIME TO SLEEP")
     time_module.sleep(2)

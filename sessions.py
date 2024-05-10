@@ -22,16 +22,17 @@ cnx = pymysql.connect(
 cursor = cnx.cursor()
 
 #querySelect = "SELECT * FROM events"
-querySelect = "SELECT * FROM racingmike_motogp.events where year = 2023 and id = 'a08837b6-1cfb-4dfe-a7a4-d61fe970ea3d';"
+querySelect = "SELECT * FROM racingmike_motogp.events WHERE year = '2024' and id = 'fb3311d5-6ff0-4a83-8edc-dcbd2b9014f1';" #AND test != 1 AND date_start BETWEEN CURDATE() - INTERVAL 10 DAY AND CURDATE() ORDER BY date_start DESC;"
 cursor.execute(querySelect)
 result = cursor.fetchall()
+print(result)
 for row in result:
     event_id = row['id']
     year = row['year']
     print("RUNNING YEAR "+str(year))
-    #querySelect3 = "SELECT * FROM racingmike_motogp.categories_general WHERE year = "+str(year)
-    querySelect3 = "SELECT * FROM racingmike_motogp.categories_general"
-    #print(querySelect3)
+    querySelect3 = "SELECT * FROM racingmike_motogp.categories_general WHERE year = "+str(year)
+    #querySelect3 = "SELECT * FROM sessions where year = 2024 AND date BETWEEN CURDATE() - INTERVAL 40 DAY AND CURDATE() ORDER BY date DESC"
+    print(querySelect3)
     cursor.execute(querySelect3)
     result = cursor.fetchall()
     #print(result)
@@ -45,13 +46,16 @@ for row in result:
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
+            print(data)
             # Assuming the JSON response is a list
             for session in data:
                 # Constructing the INSERT query using the fetched data
+                print(type(session['session_files']))  # This should show <class 'dict'> if it's correctly structured
+                print(session['session_files'])  # This will show the actual content
                 insert_query = """
                 INSERT INTO sessions (
-                    id, date, number, track_condition, air_condition, humidity_condition, ground_condition, 
-                    weather_condition, circuit_name, classification_url, classification_menu_position, 
+                    id, date, number, track_condition, air_condition, humidity_condition, ground_condition,
+                    weather_condition, circuit_name, classification_url, classification_menu_position,
                     analysis_url, analysis_menu_position, average_speed_url, average_speed_menu_position,
                     fast_lap_sequence_url, fast_lap_sequence_menu_position, lap_chart_url, lap_chart_menu_position,
                     analysis_by_lap_url, analysis_by_lap_menu_position, fast_lap_rider_url, fast_lap_rider_menu_position,
@@ -60,12 +64,12 @@ for row in result:
                     maximum_speed_url, maximum_speed_menu_position, combined_practice_url, combined_practice_menu_position,
                     combined_classification_url, combined_classification_menu_position, type, category_id,
                     category_legacy_id, category_name, event_id, event_name, event_sponsored_name, year,
-                    circuit_id, circuit_legacy_id, circuit_place, circuit_nation, country_iso, country_name, 
+                    circuit_id, circuit_legacy_id, circuit_place, circuit_nation, country_iso, country_name,
                     country_region_iso, event_short_name, status
                 ) VALUES (
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s 
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 );
                 """
 
@@ -80,8 +84,11 @@ for row in result:
                     session['condition']['weather'],
                     session['circuit'],
                     session['session_files']['classification']['url'],
+                    #session['session_files']['classification'],
                     session['session_files']['classification']['menu_position'],
                     session['session_files']['analysis']['url'],
+                    #session['session_files']['analysis'],
+                    
                     session['session_files']['analysis']['menu_position'],
                     session['session_files']['average_speed']['url'],
                     session['session_files']['average_speed']['menu_position'],

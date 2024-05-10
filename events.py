@@ -22,7 +22,7 @@ cnx = pymysql.connect(
 )
 cursor = cnx.cursor()
 
-querySelect = "SELECT * FROM seasons where year =2023"
+querySelect = "SELECT * FROM seasons where year =2024"
 cursor.execute(querySelect)
 result = cursor.fetchall()
 
@@ -30,6 +30,7 @@ for row in result:
     season_id = row['id']
     year = row['year']
     url = f"https://api.motogp.pulselive.com/motogp/v1/results/events?seasonUuid={season_id}&isFinished=true"
+    print(url)
     response = requests.get(url)
     events = response.json()
 

@@ -82,7 +82,9 @@ for row in result:
             )
 
             # Create a string representation of the entry
-            entry_str = ''.join(map(str, values))
+            entry_str = ''.join(map(str, (
+                year,rider['legacy_id']
+            )))
 
             # Generate the MD5 hash
             md5_hash = hashlib.md5(entry_str.encode()).hexdigest()
