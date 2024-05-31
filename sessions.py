@@ -22,7 +22,7 @@ cnx = pymysql.connect(
 cursor = cnx.cursor()
 
 #querySelect = "SELECT * FROM events"
-querySelect = "SELECT * FROM racingmike_motogp.events WHERE year = '2024' and id = 'fb3311d5-6ff0-4a83-8edc-dcbd2b9014f1';" #AND test != 1 AND date_start BETWEEN CURDATE() - INTERVAL 10 DAY AND CURDATE() ORDER BY date_start DESC;"
+querySelect = "SELECT * FROM racingmike_motogp.events WHERE year = '2024' AND test != 1 AND date_start BETWEEN CURDATE() - INTERVAL 10 DAY AND CURDATE() ORDER BY date_start DESC;"
 cursor.execute(querySelect)
 result = cursor.fetchall()
 print(result)
