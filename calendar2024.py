@@ -2,7 +2,7 @@ import json
 import pymysql
 import os
 import requests
-from datetime import datetime  # Importa datetime per la conversione delle date
+from datetime import datetime
 from dotenv import load_dotenv
 import logging
 
@@ -22,7 +22,6 @@ cnx = pymysql.connect(
 )
 
 
-# Funzione per convertire le date nel formato corretto
 def convert_date(date_string):
 	if date_string:
 		try:
@@ -38,7 +37,6 @@ def convert_date(date_string):
 	return None
 
 
-# Funzione per inserire i dati nella tabella principale
 def insert_main_data(cursor, data):
 	insert_query = """
     INSERT INTO MotoGP_Calendar (id, shortname, name, hashtag, circuit, country_code, country,
@@ -81,7 +79,6 @@ def insert_main_data(cursor, data):
 			logging.error(f"Errore durante l'inserimento dell'evento ID {event['id']}: {e}")
 
 
-# Funzione per inserire le sessioni chiave nella tabella delle sessioni
 def insert_session_data(cursor, event_id, sessions):
 	insert_query = """
     INSERT INTO MotoGP_KeySessionTimes (event_id, session_shortname, session_name, start_datetime_utc)
@@ -93,7 +90,7 @@ def insert_session_data(cursor, event_id, sessions):
     """
 	
 	for session in sessions:
-		formatted_date = convert_date(session['start_datetime_utc'])  # Converte la data
+		formatted_date = convert_date(session['start_datetime_utc'])
 		logging.info(
 			f"Inserimento dati: {event_id}, {session['session_shortname']}, {session['session_name']}, {formatted_date}")
 		try:
@@ -103,17 +100,20 @@ def insert_session_data(cursor, event_id, sessions):
 				session['session_name'],
 				formatted_date
 			))
+		except pymysql.err.IntegrityError as e:
+			if 'foreign key constraint fails' in str(e):
+				logging.error(f"L'evento con ID {event_id} non esiste in MotoGP_Calendar. Skipping.")
+			else:
+				logging.error(f"Errore durante l'inserimento della sessione per l'evento ID {event_id}: {e}")
 		except Exception as e:
 			logging.error(f"Errore durante l'inserimento della sessione per l'evento ID {event_id}: {e}")
 
 
-# Effettua la richiesta all'API e ottieni il JSON
 api_url = "https://mototiming.live/api/schedule?filter=all"
 response = requests.get(api_url)
 
-# Verifica se la richiesta è andata a buon fine
 if response.status_code == 200:
-	data = response.json()  # Carica il JSON dalla risposta
+	data = response.json()
 else:
 	logging.error(f"Errore durante il recupero dei dati dall'API: {response.status_code}")
 	cnx.close()
@@ -122,25 +122,22 @@ else:
 try:
 	with cnx.cursor() as cursor:
 		logging.info("Inizio inserimento dati nella tabella MotoGP_Calendar.")
-		# Inserisci i dati
 		insert_main_data(cursor, data)
 		
-		# Inserisci i dati delle sessioni chiave
 		for event in data['calendar']:
 			if event['key_session_times']:
 				insert_session_data(cursor, event['id'], event['key_session_times'])
 		
-		# Conferma le modifiche al database
 		cnx.commit()
 		logging.info("Dati inseriti e commit effettuato con successo.")
 
 except pymysql.err.IntegrityError as e:
 	logging.error(f"Errore di integrità: {e}")
-	cnx.rollback()  # Annulla le modifiche se c'è un errore
+	cnx.rollback()
 
 except Exception as e:
 	logging.error(f"Errore durante l'esecuzione della query: {e}")
-	cnx.rollback()  # Annulla le modifiche se c'è un errore
+	cnx.rollback()
 
 finally:
 	cnx.close()
