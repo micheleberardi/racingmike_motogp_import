@@ -23,27 +23,21 @@ cnx = pymysql.connect(
 
 
 # Funzione per convertire le date nel formato corretto
-from datetime import datetime, timezone
-
 def convert_date(date_string):
-    if date_string:
-        try:
-            # Converte la stringa di data in formato ISO 8601 direttamente
-            # Mantiene i microsecondi e converte il fuso orario in UTC
-            date_obj = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%fZ')
-            return date_obj.strftime('%Y-%m-%d %H:%M:%S.%f')
-        except ValueError:
-            try:
-                # Gestisce il formato senza microsecondi
-                date_obj = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S+00:00')
-                return date_obj.strftime('%Y-%m-%d %H:%M:%S')
-            except ValueError:
-                logging.error(f"Errore nella conversione della data: {date_string}")
-                return None
-    return None
-
-
-
+	if date_string:
+		try:
+			# Converte la stringa di data in formato ISO 8601 direttamente
+			date_obj = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%fZ')
+			return date_obj.strftime('%Y-%m-%d %H:%M:%S.%f')
+		except ValueError:
+			try:
+				# Gestisce il formato senza microsecondi
+				date_obj = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S+00:00')
+				return date_obj.strftime('%Y-%m-%d %H:%M:%S')
+			except ValueError:
+				logging.error(f"Errore nella conversione della data: {date_string}")
+				return None
+	return None
 
 
 # Funzione per inserire i dati nella tabella principale
@@ -115,7 +109,7 @@ response = requests.get(api_url)
 if response.status_code == 200:
 	data = response.json()  # Carica il JSON dalla risposta
 else:
-	print(f"Errore durante il recupero dei dati dall'API: {response.status_code}")
+	logging.error(f"Errore durante il recupero dei dati dall'API: {response.status_code}")
 	cnx.close()
 	exit()
 
@@ -145,7 +139,5 @@ except Exception as e:
 finally:
 	cnx.close()
 	logging.info("Connessione al database chiusa.")
-
-print("Dati importati con successo!")
 
 print("Dati importati con successo!")
