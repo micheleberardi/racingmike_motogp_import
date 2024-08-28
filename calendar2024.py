@@ -23,16 +23,25 @@ cnx = pymysql.connect(
 
 
 # Funzione per convertire le date nel formato corretto
+from datetime import datetime, timezone
+
 def convert_date(date_string):
     if date_string:
         try:
-            # Rimuovi il fuso orario e converti la data al formato 'YYYY-MM-DD HH:MM:SS'
-            if '+' in date_string:
-                date_string = date_string.split('+')[0]
-            return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+            # Converte la stringa di data in formato ISO 8601 direttamente
+            # Mantiene i microsecondi e converte il fuso orario in UTC
+            date_obj = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%fZ')
+            return date_obj.strftime('%Y-%m-%d %H:%M:%S.%f')
         except ValueError:
-            logging.error(f"Errore nella conversione della data: {date_string}")
+            try:
+                # Gestisce il formato senza microsecondi
+                date_obj = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S+00:00')
+                return date_obj.strftime('%Y-%m-%d %H:%M:%S')
+            except ValueError:
+                logging.error(f"Errore nella conversione della data: {date_string}")
+                return None
     return None
+
 
 
 
@@ -42,7 +51,11 @@ def insert_main_data(cursor, data):
 	insert_query = """
     INSERT INTO MotoGP_Calendar (id, shortname, name, hashtag, circuit, country_code, country,
         start_date, end_date, local_tz_offset, test, has_timing, friendly_name, dates, last_session_end_time)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s,
+            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'),  -- Converte stringa in DATETIME con microsecondi
+            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'),  -- Converte stringa in DATETIME con microsecondi
+            %s, %s, %s, %s,
+            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'))  -- Converte stringa in DATETIME con microsecondi
     ON DUPLICATE KEY UPDATE
         shortname = VALUES(shortname),
         name = VALUES(name),
@@ -57,7 +70,7 @@ def insert_main_data(cursor, data):
         has_timing = VALUES(has_timing),
         friendly_name = VALUES(friendly_name),
         dates = VALUES(dates),
-        last_session_end_time = VALUES(last_session_end_time)
+        last_session_end_time = VALUES(last_session_end_time);
     """
 	
 	for event in data['calendar']:
@@ -72,19 +85,18 @@ def insert_main_data(cursor, data):
 		))
 
 
-# Funzione per inserire le sessioni chiave nella tabella delle sessioni
 def insert_session_data(cursor, event_id, sessions):
 	insert_query = """
     INSERT INTO MotoGP_KeySessionTimes (event_id, session_shortname, session_name, start_datetime_utc)
-    VALUES (%s, %s, %s, %s)
+    VALUES (%s, %s, %s, STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s'))
     ON DUPLICATE KEY UPDATE
         session_shortname = VALUES(session_shortname),
         session_name = VALUES(session_name),
-        start_datetime_utc = VALUES(start_datetime_utc)
+        start_datetime_utc = VALUES(start_datetime_utc);
     """
 	
 	for session in sessions:
-		formatted_date = convert_date(session['start_datetime_utc'])  # Converti la data
+		formatted_date = convert_date(session['start_datetime_utc'])  # Converte la data
 		logging.info(
 			f"Inserimento dati: {event_id}, {session['session_shortname']}, {session['session_name']}, {formatted_date}")
 		cursor.execute(insert_query, (
