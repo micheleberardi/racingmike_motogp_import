@@ -21,13 +21,16 @@ cnx = pymysql.connect(
 
 # Funzione per convertire le date nel formato corretto
 def convert_date(date_string):
-	if date_string:
-		try:
-			# Converti al formato 'YYYY-MM-DD HH:MM:SS'
-			return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%Y-%m-%d %H:%M:%S')
-		except ValueError:
-			pass
-	return None
+    if date_string:
+        try:
+            # Rimuovi il fuso orario e converti la data al formato 'YYYY-MM-DD HH:MM:SS'
+            if '+' in date_string:
+                date_string = date_string.split('+')[0]
+            return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            pass
+    return None
+
 
 
 # Funzione per inserire i dati nella tabella principale
@@ -81,7 +84,7 @@ def insert_session_data(cursor, event_id, sessions):
 			event_id,
 			session['session_shortname'],
 			session['session_name'],
-			convert_date(session['start_datetime_utc'])  # Converte la data
+			convert_date(session['start_datetime_utc'])  # Converti la data
 		))
 
 
