@@ -22,14 +22,13 @@ cnx = pymysql.connect(
 )
 
 
-# Funzione per convertire le date nel formato corretto
+# Funzione per convertire le date nel formato DATETIME
 def convert_date(date_string):
 	if date_string:
 		try:
-			# Converte la stringa di data in formato ISO 8601 direttamente
-			# Mantiene i microsecondi e converte il fuso orario in UTC
+			# Converte la stringa ISO 8601 in oggetto datetime
 			date_obj = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%fZ')
-			return date_obj.strftime('%Y-%m-%d %H:%M:%S.%f')
+			return date_obj.strftime('%Y-%m-%d %H:%M:%S')
 		except ValueError:
 			try:
 				# Gestisce il formato senza microsecondi
@@ -46,11 +45,7 @@ def insert_main_data(cursor, data):
 	insert_query = """
     INSERT INTO MotoGP_Calendar (id, shortname, name, hashtag, circuit, country_code, country,
         start_date, end_date, local_tz_offset, test, has_timing, friendly_name, dates, last_session_end_time)
-    VALUES (%s, %s, %s, %s, %s, %s, %s,
-            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'),  -- Converte stringa in DATETIME con microsecondi
-            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'),  -- Converte stringa in DATETIME con microsecondi
-            %s, %s, %s, %s,
-            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'))  -- Converte stringa in DATETIME con microsecondi
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON DUPLICATE KEY UPDATE
         shortname = VALUES(shortname),
         name = VALUES(name),
@@ -88,7 +83,7 @@ def insert_main_data(cursor, data):
 def insert_session_data(cursor, event_id, sessions):
 	insert_query = """
     INSERT INTO MotoGP_KeySessionTimes (event_id, session_shortname, session_name, start_datetime_utc)
-    VALUES (%s, %s, %s, STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s'))
+    VALUES (%s, %s, %s, %s)
     ON DUPLICATE KEY UPDATE
         session_shortname = VALUES(session_shortname),
         session_name = VALUES(session_name),
