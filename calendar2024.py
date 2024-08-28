@@ -4,7 +4,10 @@ import os
 import requests
 from datetime import datetime  # Importa datetime per la conversione delle date
 from dotenv import load_dotenv
+import logging
 
+# Configura il logging
+logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
 # Connessione al database MySQL
@@ -80,11 +83,14 @@ def insert_session_data(cursor, event_id, sessions):
     """
 	
 	for session in sessions:
+		formatted_date = convert_date(session['start_datetime_utc'])  # Converti la data
+		logging.info(
+			f"Inserimento dati: {event_id}, {session['session_shortname']}, {session['session_name']}, {formatted_date}")
 		cursor.execute(insert_query, (
 			event_id,
 			session['session_shortname'],
 			session['session_name'],
-			convert_date(session['start_datetime_utc'])  # Converti la data
+			formatted_date
 		))
 
 
