@@ -59,8 +59,10 @@ def insert_session_data(cursor, event_id, sessions):
 	
 	for session in sessions:
 		cursor.execute(insert_query, (
-			event_id, session['session_shortname'], session['session_name'],
-			convert_date(session['start_datetime_utc'])  # Converte la data
+			event_id,
+			session['session_shortname'],
+			session['session_name'],
+			session['start_datetime_utc']  # Assicurati che questo valore sia presente
 		))
 
 
