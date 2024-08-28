@@ -1,7 +1,7 @@
 import json
 import pymysql
 import os
-import requests  # Per effettuare la richiesta HTTP
+import requests  # Assicurati che l'importazione funzioni ora
 from dotenv import load_dotenv
 
 load_dotenv()
