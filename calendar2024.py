@@ -36,6 +36,21 @@ def insert_main_data(cursor, data):
     INSERT INTO MotoGP_Calendar (id, shortname, name, hashtag, circuit, country_code, country,
         start_date, end_date, local_tz_offset, test, has_timing, friendly_name, dates, last_session_end_time)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    ON DUPLICATE KEY UPDATE
+        shortname = VALUES(shortname),
+        name = VALUES(name),
+        hashtag = VALUES(hashtag),
+        circuit = VALUES(circuit),
+        country_code = VALUES(country_code),
+        country = VALUES(country),
+        start_date = VALUES(start_date),
+        end_date = VALUES(end_date),
+        local_tz_offset = VALUES(local_tz_offset),
+        test = VALUES(test),
+        has_timing = VALUES(has_timing),
+        friendly_name = VALUES(friendly_name),
+        dates = VALUES(dates),
+        last_session_end_time = VALUES(last_session_end_time)
     """
 	
 	for event in data['calendar']:
@@ -55,6 +70,10 @@ def insert_session_data(cursor, event_id, sessions):
 	insert_query = """
     INSERT INTO MotoGP_KeySessionTimes (event_id, session_shortname, session_name, start_datetime_utc)
     VALUES (%s, %s, %s, %s)
+    ON DUPLICATE KEY UPDATE
+        session_shortname = VALUES(session_shortname),
+        session_name = VALUES(session_name),
+        start_datetime_utc = VALUES(start_datetime_utc)
     """
 	
 	for session in sessions:
@@ -62,7 +81,7 @@ def insert_session_data(cursor, event_id, sessions):
 			event_id,
 			session['session_shortname'],
 			session['session_name'],
-			session['start_datetime_utc']  # Assicurati che questo valore sia presente
+			convert_date(session['start_datetime_utc'])  # Converte la data
 		))
 
 
