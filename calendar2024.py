@@ -31,8 +31,9 @@ def convert_date(date_string):
                 date_string = date_string.split('+')[0]
             return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
         except ValueError:
-            pass
+            logging.error(f"Errore nella conversione della data: {date_string}")
     return None
+
 
 
 
@@ -108,6 +109,7 @@ else:
 
 try:
 	with cnx.cursor() as cursor:
+		logging.info("Inizio inserimento dati nella tabella MotoGP_Calendar.")
 		# Inserisci i dati
 		insert_main_data(cursor, data)
 		
@@ -115,20 +117,22 @@ try:
 		for event in data['calendar']:
 			if event['key_session_times']:
 				insert_session_data(cursor, event['id'], event['key_session_times'])
-	
-	# Conferma le modifiche al database
-	cnx.commit()
+		
+		# Conferma le modifiche al database
+		cnx.commit()
+		logging.info("Dati inseriti e commit effettuato con successo.")
 
 except pymysql.err.IntegrityError as e:
-	print(f"Errore di integrità: {e}")
+	logging.error(f"Errore di integrità: {e}")
 	cnx.rollback()  # Annulla le modifiche se c'è un errore
 
 except Exception as e:
-	print(f"Errore durante l'esecuzione della query: {e}")
+	logging.error(f"Errore durante l'esecuzione della query: {e}")
 	cnx.rollback()  # Annulla le modifiche se c'è un errore
 
 finally:
 	cnx.close()
+	logging.info("Connessione al database chiusa.")
 
 print("Dati importati con successo!")
 
