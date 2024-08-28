@@ -1,7 +1,8 @@
 import json
 import pymysql
 import os
-import requests  # Assicurati che l'importazione funzioni ora
+import requests
+from datetime import datetime  # Importa datetime per la conversione delle date
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,6 +19,17 @@ cnx = pymysql.connect(
 )
 
 
+# Funzione per convertire le date nel formato corretto
+def convert_date(date_string):
+	if date_string:
+		try:
+			# Converti al formato 'YYYY-MM-DD HH:MM:SS'
+			return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%Y-%m-%d %H:%M:%S')
+		except ValueError:
+			pass
+	return None
+
+
 # Funzione per inserire i dati nella tabella principale
 def insert_main_data(cursor, data):
 	insert_query = """
@@ -29,9 +41,12 @@ def insert_main_data(cursor, data):
 	for event in data['calendar']:
 		cursor.execute(insert_query, (
 			event['id'], event['shortname'], event['name'], event['hashtag'], event['circuit'],
-			event['country_code'], event['country'], event['start_date'], event['end_date'],
+			event['country_code'], event['country'],
+			convert_date(event['start_date']),  # Converte la data
+			convert_date(event['end_date']),  # Converte la data
 			event['local_tz_offset'], event['test'], event['has_timing'], event['friendly_name'],
-			event['dates'], event['last_session_end_time']
+			event['dates'],
+			convert_date(event['last_session_end_time'])  # Converte la data
 		))
 
 
@@ -44,7 +59,8 @@ def insert_session_data(cursor, event_id, sessions):
 	
 	for session in sessions:
 		cursor.execute(insert_query, (
-			event_id, session['session_shortname'], session['session_name'], session['start_datetime_utc']
+			event_id, session['session_shortname'], session['session_name'],
+			convert_date(session['start_datetime_utc'])  # Converte la data
 		))
 
 
