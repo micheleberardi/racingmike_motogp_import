@@ -1,7 +1,20 @@
 import json
 import pymysql
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+# Connect to the database
+cnx = pymysql.connect(
+    host=os.getenv('DB_HOST'),
+    user=os.getenv('DB_USER'),
+    passwd=os.getenv('DB_PASSWD'),
+    db=os.getenv('DB_NAME'),
+    cursorclass=pymysql.cursors.DictCursor,
+    use_unicode=True,
+    charset=os.getenv('DB_CHARSET')
+)
 # Connessione al database MySQL
 cnx = pymysql.connect(
 	host=os.getenv('DB_HOST'),
