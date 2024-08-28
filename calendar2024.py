@@ -110,7 +110,17 @@ try:
 	# Conferma le modifiche al database
 	cnx.commit()
 
+except pymysql.err.IntegrityError as e:
+	print(f"Errore di integrità: {e}")
+	cnx.rollback()  # Annulla le modifiche se c'è un errore
+
+except Exception as e:
+	print(f"Errore durante l'esecuzione della query: {e}")
+	cnx.rollback()  # Annulla le modifiche se c'è un errore
+
 finally:
 	cnx.close()
+
+print("Dati importati con successo!")
 
 print("Dati importati con successo!")
