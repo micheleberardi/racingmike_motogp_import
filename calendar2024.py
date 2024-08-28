@@ -124,9 +124,18 @@ try:
 		logging.info("Inizio inserimento dati nella tabella MotoGP_Calendar.")
 		insert_main_data(cursor, data)
 		
+		# Verifica gli eventi inseriti nel database
+		cursor.execute("SELECT id FROM MotoGP_Calendar;")
+		inserted_events = [row['id'] for row in cursor.fetchall()]
+		logging.info(f"Eventi inseriti nella tabella MotoGP_Calendar: {inserted_events}")
+		
 		for event in data['calendar']:
 			if event['key_session_times']:
-				insert_session_data(cursor, event['id'], event['key_session_times'])
+				if event['id'] in inserted_events:  # Verifica se l'evento è stato inserito
+					insert_session_data(cursor, event['id'], event['key_session_times'])
+				else:
+					logging.warning(
+						f"L'evento con ID {event['id']} non è presente in MotoGP_Calendar. Skipping session insert.")
 		
 		cnx.commit()
 		logging.info("Dati inseriti e commit effettuato con successo.")
