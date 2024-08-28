@@ -26,12 +26,10 @@ cnx = pymysql.connect(
 def convert_date(date_string):
 	if date_string:
 		try:
-			# Converte la stringa di data in formato ISO 8601 direttamente
 			date_obj = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%fZ')
 			return date_obj.strftime('%Y-%m-%d %H:%M:%S.%f')
 		except ValueError:
 			try:
-				# Gestisce il formato senza microsecondi
 				date_obj = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S+00:00')
 				return date_obj.strftime('%Y-%m-%d %H:%M:%S')
 			except ValueError:
@@ -46,10 +44,10 @@ def insert_main_data(cursor, data):
     INSERT INTO MotoGP_Calendar (id, shortname, name, hashtag, circuit, country_code, country,
         start_date, end_date, local_tz_offset, test, has_timing, friendly_name, dates, last_session_end_time)
     VALUES (%s, %s, %s, %s, %s, %s, %s,
-            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'),  -- Converte stringa in DATETIME con microsecondi
-            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'),  -- Converte stringa in DATETIME con microsecondi
+            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'),
+            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'),
             %s, %s, %s, %s,
-            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'))  -- Converte stringa in DATETIME con microsecondi
+            STR_TO_DATE(%s, '%%Y-%%m-%%d %%H:%%i:%%s.%%f'))
     ON DUPLICATE KEY UPDATE
         shortname = VALUES(shortname),
         name = VALUES(name),
@@ -68,17 +66,22 @@ def insert_main_data(cursor, data):
     """
 	
 	for event in data['calendar']:
-		cursor.execute(insert_query, (
-			event['id'], event['shortname'], event['name'], event['hashtag'], event['circuit'],
-			event['country_code'], event['country'],
-			convert_date(event['start_date']),  # Converte la data
-			convert_date(event['end_date']),  # Converte la data
-			event['local_tz_offset'], event['test'], event['has_timing'], event['friendly_name'],
-			event['dates'],
-			convert_date(event['last_session_end_time'])  # Converte la data
-		))
+		logging.info(f"Elaborazione dell'evento ID: {event['id']} - {event['name']}")
+		try:
+			cursor.execute(insert_query, (
+				event['id'], event['shortname'], event['name'], event['hashtag'], event['circuit'],
+				event['country_code'], event['country'],
+				convert_date(event['start_date']),
+				convert_date(event['end_date']),
+				event['local_tz_offset'], event['test'], event['has_timing'], event['friendly_name'],
+				event['dates'],
+				convert_date(event['last_session_end_time'])
+			))
+		except Exception as e:
+			logging.error(f"Errore durante l'inserimento dell'evento ID {event['id']}: {e}")
 
 
+# Funzione per inserire le sessioni chiave nella tabella delle sessioni
 def insert_session_data(cursor, event_id, sessions):
 	insert_query = """
     INSERT INTO MotoGP_KeySessionTimes (event_id, session_shortname, session_name, start_datetime_utc)
@@ -93,12 +96,15 @@ def insert_session_data(cursor, event_id, sessions):
 		formatted_date = convert_date(session['start_datetime_utc'])  # Converte la data
 		logging.info(
 			f"Inserimento dati: {event_id}, {session['session_shortname']}, {session['session_name']}, {formatted_date}")
-		cursor.execute(insert_query, (
-			event_id,
-			session['session_shortname'],
-			session['session_name'],
-			formatted_date
-		))
+		try:
+			cursor.execute(insert_query, (
+				event_id,
+				session['session_shortname'],
+				session['session_name'],
+				formatted_date
+			))
+		except Exception as e:
+			logging.error(f"Errore durante l'inserimento della sessione per l'evento ID {event_id}: {e}")
 
 
 # Effettua la richiesta all'API e ottieni il JSON
