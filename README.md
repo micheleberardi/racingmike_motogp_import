@@ -193,7 +193,7 @@ All data provided through these APIs is the property of MotoGP or its respective
 This project is not affiliated with, endorsed by, or in any way officially connected with MotoGP or any of its subsidiaries or affiliates. The official MotoGP website can be found at https://www.motogp.com.
 
 ## Contact and Issues
-If there are any concerns or questions regarding the use of MotoGP data in this project, or if it is believed that the data usage infringes on any rights or terms of use, please reach out to mike@hackmike.com for immediate action.
+If there are any concerns or questions regarding the use of MotoGP data in this project, or if it is believed that the data usage infringes on any rights or terms of use, please reach out to hello@micheleberardi.com for immediate action.
 
 
 https://api.motogp.pulselive.com/motogp/v1/timing-gateway/livetiming-lite
