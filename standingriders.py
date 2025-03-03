@@ -23,7 +23,7 @@ cnx = pymysql.connect(
 cursor = cnx.cursor()
 
 #querySelect = "SELECT * FROM racingmike_motogp.seasons order by year desc"
-querySelect = "SELECT * FROM racingmike_motogp.seasons where year = 2024"
+querySelect = "SELECT * FROM racingmike_motogp.seasons where year = 2025"
 cursor.execute(querySelect)
 result = cursor.fetchall()
 

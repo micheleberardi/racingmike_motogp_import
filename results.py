@@ -38,7 +38,7 @@ def safe_get(d, *keys):
 
 cursor = cnx.cursor()
 #querySelect = "SELECT * FROM sessions WHERE event_season BETWEEN 2022 AND 2022 ORDER BY event_season ASC" #where event_season = '2023' and event_id = 'bfd8a08c-cbb4-413a-a210-6d34774ea4c5';
-querySelect = "SELECT * FROM sessions WHERE year = '2024' AND date >= CURDATE() - INTERVAL 4 DAY AND date < CURDATE() + INTERVAL 1 DAY ORDER BY date DESC;"
+querySelect = "SELECT * FROM sessions WHERE year = '2025' AND date >= CURDATE() - INTERVAL 4 DAY AND date < CURDATE() + INTERVAL 1 DAY ORDER BY date DESC;"
 
 cursor.execute(querySelect)
 result = cursor.fetchall()

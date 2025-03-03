@@ -20,7 +20,7 @@ cnx = pymysql.connect(
 
 cursor = cnx.cursor()
 
-querySelect = "SELECT * FROM racingmike_motogp.events WHERE year = '2024' AND test != 1 AND date_start BETWEEN CURDATE() - INTERVAL 5 DAY AND CURDATE() ORDER BY date_start DESC;"
+querySelect = "SELECT * FROM racingmike_motogp.events WHERE year = '2025' AND test != 1 AND date_start BETWEEN CURDATE() - INTERVAL 5 DAY AND CURDATE() ORDER BY date_start DESC;"
 cursor.execute(querySelect)
 result = cursor.fetchall()
 for row in result:

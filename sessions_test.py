@@ -22,7 +22,7 @@ cnx = pymysql.connect(
 cursor = cnx.cursor()
 
 #querySelect = "SELECT * FROM events"
-querySelect = "SELECT * FROM racingmike_motogp.events WHERE year = '2024' AND test = 1 AND date_start BETWEEN CURDATE() - INTERVAL 150 DAY AND CURDATE() ORDER BY date_start DESC;"
+querySelect = "SELECT * FROM racingmike_motogp.events WHERE year = '2025' AND test = 1 AND date_start BETWEEN CURDATE() - INTERVAL 150 DAY AND CURDATE() ORDER BY date_start DESC;"
 cursor.execute(querySelect)
 result = cursor.fetchall()
 #print(result)
@@ -31,7 +31,7 @@ for row in result:
     year = row['year']
     print("RUNNING YEAR "+str(year))
     querySelect3 = "SELECT * FROM racingmike_motogp.categories_general WHERE year = "+str(year)
-    #querySelect3 = "SELECT * FROM sessions where year = 2024 AND date BETWEEN CURDATE() - INTERVAL 40 DAY AND CURDATE() ORDER BY date DESC"
+    #querySelect3 = "SELECT * FROM sessions where year = 2025 AND date BETWEEN CURDATE() - INTERVAL 40 DAY AND CURDATE() ORDER BY date DESC"
     print(querySelect3)
     cursor.execute(querySelect3)
     result = cursor.fetchall()
