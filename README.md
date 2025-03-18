@@ -1,6 +1,4 @@
-Here’s a cleaner, more polished version of the README:
 
----
 
 # MotoGP API Documentation
 
