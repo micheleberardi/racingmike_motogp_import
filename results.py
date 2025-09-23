@@ -8,6 +8,8 @@ import requests
 import json
 import time
 import time as time_module
+import logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 import os
@@ -37,12 +39,18 @@ def safe_get(d, *keys):
 
 
 cursor = cnx.cursor()
+# querySelect = "SELECT * FROM sessions where year = 2013 and event_id = '9b726286-adcb-47ff-8a7e-bc53cc6fbfcb'"
 #querySelect = "SELECT * FROM sessions WHERE event_season BETWEEN 2022 AND 2022 ORDER BY event_season ASC" #where event_season = '2023' and event_id = 'bfd8a08c-cbb4-413a-a210-6d34774ea4c5';
-querySelect = "SELECT * FROM sessions WHERE year = '2025' AND date >= CURDATE() - INTERVAL 4 DAY AND date < CURDATE() + INTERVAL 1 DAY ORDER BY date DESC;"
+querySelect = "SELECT * FROM sessions WHERE year = '2025' AND date >= CURDATE() - INTERVAL 5 DAY AND date < CURDATE() + INTERVAL 1 DAY ORDER BY date DESC;"
 
 cursor.execute(querySelect)
 result = cursor.fetchall()
-print(result)
+logging.info(result)
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*"
+}
+
 for row in result:
     session_id = row['id']
     event_id = row['event_id']
@@ -71,15 +79,25 @@ for row in result:
 
 
 
-    print("RUNNING SESSION "+str(year)+" "+str(session_id))
-    print("***********************************")
+    logging.info("RUNNING SESSION %s %s", str(year), str(session_id))
+    logging.info("***********************************")
     url = "https://api.motogp.pulselive.com/motogp/v1/results/session/" + str(session_id) + "/classification?test=false"
-    print(url)
+    logging.info(url)
     #sys.exit(0)
 
-    # Removed the sys.exit(0) as it stops the script execution
-    response = requests.get(url)
-    data = response.json()
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.status_code != 200:
+            logging.error(f"Failed to fetch data for session {session_id}: HTTP {response.status_code}")
+            continue
+        try:
+            data = response.json()
+        except json.decoder.JSONDecodeError:
+            logging.error(f"JSON decode error for session {session_id}. Response: {response.text[:200]}")
+            continue
+    except requests.RequestException as e:
+        logging.error(f"Request exception for session {session_id}: {e}")
+        continue
 
     if 'classification' in data:
         classifications = data['classification']
@@ -147,14 +165,14 @@ for row in result:
             humidity_condition = row['humidity_condition']  # << NEW
             ground_condition = row['ground_condition']  # << NEW
             weather_condition = row['weather_condition']  # << NEW
-            print("***********************************")
-            print(category_id)
-            print("TRACK CONDITION: ", track_condition)
-            print("AIR CONDITION: ", air_condition)
-            print("HUMIDITY CONDITION: ", humidity_condition)
-            print("GROUND CONDITION: ", ground_condition)
-            print("WEATHER CONDITION: ", weather_condition)
-            print("***********************************")
+            logging.info("***********************************")
+            logging.info("Category ID: %s", category_id)
+            logging.info("TRACK CONDITION: %s", track_condition)
+            logging.info("AIR CONDITION: %s", air_condition)
+            logging.info("HUMIDITY CONDITION: %s", humidity_condition)
+            logging.info("GROUND CONDITION: %s", ground_condition)
+            logging.info("WEATHER CONDITION: %s", weather_condition)
+            logging.info("***********************************")
 
 
 
@@ -166,11 +184,11 @@ for row in result:
             try:
                 insert_query = """
                 INSERT INTO results (
-                    result_id, position, rider_id, rider_full_name, rider_country_iso, 
+                    result_id, position, rider_id, rider_full_name, rider_country_iso,
                     rider_country_name, rider_region_iso, rider_legacy_id, rider_number,
                     riders_api_uuid, team_id, team_name, team_legacy_id, team_season_id,
                     team_season_year, team_season_current, constructor_id, constructor_name,
-                    constructor_legacy_id, average_speed, gap_first, gap_lap, total_laps, 
+                    constructor_legacy_id, average_speed, gap_first, gap_lap, total_laps,
                     time, points, status, file, files,session_id, event_id,year,md5,gap_prev,top_speed,best_lap_number,best_lap_time,track_condition,air_condition,humidity_condition,ground_condition,weather_condition,category_id,session_number,circuit_name,session_type,category_name,event_name,event_sponsored_name,event_season,circuit_id,circuit_legacy_id,circuit_place,circuit_nation,circuit_country_iso,circuit_country_name,circuit_country_region_iso,event_short_name)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
@@ -233,7 +251,7 @@ for row in result:
 
 
                 """
-                print(insert_query)
+                logging.info(insert_query)
                 cursor.execute(insert_query, (
                     id,
                     position,
@@ -297,17 +315,16 @@ for row in result:
                 cnx.commit()
             except TypeError as e:
                 if str(e) == "'NoneType' object is not subscriptable":
-                    print(item)
+                    logging.error(item)
                     sys.exit(0)
-                print("ca" +str(e))
+                logging.error("ca" + str(e))
                 sys.exit(0)
-                #continue
 
         # Inserting the records
         #md5 = records[0]['rider']['id']+str(records[0]['bestLap']['number'])+str(records[0]['bestLap']['time'])+str(records[0]['speed'])+str(records[0]['year'])+str(session_id)
         #md5 = hashlib.md5(md5.encode('utf-8')).hexdigest()
         #records = [{"type": "poleLap", "rider": {"id": "3c7598e5-12ec-4e19-9311-1c0e9a017cbe", "full_name": "Diogo Moreira", "country": {"iso": "BR", "name": "Brazil", "region_iso": ""}, "legacy_id": 10257 }, "bestLap": {"number": null, "time": "01:39.0850"}, "speed": "156.2", "year": null, "isNewRecord": false } ]
-        print("RECORDS: ", records)
+        logging.info("RECORDS: %s", records)
         if records is not None:
             for record in records:
                 record_type = record['type']
@@ -326,7 +343,7 @@ for row in result:
 
                 md5 = rider_id + str(session_id) + str(event_id) + str(year)+str(category_id)
                 md5 = hashlib.md5(md5.encode('utf-8')).hexdigest()
-                print("CATEGORY ID: ", category_id)
+                logging.info("CATEGORY ID: %s", category_id)
 
                 try:
                     insert_record_query = """
@@ -375,11 +392,11 @@ for row in result:
                     cnx.commit()
                 except TypeError as e:
                     cnx.rollback()
-                    print("CaazziA TypeError occurred:", e)
+                    logging.error("CaazziA TypeError occurred: %s", e)
                     sys.exit(0)
                     # Log the error, and/or print more diagnostic information
 
-    print("TIME TO SLEEP")
+    logging.info("TIME TO SLEEP")
     time_module.sleep(2)
 
 #print("TIME TO SLEEP")
@@ -387,5 +404,5 @@ for row in result:
 # Always close the cursor and connection
 cursor.close()
 cnx.close()
-print("DONE")
+logging.info("DONE")
 #time.sleep(20)
