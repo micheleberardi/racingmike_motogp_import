@@ -115,7 +115,8 @@ For race weekend updates:
 
 ## Project Structure
 
-- `modules/runtime.py`: shared runtime helpers (DB, HTTP, year args, logging)
+- `runtime.py`: shared runtime helpers (DB, HTTP, year args, logging)
+- `modules/runtime.py`: backward-compatible wrapper
 - `modules/utils.py`: legacy utilities (JSON file helper, DB/API wrappers)
 - `docs/DB_HARDENING.sql`: optional SQL improvements for keys/indexes
 - `*.py`: import jobs for each data domain

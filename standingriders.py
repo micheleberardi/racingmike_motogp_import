@@ -1,7 +1,7 @@
 import hashlib
 import logging
 
-from modules.runtime import get_db_connection, get_http_session, parse_year_arg, request_json, setup_logging
+from runtime import get_db_connection, get_http_session, parse_year_arg, request_json, setup_logging
 
 
 def main() -> int:

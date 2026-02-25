@@ -2,7 +2,7 @@ import json
 import logging
 from pathlib import Path
 
-from modules.runtime import get_db_connection, parse_year_arg, setup_logging
+from runtime import get_db_connection, parse_year_arg, setup_logging
 
 
 def main() -> int:

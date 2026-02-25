@@ -1,6 +1,6 @@
 import logging
 
-from modules.runtime import get_db_connection, get_http_session, request_json, setup_logging
+from runtime import get_db_connection, get_http_session, request_json, setup_logging
 
 LIVE_URL = "https://api.motogp.pulselive.com/motogp/v1/timing-gateway/livetiming-lite"
 
