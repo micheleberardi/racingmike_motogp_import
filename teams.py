@@ -1,106 +1,101 @@
-import pymysql
 import hashlib
-import requests
-import sys
-import os
-from dotenv import load_dotenv
+import logging
 
-load_dotenv()
+from modules.runtime import get_db_connection, get_http_session, parse_year_arg, request_json, setup_logging
 
-# Connect to the database
-cnx = pymysql.connect(
-    host=os.getenv('DB_HOST'),
-    user=os.getenv('DB_USER'),
-    passwd=os.getenv('DB_PASSWD'),
-    db=os.getenv('DB_NAME'),
-    cursorclass=pymysql.cursors.DictCursor,
-    use_unicode=True,
-    charset=os.getenv('DB_CHARSET')
-)
 
-cursor = cnx.cursor()
+def main() -> int:
+    setup_logging()
+    target_year = parse_year_arg()
+    session = get_http_session()
 
-querySelect = "SELECT * FROM racingmike_motogp.categories_by_season"
-cursor.execute(querySelect)
-result = cursor.fetchall()
-print(result)
-for row in result:
-    category_id = row['id']
-    name = row['name']
-    year = row['year']
-    print("RUNNING YEAR "+str(year))
-    #url = "https://api.motogp.com/riders-api/season/" + str(year) + "/teams?category=" + str(category_id)
-    url = "https://api.motogp.pulselive.com/motogp/v1/teams?categoryUuid="+ str(category_id)+"&seasonYear="+str(year)
-    print(url)
-    response = requests.get(url)
-    data = response.json()
-    for team in data:
-        for rider in team['riders']:
-            team_id = None
-            if rider.get('current_career_step') and rider['current_career_step'].get('team'):
-                team_id = rider['current_career_step']['team'].get('id')
-            values = (
-                team['id'],
-                team['name'],
-                team['legacy_id'],
-                team['color'],
-                team['text_color'],
-                team['picture'],
-                team['constructor']['id'],
-                team['constructor']['name'],
-                team['constructor']['legacy_id'],
-                rider['id'],
-                rider['name'],
-                rider['surname'],
-                rider['nickname'],
-                rider['current_career_step']['season'],
-                rider['current_career_step']['number'],
-                rider['current_career_step']['sponsored_team'],
-                #rider['current_career_step']['team']['id'],
-                team_id,
-                rider['current_career_step']['category']['id'],
-                rider['current_career_step']['category']['name'],
-                rider['current_career_step']['category']['legacy_id'],
-                rider['current_career_step']['in_grid'],
-                rider['current_career_step']['short_nickname'],
-                rider['current_career_step']['current'],
-                rider['current_career_step']['pictures']['profile']['main'],
-                rider['current_career_step']['pictures']['bike']['main'],
-                rider['current_career_step']['pictures']['helmet']['main'],
-                rider['current_career_step']['pictures']['number'],
-                rider['current_career_step']['pictures']['portrait'],
-                rider['current_career_step']['type'],
-                rider['country']['iso'],
-                rider['country']['name'],
-                rider['country']['flag'],
-                rider['birth_city'],
-                rider['birth_date'],
-                rider['years_old'],
-                rider['published'],
-                rider['legacy_id'],
-                year
-            )
+    total = 0
+    with get_db_connection() as cnx:
+        with cnx.cursor() as cursor:
+            cursor.execute("SELECT id, year FROM categories_by_season WHERE year = %s", (target_year,))
+            categories = cursor.fetchall()
 
-            # Create a string representation of the entry
-            entry_str = ''.join(map(str, (
-                year,rider['legacy_id']
-            )))
+            for category in categories:
+                category_id = category["id"]
+                year = category["year"]
+                url = (
+                    "https://api.motogp.pulselive.com/motogp/v1/teams"
+                    f"?categoryUuid={category_id}&seasonYear={year}"
+                )
+                try:
+                    teams = request_json(session, url)
+                except Exception as exc:
+                    logging.error("Errore teams category=%s year=%s: %s", category_id, year, exc)
+                    continue
 
-            # Generate the MD5 hash
-            md5_hash = hashlib.md5(entry_str.encode()).hexdigest()
+                for team in teams:
+                    constructor = team.get("constructor") or {}
+                    for rider in team.get("riders", []) or []:
+                        current_step = rider.get("current_career_step") or {}
+                        rider_team = current_step.get("team") or {}
+                        rider_category = current_step.get("category") or {}
+                        pictures = current_step.get("pictures") or {}
 
-            # Extend your insertion values and query to include the MD5 hash
-            values += (md5_hash,)
-            try:
-                insert_query = "INSERT INTO TeamRiders VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(insert_query, values)
-            except Exception as e:
-                print(e)
-                print(values)
-                print(insert_query)
-                continue
+                        md5_hash = hashlib.md5(f"{year}{rider.get('legacy_id')}".encode("utf-8")).hexdigest()
+                        values = (
+                            team.get("id"),
+                            team.get("name"),
+                            team.get("legacy_id"),
+                            team.get("color"),
+                            team.get("text_color"),
+                            team.get("picture"),
+                            constructor.get("id"),
+                            constructor.get("name"),
+                            constructor.get("legacy_id"),
+                            rider.get("id"),
+                            rider.get("name"),
+                            rider.get("surname"),
+                            rider.get("nickname"),
+                            current_step.get("season"),
+                            current_step.get("number"),
+                            current_step.get("sponsored_team"),
+                            rider_team.get("id"),
+                            rider_category.get("id"),
+                            rider_category.get("name"),
+                            rider_category.get("legacy_id"),
+                            current_step.get("in_grid"),
+                            current_step.get("short_nickname"),
+                            current_step.get("current"),
+                            (pictures.get("profile") or {}).get("main"),
+                            (pictures.get("bike") or {}).get("main"),
+                            (pictures.get("helmet") or {}).get("main"),
+                            pictures.get("number"),
+                            pictures.get("portrait"),
+                            current_step.get("type"),
+                            (rider.get("country") or {}).get("iso"),
+                            (rider.get("country") or {}).get("name"),
+                            (rider.get("country") or {}).get("flag"),
+                            rider.get("birth_city"),
+                            rider.get("birth_date"),
+                            rider.get("years_old"),
+                            rider.get("published"),
+                            rider.get("legacy_id"),
+                            year,
+                            md5_hash,
+                        )
+
+                        cursor.execute(
+                            """
+                            INSERT INTO TeamRiders VALUES (
+                                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                            )
+                            """,
+                            values,
+                        )
+                        total += 1
+
         cnx.commit()
 
-cursor.close()
-cnx.close()
+    logging.info("TeamRiders elaborati anno %s: %s", target_year, total)
+    return 0
 
+
+if __name__ == "__main__":
+    raise SystemExit(main())

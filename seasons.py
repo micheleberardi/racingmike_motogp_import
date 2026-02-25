@@ -1,45 +1,49 @@
-import pymysql
-import requests
 import hashlib
+import logging
 
-import os
-from dotenv import load_dotenv
+from modules.runtime import get_db_connection, get_http_session, parse_year_arg, request_json, setup_logging
 
-load_dotenv()
-
-# Connect to the database
-cnx = pymysql.connect(
-    host=os.getenv('DB_HOST'),
-    user=os.getenv('DB_USER'),
-    passwd=os.getenv('DB_PASSWD'),
-    db=os.getenv('DB_NAME'),
-    cursorclass=pymysql.cursors.DictCursor,
-    use_unicode=True,
-    charset=os.getenv('DB_CHARSET')
-)
-
-cursor = cnx.cursor()
+SEASONS_URL = "https://api.motogp.pulselive.com/motogp/v1/results/seasons"
 
 
+def main() -> int:
+    setup_logging()
+    target_year = parse_year_arg()
 
-url = "https://api.motogp.pulselive.com/motogp/v1/results/seasons"
-response = requests.get(url)
-data = response.json()
-print(data)
-for d in data:
-    id = d['id']
-    name = d['name']
-    year = d['year']
-    current = d['current']
-    md5 = str(id)+str(year)+str(current)
-    md5 = hashlib.md5(md5.encode('utf-8')).hexdigest()
+    session = get_http_session()
     try:
-        insertquery = "INSERT INTO seasons (id, name, year, current,md5) VALUES (%s,%s, %s, %s,%s)"
-        insertvalues = (id, name, year, current,md5)
-        print(insertquery)
-        cursor.execute(insertquery, insertvalues)
+        seasons = request_json(session, SEASONS_URL)
+    except Exception as exc:
+        logging.error("Errore nel recupero stagioni: %s", exc)
+        return 1
+
+    inserted = 0
+    with get_db_connection() as cnx:
+        with cnx.cursor() as cursor:
+            for item in seasons:
+                year = item.get("year")
+                if year != target_year:
+                    continue
+                season_id = item.get("id")
+                current = item.get("current")
+                digest = hashlib.md5(f"{season_id}{year}{current}".encode("utf-8")).hexdigest()
+                cursor.execute(
+                    """
+                    INSERT INTO seasons (id, name, year, current, md5)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON DUPLICATE KEY UPDATE
+                        name = VALUES(name),
+                        current = VALUES(current),
+                        md5 = VALUES(md5)
+                    """,
+                    (season_id, item.get("name"), year, current, digest),
+                )
+                inserted += 1
         cnx.commit()
-    except Exception as e:
-        print(e)
-    #cursor.close()
-    #cnx.close()
+
+    logging.info("Stagioni elaborate per anno %s: %s", target_year, inserted)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

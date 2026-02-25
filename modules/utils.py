@@ -58,13 +58,15 @@ conv[FIELD_TYPE.TIMESTAMP] = str
 
 class Connection:
     def __init__(self):
+        db_password = os.getenv('DB_PASSWD') or os.getenv('DB_PASSWORD')
+        db_port = int(os.getenv('DB_PORT', '3306'))
         self.con = pymysql.connect(
             host=os.getenv('DB_HOST'),
-            port=int(os.getenv('DB_PORT')),
+            port=db_port,
             user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD'),
+            password=db_password,
             db=os.getenv('DB_NAME'),
-            charset=os.getenv('DB_CHARSET'),
+            charset=os.getenv('DB_CHARSET', 'utf8mb4'),
             conv=conv,
             cursorclass=pymysql.cursors.DictCursor,
             use_unicode=True
@@ -73,18 +75,20 @@ class Connection:
         self.cur = self.con.cursor()
 
     def select(self,sql,args=None):
-        self.cur.execute(sql,args)
-        self.sel = self.cur.fetchone()
-        self.cur.close()
-        self.con.close()
-        return self.sel
+        try:
+            self.cur.execute(sql,args)
+            return self.cur.fetchone()
+        finally:
+            self.cur.close()
+            self.con.close()
 
     def selectAll(self,sql,args=None):
-        self.cur.execute(sql,args)
-        self.sel = self.cur.fetchall()
-        self.cur.close()
-        self.con.close()
-        return self.sel
+        try:
+            self.cur.execute(sql,args)
+            return self.cur.fetchall()
+        finally:
+            self.cur.close()
+            self.con.close()
 
     def insert(self,sql,args=None):
         self.ins = self.cur.execute(sql,args)

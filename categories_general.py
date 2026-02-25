@@ -1,75 +1,54 @@
-import pymysql
 import hashlib
-import requests
-import sys
-import os
-from dotenv import load_dotenv
+import logging
 
-load_dotenv()
-
-# Connect to the database
-cnx = pymysql.connect(
-    host=os.getenv('DB_HOST'),
-    user=os.getenv('DB_USER'),
-    passwd=os.getenv('DB_PASSWD'),
-    db=os.getenv('DB_NAME'),
-    cursorclass=pymysql.cursors.DictCursor,
-    use_unicode=True,
-    charset=os.getenv('DB_CHARSET')
-)
-
-cursor = cnx.cursor()
-
-querySelect = "SELECT * FROM racingmike_motogp.seasons where year = 2025"
-cursor.execute(querySelect)
-result = cursor.fetchall()
-for row in result:
-    id = row['id']
-    year = row['year']
-    url = "https://api.motogp.pulselive.com/motogp/v1/results/categories?seasonUuid="+str(id)
-    print(url)
-    #sys.exit(0)
-
-    response = requests.get(url)
-    data = response.json()
-    print(data)
-    for d in data:
-        id = d['id']
-        legacy_id = d['legacy_id']
-        name = d['name']
-
-        md5= str(id)+str(legacy_id)+str(name)+str(year)
-        md5 = hashlib.md5(md5.encode('utf-8')).hexdigest()
-
-        dict_mysql = {"id": id, "legacy_id": legacy_id, "name": name, "year": year, "md5": md5}
-        # build column names and placeholders
-        columns = []
-        placeholders = []
-        for key in dict_mysql.keys():
-            columns.append(key)
-            placeholders.append("%s")
-
-        # convert integer to string
-        columns = [str(col) for col in columns]
-
-        # join column names and placeholders into a string
-        column_names = ", ".join(columns)
-        value_placeholders = ", ".join(placeholders)
-
-        # build insert statement
-
-        try:
-            query = f"INSERT INTO categories_general ({column_names}) VALUES ({value_placeholders})"
-
-            # execute insert statement with values
-            values = tuple(dict_mysql.values())
-            # print(dict_mysql)
-            print(query)
-            print(values)
-            cursor.execute(query, values)
-            cnx.commit()
-            print("***********************************")
-        except Exception as e:
-            print(e)
+from modules.runtime import get_db_connection, get_http_session, parse_year_arg, request_json, setup_logging
 
 
+def main() -> int:
+    setup_logging()
+    target_year = parse_year_arg()
+    session = get_http_session()
+
+    with get_db_connection() as cnx:
+        with cnx.cursor() as cursor:
+            cursor.execute("SELECT id, year FROM seasons WHERE year = %s", (target_year,))
+            seasons = cursor.fetchall()
+
+            total = 0
+            for season in seasons:
+                season_id = season["id"]
+                year = season["year"]
+                url = f"https://api.motogp.pulselive.com/motogp/v1/results/categories?seasonUuid={season_id}"
+                try:
+                    categories = request_json(session, url)
+                except Exception as exc:
+                    logging.error("Errore categorie season %s: %s", season_id, exc)
+                    continue
+
+                for category in categories:
+                    category_id = category.get("id")
+                    legacy_id = category.get("legacy_id")
+                    name = category.get("name")
+                    md5 = hashlib.md5(f"{category_id}{legacy_id}{name}{year}".encode("utf-8")).hexdigest()
+
+                    cursor.execute(
+                        """
+                        INSERT INTO categories_general (id, legacy_id, name, year, md5)
+                        VALUES (%s, %s, %s, %s, %s)
+                        ON DUPLICATE KEY UPDATE
+                            legacy_id = VALUES(legacy_id),
+                            name = VALUES(name),
+                            md5 = VALUES(md5)
+                        """,
+                        (category_id, legacy_id, name, year, md5),
+                    )
+                    total += 1
+
+        cnx.commit()
+
+    logging.info("Categorie generali elaborate anno %s: %s", target_year, total)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
