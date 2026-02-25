@@ -89,7 +89,7 @@ python3 export_data.py --year 2026
 
 ```bash
 python3 liveresult.py
-python3 calendar.py
+python3 calendar2024.py
 ```
 
 ## Suggested Execution Order
