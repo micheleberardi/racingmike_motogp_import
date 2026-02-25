@@ -95,7 +95,16 @@ def main() -> int:
                     )
                     total_events += 1
 
+                    seen_legacy = set()
                     for legacy in event.get("legacy_id", []) or []:
+                        legacy_key = (
+                            event.get("id"),
+                            legacy.get("categoryId"),
+                            legacy.get("eventId"),
+                        )
+                        if legacy_key in seen_legacy:
+                            continue
+                        seen_legacy.add(legacy_key)
                         cursor.execute(
                             """
                             INSERT INTO event_legacy_ids (event_id, categoryId, eventId)

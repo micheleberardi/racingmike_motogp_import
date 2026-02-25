@@ -61,3 +61,4 @@ python3 liveresult.py
 ## Avvertenza
 
 Gli script scrivono direttamente sulle tabelle di produzione: esegui sempre prima su ambiente staging quando cambi schema.
+https://api.motogp.pulselive.com/motogp/v1/results/sessions?eventUuid=f3fd8ba7-2966-46bd-8687-b92047f5e733&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942

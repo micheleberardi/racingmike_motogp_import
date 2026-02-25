@@ -17,7 +17,7 @@ def main() -> int:
                 FROM events
                 WHERE year = %s
                   AND test != 1
-                  AND date_start BETWEEN CURDATE() - INTERVAL 60 DAY AND CURDATE()
+                  AND date_start BETWEEN CURDATE() - INTERVAL 60 DAY AND CURDATE() + INTERVAL 30 DAY
                 ORDER BY date_start DESC
                 """,
                 (target_year,),

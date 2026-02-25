@@ -161,7 +161,7 @@ def main() -> int:
 
                 classifications = data.get("classification", [])
                 file_url = data.get("file", "")
-                files = ""
+                files = data.get("files")
                 records = data.get("records") or []
 
                 for item in classifications:
@@ -253,15 +253,16 @@ def main() -> int:
                     if not rider_id:
                         continue
 
+                    record_type = record.get("type")
                     record_year = record.get("year")
                     digest = hashlib.md5(
-                        f"{rider_id}{session_id}{event_id}{record_year}{category_id}".encode("utf-8")
+                        f"{record_type}{rider_id}{session_id}{event_id}{record_year}{category_id}".encode("utf-8")
                     ).hexdigest()
 
                     cursor.execute(
                         RECORDS_QUERY,
                         (
-                            record.get("type"),
+                            record_type,
                             rider_id,
                             rider.get("full_name"),
                             rider_country.get("iso"),
