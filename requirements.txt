@@ -1,0 +1,4 @@
+pymysql>=1.1.0
+requests>=2.31.0
+python-dotenv>=1.0.1
+urllib3>=2.2.0

@@ -34,7 +34,7 @@ def main() -> int:
                         logging.error("Errore standings season=%s category=%s: %s", season_id, category_id, exc)
                         continue
 
-                    xml_file = data.get("xmlFile")
+                    xml_file = data.get("xmlFile") or data.get("file")
                     for item in data.get("classification", []):
                         rider = item.get("rider") or {}
                         constructor = item.get("constructor") or {}

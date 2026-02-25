@@ -29,7 +29,10 @@ def get_target_year(cli_year: Optional[int] = None) -> int:
         return cli_year
     env_value = os.getenv("TARGET_YEAR")
     if env_value:
-        return int(env_value)
+        try:
+            return int(env_value)
+        except ValueError as exc:
+            raise ValueError(f"Invalid TARGET_YEAR value: {env_value}") from exc
     return datetime.utcnow().year
 
 
@@ -44,6 +47,16 @@ def get_db_connection() -> pymysql.connections.Connection:
     load_environment()
     password = os.getenv("DB_PASSWD") or os.getenv("DB_PASSWORD")
     port = int(os.getenv("DB_PORT", "3306"))
+    required_vars = {
+        "DB_HOST": os.getenv("DB_HOST"),
+        "DB_USER": os.getenv("DB_USER"),
+        "DB_NAME": os.getenv("DB_NAME"),
+    }
+    missing = [name for name, value in required_vars.items() if not value]
+    if missing:
+        raise RuntimeError(f"Missing required database env vars: {', '.join(missing)}")
+    if not password:
+        raise RuntimeError("Missing database password. Set DB_PASSWD or DB_PASSWORD.")
     return pymysql.connect(
         host=os.getenv("DB_HOST"),
         port=port,

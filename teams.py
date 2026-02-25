@@ -32,8 +32,28 @@ def main() -> int:
                     constructor = team.get("constructor") or {}
                     for rider in team.get("riders", []) or []:
                         current_step = rider.get("current_career_step") or {}
+                        step_category = current_step.get("category") or {}
+                        step_category_id = step_category.get("id")
+                        step_season = current_step.get("season")
+
+                        # L'endpoint può includere rider con step di altre categorie/stagioni.
+                        # Salviamo solo i record coerenti con la query richiesta.
+                        if step_category_id and step_category_id != category_id:
+                            continue
+                        if step_season is not None:
+                            try:
+                                if int(step_season) != int(year):
+                                    continue
+                            except (TypeError, ValueError):
+                                logging.warning(
+                                    "Skipping rider %s due to invalid step season: %s",
+                                    rider.get("id"),
+                                    step_season,
+                                )
+                                continue
+
                         rider_team = current_step.get("team") or {}
-                        rider_category = current_step.get("category") or {}
+                        rider_category = step_category
                         pictures = current_step.get("pictures") or {}
 
                         md5_hash = hashlib.md5(f"{year}{rider.get('legacy_id')}".encode("utf-8")).hexdigest()

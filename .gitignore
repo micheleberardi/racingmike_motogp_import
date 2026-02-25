@@ -1,6 +1,36 @@
+# Environment
 .env
-gitignore/README222.md
-gitignore/
-gitignore/
+.env.*
 
+# Python cache/build
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
+# Virtualenvs
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# Logs / temp
+logs/*.log
+*.log
+*.tmp
+
+# Local exports
+result.json
+results_*.json
