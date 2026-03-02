@@ -1,0 +1,282 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//racingmike//MotoGP and WorldSBK Calendars//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:R3 bLU cRU Champ 2026 - All Sessions
+X-WR-TIMEZONE:UTC
+BEGIN:VEVENT
+UID:64c33cbf3ce688a94495db23ecb15748@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260501T070000Z
+DTEND:20260501T072500Z
+SUMMARY:R3 bLU cRU Champ - FP - Motul Hungarian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: FP
+ \nEvent: Motul Hungarian Round\nSource: https://www.worldsbk.com/en/event/
+ HUN/2026
+LOCATION:Motul Hungarian Round
+URL:https://www.worldsbk.com/en/event/HUN/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:d248244fb90193c9fcf8e5949c3cb1b8@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260501T113000Z
+DTEND:20260501T115500Z
+SUMMARY:R3 bLU cRU Champ - Superpole - Motul Hungarian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Su
+ perpole\nEvent: Motul Hungarian Round\nSource: https://www.worldsbk.com/en
+ /event/HUN/2026
+LOCATION:Motul Hungarian Round
+URL:https://www.worldsbk.com/en/event/HUN/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:263d466ff6befe2fab37c8151a7f75dc@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260502T082000Z
+SUMMARY:R3 bLU cRU Champ - Race 1 - Motul Hungarian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 1\nEvent: Motul Hungarian Round\nSource: https://www.worldsbk.com/en/ev
+ ent/HUN/2026
+LOCATION:Motul Hungarian Round
+URL:https://www.worldsbk.com/en/event/HUN/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:a357c97b369ccfe2dd41af73b7150135@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260503T081000Z
+SUMMARY:R3 bLU cRU Champ - Race 2 - Motul Hungarian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 2\nEvent: Motul Hungarian Round\nSource: https://www.worldsbk.com/en/ev
+ ent/HUN/2026
+LOCATION:Motul Hungarian Round
+URL:https://www.worldsbk.com/en/event/HUN/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:2a1f6cf2ffc83a55a22de1b4012872ff@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260529T070000Z
+DTEND:20260529T072500Z
+SUMMARY:R3 bLU cRU Champ - FP - Aragon Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: FP
+ \nEvent: Aragon Round\nSource: https://www.worldsbk.com/en/event/ARA/2026
+LOCATION:Aragon Round
+URL:https://www.worldsbk.com/en/event/ARA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:e5f534fe81b8dcab458c348b41bbf32d@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260529T111500Z
+DTEND:20260529T114000Z
+SUMMARY:R3 bLU cRU Champ - Superpole - Aragon Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Su
+ perpole\nEvent: Aragon Round\nSource: https://www.worldsbk.com/en/event/AR
+ A/2026
+LOCATION:Aragon Round
+URL:https://www.worldsbk.com/en/event/ARA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:5861baf1c69e98131e27145ce12bdad7@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260530T082000Z
+SUMMARY:R3 bLU cRU Champ - Race 1 - Aragon Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 1\nEvent: Aragon Round\nSource: https://www.worldsbk.com/en/event/ARA/2
+ 026
+LOCATION:Aragon Round
+URL:https://www.worldsbk.com/en/event/ARA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:84abe37d6271fa669c69c9e8ee51c10f@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260531T081000Z
+SUMMARY:R3 bLU cRU Champ - Race 2 - Aragon Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 2\nEvent: Aragon Round\nSource: https://www.worldsbk.com/en/event/ARA/2
+ 026
+LOCATION:Aragon Round
+URL:https://www.worldsbk.com/en/event/ARA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:6e37ff47f3d47d4a5c8f496b017ae931@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260710T080000Z
+DTEND:20260710T082500Z
+SUMMARY:R3 bLU cRU Champ - FP - Prosecco DOC UK Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: FP
+ \nEvent: Prosecco DOC UK Round\nSource: https://www.worldsbk.com/en/event/
+ GBR/2026
+LOCATION:Prosecco DOC UK Round
+URL:https://www.worldsbk.com/en/event/GBR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:39679c7245ec0799edb1d91472c2a421@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260710T120000Z
+DTEND:20260710T122500Z
+SUMMARY:R3 bLU cRU Champ - Superpole - Prosecco DOC UK Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Su
+ perpole\nEvent: Prosecco DOC UK Round\nSource: https://www.worldsbk.com/en
+ /event/GBR/2026
+LOCATION:Prosecco DOC UK Round
+URL:https://www.worldsbk.com/en/event/GBR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:5dad1a71b090fabd894e38ccb8f44d1c@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260711T092000Z
+SUMMARY:R3 bLU cRU Champ - Race 1 - Prosecco DOC UK Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 1\nEvent: Prosecco DOC UK Round\nSource: https://www.worldsbk.com/en/ev
+ ent/GBR/2026
+LOCATION:Prosecco DOC UK Round
+URL:https://www.worldsbk.com/en/event/GBR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:085d62469f1e60fdf750d3daf5d71502@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260712T091000Z
+SUMMARY:R3 bLU cRU Champ - Race 2 - Prosecco DOC UK Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 2\nEvent: Prosecco DOC UK Round\nSource: https://www.worldsbk.com/en/ev
+ ent/GBR/2026
+LOCATION:Prosecco DOC UK Round
+URL:https://www.worldsbk.com/en/event/GBR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:fa8a85cd91ed2bb068eda394679fd269@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260904T070000Z
+DTEND:20260904T072500Z
+SUMMARY:R3 bLU cRU Champ - FP - Acerbis French Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: FP
+ \nEvent: Acerbis French Round\nSource: https://www.worldsbk.com/en/event/F
+ RA/2026
+LOCATION:Acerbis French Round
+URL:https://www.worldsbk.com/en/event/FRA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:1c53b15e95d00c2e10a91dd9313dc42b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260904T111500Z
+DTEND:20260904T114000Z
+SUMMARY:R3 bLU cRU Champ - Superpole - Acerbis French Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Su
+ perpole\nEvent: Acerbis French Round\nSource: https://www.worldsbk.com/en/
+ event/FRA/2026
+LOCATION:Acerbis French Round
+URL:https://www.worldsbk.com/en/event/FRA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:5a498d6f130b6094d89ed8e208ac865f@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260905T082000Z
+SUMMARY:R3 bLU cRU Champ - Race 1 - Acerbis French Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 1\nEvent: Acerbis French Round\nSource: https://www.worldsbk.com/en/eve
+ nt/FRA/2026
+LOCATION:Acerbis French Round
+URL:https://www.worldsbk.com/en/event/FRA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:537ad51cb99180d10d456281318c9b3b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260906T081000Z
+SUMMARY:R3 bLU cRU Champ - Race 2 - Acerbis French Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 2\nEvent: Acerbis French Round\nSource: https://www.worldsbk.com/en/eve
+ nt/FRA/2026
+LOCATION:Acerbis French Round
+URL:https://www.worldsbk.com/en/event/FRA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:e928fb989e5d9ab17359632f9a026fc9@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260925T070000Z
+DTEND:20260925T072500Z
+SUMMARY:R3 bLU cRU Champ - FP - Italian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: FP
+ \nEvent: Italian Round\nSource: https://www.worldsbk.com/en/event/CRE/2026
+LOCATION:Italian Round
+URL:https://www.worldsbk.com/en/event/CRE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:7c46d0d8a52968a91335f8960d94b2eb@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260925T111500Z
+DTEND:20260925T114000Z
+SUMMARY:R3 bLU cRU Champ - Superpole - Italian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Su
+ perpole\nEvent: Italian Round\nSource: https://www.worldsbk.com/en/event/C
+ RE/2026
+LOCATION:Italian Round
+URL:https://www.worldsbk.com/en/event/CRE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:6232815fd3c1913e8335ce9adfeb63fb@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260926T082000Z
+SUMMARY:R3 bLU cRU Champ - Race 1 - Italian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 1\nEvent: Italian Round\nSource: https://www.worldsbk.com/en/event/CRE/
+ 2026
+LOCATION:Italian Round
+URL:https://www.worldsbk.com/en/event/CRE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:9c460fbc86412a18a8cc85491ace4488@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260927T081000Z
+SUMMARY:R3 bLU cRU Champ - Race 2 - Italian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 2\nEvent: Italian Round\nSource: https://www.worldsbk.com/en/event/CRE/
+ 2026
+LOCATION:Italian Round
+URL:https://www.worldsbk.com/en/event/CRE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:5ce3465e6b1bd71f7bdb6d1ebb6e34f8@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261009T084000Z
+DTEND:20261009T090500Z
+SUMMARY:R3 bLU cRU Champ - FP - Tissot Estoril Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: FP
+ \nEvent: Tissot Estoril Round\nSource: https://www.worldsbk.com/en/event/E
+ ST/2026
+LOCATION:Tissot Estoril Round
+URL:https://www.worldsbk.com/en/event/EST/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:481e4ff87fc448eb573ec8170c8ee9c7@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261009T131500Z
+DTEND:20261009T134000Z
+SUMMARY:R3 bLU cRU Champ - Superpole - Tissot Estoril Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Su
+ perpole\nEvent: Tissot Estoril Round\nSource: https://www.worldsbk.com/en/
+ event/EST/2026
+LOCATION:Tissot Estoril Round
+URL:https://www.worldsbk.com/en/event/EST/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:d54b22f41f9839d9a227e76564ba4b0b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261010T120000Z
+SUMMARY:R3 bLU cRU Champ - Race 1 - Tissot Estoril Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 1\nEvent: Tissot Estoril Round\nSource: https://www.worldsbk.com/en/eve
+ nt/EST/2026
+LOCATION:Tissot Estoril Round
+URL:https://www.worldsbk.com/en/event/EST/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:778ba5dd048650f2d38c43c2c57f4588@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261011T120000Z
+SUMMARY:R3 bLU cRU Champ - Race 2 - Tissot Estoril Round
+DESCRIPTION:Championship: WorldSBK\nCategory: R3 bLU cRU Champ\nSession: Ra
+ ce 2\nEvent: Tissot Estoril Round\nSource: https://www.worldsbk.com/en/eve
+ nt/EST/2026
+LOCATION:Tissot Estoril Round
+URL:https://www.worldsbk.com/en/event/EST/2026
+END:VEVENT
+END:VCALENDAR

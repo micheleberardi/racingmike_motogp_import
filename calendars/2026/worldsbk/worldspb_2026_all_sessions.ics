@@ -1,0 +1,547 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//racingmike//MotoGP and WorldSBK Calendars//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:WorldSPB 2026 - All Sessions
+X-WR-TIMEZONE:UTC
+BEGIN:VEVENT
+UID:d7b3e29df8d43962cacbf370f28a1c8b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260327T084000Z
+DTEND:20260327T090500Z
+SUMMARY:WorldSPB - FP - Pirelli Portuguese Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: FP\nEvent:
+  Pirelli Portuguese Round\nSource: https://www.worldsbk.com/en/event/POR/2
+ 026
+LOCATION:Pirelli Portuguese Round
+URL:https://www.worldsbk.com/en/event/POR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:649c7ecbe720a5b24a23efe277f3ce8c@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260327T131000Z
+DTEND:20260327T133500Z
+SUMMARY:WorldSPB - Superpole - Pirelli Portuguese Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Superpole\
+ nEvent: Pirelli Portuguese Round\nSource: https://www.worldsbk.com/en/even
+ t/POR/2026
+LOCATION:Pirelli Portuguese Round
+URL:https://www.worldsbk.com/en/event/POR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:0cb7d82d1a0639bee4860be05a81c878@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260328T082000Z
+DTEND:20260328T083000Z
+SUMMARY:WorldSPB - WUP 1 - Pirelli Portuguese Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 1\nEve
+ nt: Pirelli Portuguese Round\nSource: https://www.worldsbk.com/en/event/PO
+ R/2026
+LOCATION:Pirelli Portuguese Round
+URL:https://www.worldsbk.com/en/event/POR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:fef109feb0b48ed0c0115fea386c4ad9@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260328T120000Z
+SUMMARY:WorldSPB - Race 1 - Pirelli Portuguese Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 1\nEv
+ ent: Pirelli Portuguese Round\nSource: https://www.worldsbk.com/en/event/P
+ OR/2026
+LOCATION:Pirelli Portuguese Round
+URL:https://www.worldsbk.com/en/event/POR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:8b73407d1a5d6f17170b970d24c81ef3@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260329T083500Z
+DTEND:20260329T084500Z
+SUMMARY:WorldSPB - WUP 2 - Pirelli Portuguese Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 2\nEve
+ nt: Pirelli Portuguese Round\nSource: https://www.worldsbk.com/en/event/PO
+ R/2026
+LOCATION:Pirelli Portuguese Round
+URL:https://www.worldsbk.com/en/event/POR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:0d85a19ba933e8b04125a0f135389b75@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260329T120000Z
+SUMMARY:WorldSPB - Race 2 - Pirelli Portuguese Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 2\nEv
+ ent: Pirelli Portuguese Round\nSource: https://www.worldsbk.com/en/event/P
+ OR/2026
+LOCATION:Pirelli Portuguese Round
+URL:https://www.worldsbk.com/en/event/POR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:8c4ff4f171eb09d4f8c1ff017a741b38@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260417T074000Z
+DTEND:20260417T080500Z
+SUMMARY:WorldSPB - FP - Pirelli Dutch Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: FP\nEvent:
+  Pirelli Dutch Round\nSource: https://www.worldsbk.com/en/event/NED/2026
+LOCATION:Pirelli Dutch Round
+URL:https://www.worldsbk.com/en/event/NED/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:0bdfd8b7d3c6b62c0f6427378a52454e@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260417T121000Z
+DTEND:20260417T123500Z
+SUMMARY:WorldSPB - Superpole - Pirelli Dutch Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Superpole\
+ nEvent: Pirelli Dutch Round\nSource: https://www.worldsbk.com/en/event/NED
+ /2026
+LOCATION:Pirelli Dutch Round
+URL:https://www.worldsbk.com/en/event/NED/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:bf34548161ff36bf25cfdd85059943ab@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260418T072000Z
+DTEND:20260418T073000Z
+SUMMARY:WorldSPB - WUP 1 - Pirelli Dutch Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 1\nEve
+ nt: Pirelli Dutch Round\nSource: https://www.worldsbk.com/en/event/NED/202
+ 6
+LOCATION:Pirelli Dutch Round
+URL:https://www.worldsbk.com/en/event/NED/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:038da44fb61f681bf9fbe5327a1fcbe4@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260418T110000Z
+SUMMARY:WorldSPB - Race 1 - Pirelli Dutch Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 1\nEv
+ ent: Pirelli Dutch Round\nSource: https://www.worldsbk.com/en/event/NED/20
+ 26
+LOCATION:Pirelli Dutch Round
+URL:https://www.worldsbk.com/en/event/NED/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:699cbc6d1c341b6d8330991e8e1eaf35@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260419T073500Z
+DTEND:20260419T074500Z
+SUMMARY:WorldSPB - WUP 2 - Pirelli Dutch Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 2\nEve
+ nt: Pirelli Dutch Round\nSource: https://www.worldsbk.com/en/event/NED/202
+ 6
+LOCATION:Pirelli Dutch Round
+URL:https://www.worldsbk.com/en/event/NED/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:1fb5b4a42c78f9e09dd0e7fd6a61fc87@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260419T110000Z
+SUMMARY:WorldSPB - Race 2 - Pirelli Dutch Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 2\nEv
+ ent: Pirelli Dutch Round\nSource: https://www.worldsbk.com/en/event/NED/20
+ 26
+LOCATION:Pirelli Dutch Round
+URL:https://www.worldsbk.com/en/event/NED/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:d610d48773e45ac036867fa6bd9cd199@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260515T093500Z
+DTEND:20260515T100000Z
+SUMMARY:WorldSPB - FP - Czech Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: FP\nEvent:
+  Czech Round\nSource: https://www.worldsbk.com/en/event/CZE/2026
+LOCATION:Czech Round
+URL:https://www.worldsbk.com/en/event/CZE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:0bc16f451059fe53c343715369f0b15c@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260515T140000Z
+DTEND:20260515T142500Z
+SUMMARY:WorldSPB - Superpole - Czech Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Superpole\
+ nEvent: Czech Round\nSource: https://www.worldsbk.com/en/event/CZE/2026
+LOCATION:Czech Round
+URL:https://www.worldsbk.com/en/event/CZE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:fc4849ae0351e43327a486d18bf794a4@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260516T072000Z
+DTEND:20260516T073000Z
+SUMMARY:WorldSPB - WUP 1 - Czech Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 1\nEve
+ nt: Czech Round\nSource: https://www.worldsbk.com/en/event/CZE/2026
+LOCATION:Czech Round
+URL:https://www.worldsbk.com/en/event/CZE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:558a3959a1f2b41ec109d65018966935@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260516T131500Z
+SUMMARY:WorldSPB - Race 1 - Czech Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 1\nEv
+ ent: Czech Round\nSource: https://www.worldsbk.com/en/event/CZE/2026
+LOCATION:Czech Round
+URL:https://www.worldsbk.com/en/event/CZE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:eb790c166b593111e09266a0eee4b58a@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260517T073500Z
+DTEND:20260517T074500Z
+SUMMARY:WorldSPB - WUP 2 - Czech Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 2\nEve
+ nt: Czech Round\nSource: https://www.worldsbk.com/en/event/CZE/2026
+LOCATION:Czech Round
+URL:https://www.worldsbk.com/en/event/CZE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:58b7f372fb721fb125de1e34060343c2@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260517T110000Z
+SUMMARY:WorldSPB - Race 2 - Czech Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 2\nEv
+ ent: Czech Round\nSource: https://www.worldsbk.com/en/event/CZE/2026
+LOCATION:Czech Round
+URL:https://www.worldsbk.com/en/event/CZE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:9213db5441411992be1910a3c6e54d89@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260529T093500Z
+DTEND:20260529T100000Z
+SUMMARY:WorldSPB - FP - Aragon Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: FP\nEvent:
+  Aragon Round\nSource: https://www.worldsbk.com/en/event/ARA/2026
+LOCATION:Aragon Round
+URL:https://www.worldsbk.com/en/event/ARA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:8d52ccf2a3ecc24901ff3e94599ce3e8@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260529T140000Z
+DTEND:20260529T142500Z
+SUMMARY:WorldSPB - Superpole - Aragon Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Superpole\
+ nEvent: Aragon Round\nSource: https://www.worldsbk.com/en/event/ARA/2026
+LOCATION:Aragon Round
+URL:https://www.worldsbk.com/en/event/ARA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:cec402cc78bc5fa43336bbad24f72cad@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260530T072000Z
+DTEND:20260530T073000Z
+SUMMARY:WorldSPB - WUP 1 - Aragon Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 1\nEve
+ nt: Aragon Round\nSource: https://www.worldsbk.com/en/event/ARA/2026
+LOCATION:Aragon Round
+URL:https://www.worldsbk.com/en/event/ARA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:f0855b1fb8e6906aec7a4f1e1f4d8cec@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260530T131500Z
+SUMMARY:WorldSPB - Race 1 - Aragon Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 1\nEv
+ ent: Aragon Round\nSource: https://www.worldsbk.com/en/event/ARA/2026
+LOCATION:Aragon Round
+URL:https://www.worldsbk.com/en/event/ARA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:490bcd8b16de18e448241fbeb6c219f1@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260531T070000Z
+DTEND:20260531T071000Z
+SUMMARY:WorldSPB - WUP 2 - Aragon Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 2\nEve
+ nt: Aragon Round\nSource: https://www.worldsbk.com/en/event/ARA/2026
+LOCATION:Aragon Round
+URL:https://www.worldsbk.com/en/event/ARA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:7feff7c28ed66b306d362144a2c5904c@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260531T110000Z
+SUMMARY:WorldSPB - Race 2 - Aragon Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 2\nEv
+ ent: Aragon Round\nSource: https://www.worldsbk.com/en/event/ARA/2026
+LOCATION:Aragon Round
+URL:https://www.worldsbk.com/en/event/ARA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:7d92a8075ec00e122fc828d8ff78bad1@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260612T074000Z
+DTEND:20260612T080500Z
+SUMMARY:WorldSPB - FP - Pirelli Emilia Romagna Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: FP\nEvent:
+  Pirelli Emilia Romagna Round\nSource: https://www.worldsbk.com/en/event/I
+ TA/2026
+LOCATION:Pirelli Emilia Romagna Round
+URL:https://www.worldsbk.com/en/event/ITA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:473c6c40fa1308f96250436461e382d5@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260612T121000Z
+DTEND:20260612T123500Z
+SUMMARY:WorldSPB - Superpole - Pirelli Emilia Romagna Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Superpole\
+ nEvent: Pirelli Emilia Romagna Round\nSource: https://www.worldsbk.com/en/
+ event/ITA/2026
+LOCATION:Pirelli Emilia Romagna Round
+URL:https://www.worldsbk.com/en/event/ITA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:9d1473250208909ab5ea9f585deb5a7a@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260613T072000Z
+DTEND:20260613T073000Z
+SUMMARY:WorldSPB - WUP 1 - Pirelli Emilia Romagna Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 1\nEve
+ nt: Pirelli Emilia Romagna Round\nSource: https://www.worldsbk.com/en/even
+ t/ITA/2026
+LOCATION:Pirelli Emilia Romagna Round
+URL:https://www.worldsbk.com/en/event/ITA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:d1c2dce959af93ef968ccc14b59e14b8@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260613T110000Z
+SUMMARY:WorldSPB - Race 1 - Pirelli Emilia Romagna Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 1\nEv
+ ent: Pirelli Emilia Romagna Round\nSource: https://www.worldsbk.com/en/eve
+ nt/ITA/2026
+LOCATION:Pirelli Emilia Romagna Round
+URL:https://www.worldsbk.com/en/event/ITA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:66de15b22775d5e9f8cf03acd3e3cf89@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260614T073500Z
+DTEND:20260614T074500Z
+SUMMARY:WorldSPB - WUP 2 - Pirelli Emilia Romagna Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 2\nEve
+ nt: Pirelli Emilia Romagna Round\nSource: https://www.worldsbk.com/en/even
+ t/ITA/2026
+LOCATION:Pirelli Emilia Romagna Round
+URL:https://www.worldsbk.com/en/event/ITA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:5dda087012222742f4875f13814974d3@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260614T104500Z
+SUMMARY:WorldSPB - Race 2 - Pirelli Emilia Romagna Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 2\nEv
+ ent: Pirelli Emilia Romagna Round\nSource: https://www.worldsbk.com/en/eve
+ nt/ITA/2026
+LOCATION:Pirelli Emilia Romagna Round
+URL:https://www.worldsbk.com/en/event/ITA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:d9c755fd085f3eeeb6bbf11c2b43b229@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260904T074000Z
+DTEND:20260904T080500Z
+SUMMARY:WorldSPB - FP - Acerbis French Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: FP\nEvent:
+  Acerbis French Round\nSource: https://www.worldsbk.com/en/event/FRA/2026
+LOCATION:Acerbis French Round
+URL:https://www.worldsbk.com/en/event/FRA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:190ca686885c54a4908b06b5369ee038@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260904T121000Z
+DTEND:20260904T123500Z
+SUMMARY:WorldSPB - Superpole - Acerbis French Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Superpole\
+ nEvent: Acerbis French Round\nSource: https://www.worldsbk.com/en/event/FR
+ A/2026
+LOCATION:Acerbis French Round
+URL:https://www.worldsbk.com/en/event/FRA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:7df8686666d0b119636e957ca52b8ccb@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260905T070000Z
+DTEND:20260905T071000Z
+SUMMARY:WorldSPB - WUP 1 - Acerbis French Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 1\nEve
+ nt: Acerbis French Round\nSource: https://www.worldsbk.com/en/event/FRA/20
+ 26
+LOCATION:Acerbis French Round
+URL:https://www.worldsbk.com/en/event/FRA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:e63bcd4f81594f1f57e1b3901a34eeab@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260905T110000Z
+SUMMARY:WorldSPB - Race 1 - Acerbis French Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 1\nEv
+ ent: Acerbis French Round\nSource: https://www.worldsbk.com/en/event/FRA/2
+ 026
+LOCATION:Acerbis French Round
+URL:https://www.worldsbk.com/en/event/FRA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:85c0e9cfe2a1e80aa7098ccacfe79c15@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260906T074000Z
+DTEND:20260906T075000Z
+SUMMARY:WorldSPB - WUP 2 - Acerbis French Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 2\nEve
+ nt: Acerbis French Round\nSource: https://www.worldsbk.com/en/event/FRA/20
+ 26
+LOCATION:Acerbis French Round
+URL:https://www.worldsbk.com/en/event/FRA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:180f13fb2ebe98f97f50d40d6b11e34b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260906T131500Z
+SUMMARY:WorldSPB - Race 2 - Acerbis French Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 2\nEv
+ ent: Acerbis French Round\nSource: https://www.worldsbk.com/en/event/FRA/2
+ 026
+LOCATION:Acerbis French Round
+URL:https://www.worldsbk.com/en/event/FRA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:a056a76771f0daeafaebb4bb285527e9@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260925T074000Z
+DTEND:20260925T080500Z
+SUMMARY:WorldSPB - FP - Italian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: FP\nEvent:
+  Italian Round\nSource: https://www.worldsbk.com/en/event/CRE/2026
+LOCATION:Italian Round
+URL:https://www.worldsbk.com/en/event/CRE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:cc2aa9a69dfc67ac13df746340f2c346@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260925T121000Z
+DTEND:20260925T123500Z
+SUMMARY:WorldSPB - Superpole - Italian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Superpole\
+ nEvent: Italian Round\nSource: https://www.worldsbk.com/en/event/CRE/2026
+LOCATION:Italian Round
+URL:https://www.worldsbk.com/en/event/CRE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:ca6e3044b4a8fc59f3944080f0564192@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260926T070000Z
+DTEND:20260926T071000Z
+SUMMARY:WorldSPB - WUP 1 - Italian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 1\nEve
+ nt: Italian Round\nSource: https://www.worldsbk.com/en/event/CRE/2026
+LOCATION:Italian Round
+URL:https://www.worldsbk.com/en/event/CRE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:484a9576a6f6f61d3d8a5a37308ee4e8@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260926T110000Z
+SUMMARY:WorldSPB - Race 1 - Italian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 1\nEv
+ ent: Italian Round\nSource: https://www.worldsbk.com/en/event/CRE/2026
+LOCATION:Italian Round
+URL:https://www.worldsbk.com/en/event/CRE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:4f8314d5e12cd41c8da63b44d6f5917c@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260927T070000Z
+DTEND:20260927T071000Z
+SUMMARY:WorldSPB - WUP 2 - Italian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 2\nEve
+ nt: Italian Round\nSource: https://www.worldsbk.com/en/event/CRE/2026
+LOCATION:Italian Round
+URL:https://www.worldsbk.com/en/event/CRE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:20889d2451c472e2f8a04d775b2c24ea@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260927T110000Z
+SUMMARY:WorldSPB - Race 2 - Italian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 2\nEv
+ ent: Italian Round\nSource: https://www.worldsbk.com/en/event/CRE/2026
+LOCATION:Italian Round
+URL:https://www.worldsbk.com/en/event/CRE/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:b85415988919a3383c414f245eda4ce7@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261016T075500Z
+DTEND:20261016T082000Z
+SUMMARY:WorldSPB - FP - Pirelli Spanish Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: FP\nEvent:
+  Pirelli Spanish Round\nSource: https://www.worldsbk.com/en/event/JER/2026
+LOCATION:Pirelli Spanish Round
+URL:https://www.worldsbk.com/en/event/JER/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:b40d93eee0c2f5a7865c76a6d59228ac@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261016T121000Z
+DTEND:20261016T123500Z
+SUMMARY:WorldSPB - Superpole - Pirelli Spanish Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Superpole\
+ nEvent: Pirelli Spanish Round\nSource: https://www.worldsbk.com/en/event/J
+ ER/2026
+LOCATION:Pirelli Spanish Round
+URL:https://www.worldsbk.com/en/event/JER/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:807427c9f974929799d20353db5a34da@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261017T080500Z
+DTEND:20261017T081500Z
+SUMMARY:WorldSPB - WUP 1 - Pirelli Spanish Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 1\nEve
+ nt: Pirelli Spanish Round\nSource: https://www.worldsbk.com/en/event/JER/2
+ 026
+LOCATION:Pirelli Spanish Round
+URL:https://www.worldsbk.com/en/event/JER/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:2ba5fe72f56b9f329d5f286f7d793ab2@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261017T110000Z
+SUMMARY:WorldSPB - Race 1 - Pirelli Spanish Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 1\nEv
+ ent: Pirelli Spanish Round\nSource: https://www.worldsbk.com/en/event/JER/
+ 2026
+LOCATION:Pirelli Spanish Round
+URL:https://www.worldsbk.com/en/event/JER/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:4a6af436aea9a453d60e3ec880ac8262@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261018T075500Z
+DTEND:20261018T080500Z
+SUMMARY:WorldSPB - WUP 2 - Pirelli Spanish Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: WUP 2\nEve
+ nt: Pirelli Spanish Round\nSource: https://www.worldsbk.com/en/event/JER/2
+ 026
+LOCATION:Pirelli Spanish Round
+URL:https://www.worldsbk.com/en/event/JER/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:8e2272ef645b62051a84c91ecdfe400b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261018T110000Z
+SUMMARY:WorldSPB - Race 2 - Pirelli Spanish Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldSPB\nSession: Race 2\nEv
+ ent: Pirelli Spanish Round\nSource: https://www.worldsbk.com/en/event/JER/
+ 2026
+LOCATION:Pirelli Spanish Round
+URL:https://www.worldsbk.com/en/event/JER/2026
+END:VEVENT
+END:VCALENDAR

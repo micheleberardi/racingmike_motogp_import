@@ -1,0 +1,1370 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//racingmike//MotoGP and WorldSBK Calendars//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Moto3 2026 - All Sessions
+X-WR-TIMEZONE:UTC
+BEGIN:VEVENT
+UID:512e8cff3a0e8106ba758db5956f0bf5@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260227T090000Z
+SUMMARY:Moto3 - FP - PT Grand Prix of Thailand
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: PT G
+ rand Prix of Thailand\nSource: https://www.motogp.com/en/calendar
+LOCATION:Chang International Circuit\, Thailand
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:2457bd78b2e4651206b1c47baf542179@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260227T131500Z
+SUMMARY:Moto3 - PR - PT Grand Prix of Thailand
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: PT G
+ rand Prix of Thailand\nSource: https://www.motogp.com/en/calendar
+LOCATION:Chang International Circuit\, Thailand
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:bfed0589855cc693e2c84090d0288c53@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260228T084000Z
+SUMMARY:Moto3 - FP - PT Grand Prix of Thailand
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: PT G
+ rand Prix of Thailand\nSource: https://www.motogp.com/en/calendar
+LOCATION:Chang International Circuit\, Thailand
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:6210fe70a45a564e33729ae13392dd0d@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260228T124500Z
+SUMMARY:Moto3 - Q - PT Grand Prix of Thailand
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: PT Gr
+ and Prix of Thailand\nSource: https://www.motogp.com/en/calendar
+LOCATION:Chang International Circuit\, Thailand
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:fddbba5a23725e7d6a48e1b3aa51fc95@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260228T131000Z
+SUMMARY:Moto3 - Q - PT Grand Prix of Thailand
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: PT Gr
+ and Prix of Thailand\nSource: https://www.motogp.com/en/calendar
+LOCATION:Chang International Circuit\, Thailand
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:247f67f7394a12fff51c0cda006885ba@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260301T120000Z
+SUMMARY:Moto3 - RAC - PT Grand Prix of Thailand
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: PT 
+ Grand Prix of Thailand\nSource: https://www.motogp.com/en/calendar
+LOCATION:Chang International Circuit\, Thailand
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:a8c6432db909913bdcde1489b4bd3d96@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260320T090000Z
+SUMMARY:Moto3 - FP - Estrella Galicia 0\,0 Grand Prix of Brazil
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Estr
+ ella Galicia 0\,0 Grand Prix of Brazil\nSource: https://www.motogp.com/en/
+ calendar
+LOCATION:Autódromo Internacional de Goiânia - Ayrton Senna\, Brazil
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:d2a1575190f7e28c31ab28dca71c4935@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260320T131500Z
+SUMMARY:Moto3 - PR - Estrella Galicia 0\,0 Grand Prix of Brazil
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Estr
+ ella Galicia 0\,0 Grand Prix of Brazil\nSource: https://www.motogp.com/en/
+ calendar
+LOCATION:Autódromo Internacional de Goiânia - Ayrton Senna\, Brazil
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:66a51c6a86c5ea2effb05373d9f5c2b2@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260321T084000Z
+SUMMARY:Moto3 - FP - Estrella Galicia 0\,0 Grand Prix of Brazil
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Estr
+ ella Galicia 0\,0 Grand Prix of Brazil\nSource: https://www.motogp.com/en/
+ calendar
+LOCATION:Autódromo Internacional de Goiânia - Ayrton Senna\, Brazil
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:ff46d1533874d2a1c64d7d651d088e58@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260321T124500Z
+SUMMARY:Moto3 - Q - Estrella Galicia 0\,0 Grand Prix of Brazil
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Estre
+ lla Galicia 0\,0 Grand Prix of Brazil\nSource: https://www.motogp.com/en/c
+ alendar
+LOCATION:Autódromo Internacional de Goiânia - Ayrton Senna\, Brazil
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:927a29ef350c51063e597ec1b7631fce@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260321T131000Z
+SUMMARY:Moto3 - Q - Estrella Galicia 0\,0 Grand Prix of Brazil
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Estre
+ lla Galicia 0\,0 Grand Prix of Brazil\nSource: https://www.motogp.com/en/c
+ alendar
+LOCATION:Autódromo Internacional de Goiânia - Ayrton Senna\, Brazil
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:2060f391f142389ab0c8aca88bfe9516@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260322T120000Z
+SUMMARY:Moto3 - RAC - Estrella Galicia 0\,0 Grand Prix of Brazil
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Est
+ rella Galicia 0\,0 Grand Prix of Brazil\nSource: https://www.motogp.com/en
+ /calendar
+LOCATION:Autódromo Internacional de Goiânia - Ayrton Senna\, Brazil
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:238ec903966f2886405a0312e40d0d96@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260327T090000Z
+SUMMARY:Moto3 - FP - Red Bull Grand Prix of The United States
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Red 
+ Bull Grand Prix of The United States\nSource: https://www.motogp.com/en/ca
+ lendar
+LOCATION:Circuit Of The Americas\, United States of America
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:badea53105b7fcb0f3cb0888e7f5a7e6@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260327T131500Z
+SUMMARY:Moto3 - PR - Red Bull Grand Prix of The United States
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Red 
+ Bull Grand Prix of The United States\nSource: https://www.motogp.com/en/ca
+ lendar
+LOCATION:Circuit Of The Americas\, United States of America
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:e45e8f9b56beadb73b8309ca08941575@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260328T084000Z
+SUMMARY:Moto3 - FP - Red Bull Grand Prix of The United States
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Red 
+ Bull Grand Prix of The United States\nSource: https://www.motogp.com/en/ca
+ lendar
+LOCATION:Circuit Of The Americas\, United States of America
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:14dfb5354de03e8937a4f17af9f6b609@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260328T124500Z
+SUMMARY:Moto3 - Q - Red Bull Grand Prix of The United States
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Red B
+ ull Grand Prix of The United States\nSource: https://www.motogp.com/en/cal
+ endar
+LOCATION:Circuit Of The Americas\, United States of America
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:fe37a17d63faa4f8d396f4d7517a1af9@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260328T131000Z
+SUMMARY:Moto3 - Q - Red Bull Grand Prix of The United States
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Red B
+ ull Grand Prix of The United States\nSource: https://www.motogp.com/en/cal
+ endar
+LOCATION:Circuit Of The Americas\, United States of America
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:f1c6da6e6cf8c8080fe9e1a45f485b7d@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260329T120000Z
+SUMMARY:Moto3 - RAC - Red Bull Grand Prix of The United States
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Red
+  Bull Grand Prix of The United States\nSource: https://www.motogp.com/en/c
+ alendar
+LOCATION:Circuit Of The Americas\, United States of America
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:2b43e1643ac771fcf640cd9b29c8ccc8@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260410T140000Z
+SUMMARY:Moto3 - FP - Qatar Airways Grand Prix of Qatar
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Qata
+ r Airways Grand Prix of Qatar\nSource: https://www.motogp.com/en/calendar
+LOCATION:Lusail International Circuit\, Qatar
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:e8a91f80cc60a1869c58fe55aded931f@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260410T181500Z
+SUMMARY:Moto3 - PR - Qatar Airways Grand Prix of Qatar
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Qata
+ r Airways Grand Prix of Qatar\nSource: https://www.motogp.com/en/calendar
+LOCATION:Lusail International Circuit\, Qatar
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:d8535aa6e39a6867b5836fcda4a293d2@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260411T133000Z
+SUMMARY:Moto3 - FP - Qatar Airways Grand Prix of Qatar
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Qata
+ r Airways Grand Prix of Qatar\nSource: https://www.motogp.com/en/calendar
+LOCATION:Lusail International Circuit\, Qatar
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:6b838b5d126cfac423eed83c8dfb4265@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260411T174500Z
+SUMMARY:Moto3 - Q - Qatar Airways Grand Prix of Qatar
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Qatar
+  Airways Grand Prix of Qatar\nSource: https://www.motogp.com/en/calendar
+LOCATION:Lusail International Circuit\, Qatar
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:6de258e47fc448f48ef2da276fe2263a@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260411T181000Z
+SUMMARY:Moto3 - Q - Qatar Airways Grand Prix of Qatar
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Qatar
+  Airways Grand Prix of Qatar\nSource: https://www.motogp.com/en/calendar
+LOCATION:Lusail International Circuit\, Qatar
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:5312db838fbd87b44ff2e31657e88292@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260412T170000Z
+SUMMARY:Moto3 - RAC - Qatar Airways Grand Prix of Qatar
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Qat
+ ar Airways Grand Prix of Qatar\nSource: https://www.motogp.com/en/calendar
+LOCATION:Lusail International Circuit\, Qatar
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:34f0c42c472d4ef89cde5a7aec3c4c8e@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260424T090000Z
+SUMMARY:Moto3 - FP - Estrella Galicia 0\,0 Grand Prix of Spain
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Estr
+ ella Galicia 0\,0 Grand Prix of Spain\nSource: https://www.motogp.com/en/c
+ alendar
+LOCATION:Circuito de Jerez - Ángel Nieto\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:d3b8886f3fa571f72acd8bf97d32fc9f@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260424T131500Z
+SUMMARY:Moto3 - PR - Estrella Galicia 0\,0 Grand Prix of Spain
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Estr
+ ella Galicia 0\,0 Grand Prix of Spain\nSource: https://www.motogp.com/en/c
+ alendar
+LOCATION:Circuito de Jerez - Ángel Nieto\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:a18d86a2ac4245d92a175c0a72aea29f@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260425T084000Z
+SUMMARY:Moto3 - FP - Estrella Galicia 0\,0 Grand Prix of Spain
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Estr
+ ella Galicia 0\,0 Grand Prix of Spain\nSource: https://www.motogp.com/en/c
+ alendar
+LOCATION:Circuito de Jerez - Ángel Nieto\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:07c8f0a8bb5815c4507693968fe5c065@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260425T124500Z
+SUMMARY:Moto3 - Q - Estrella Galicia 0\,0 Grand Prix of Spain
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Estre
+ lla Galicia 0\,0 Grand Prix of Spain\nSource: https://www.motogp.com/en/ca
+ lendar
+LOCATION:Circuito de Jerez - Ángel Nieto\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:78c96257e21438271e86c9f65faa8ed6@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260425T131000Z
+SUMMARY:Moto3 - Q - Estrella Galicia 0\,0 Grand Prix of Spain
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Estre
+ lla Galicia 0\,0 Grand Prix of Spain\nSource: https://www.motogp.com/en/ca
+ lendar
+LOCATION:Circuito de Jerez - Ángel Nieto\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:30abb3721faeab6751597ecc0df7a705@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260426T110000Z
+SUMMARY:Moto3 - RAC - Estrella Galicia 0\,0 Grand Prix of Spain
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Est
+ rella Galicia 0\,0 Grand Prix of Spain\nSource: https://www.motogp.com/en/
+ calendar
+LOCATION:Circuito de Jerez - Ángel Nieto\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:2b92c326d33f998bf1a99ff72d4fe082@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260508T090000Z
+SUMMARY:Moto3 - FP - Michelin Grand Prix of France
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Mich
+ elin Grand Prix of France\nSource: https://www.motogp.com/en/calendar
+LOCATION:Le Mans\, France
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:d2d7d768e69ddd4c96831293b14b3f7e@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260508T131500Z
+SUMMARY:Moto3 - PR - Michelin Grand Prix of France
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Mich
+ elin Grand Prix of France\nSource: https://www.motogp.com/en/calendar
+LOCATION:Le Mans\, France
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:44a53db14421f5346fdaf1b54b5a479b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260509T084000Z
+SUMMARY:Moto3 - FP - Michelin Grand Prix of France
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Mich
+ elin Grand Prix of France\nSource: https://www.motogp.com/en/calendar
+LOCATION:Le Mans\, France
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:0d1028d4a67b96f3b9cfe974ee7b60d9@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260509T124500Z
+SUMMARY:Moto3 - Q - Michelin Grand Prix of France
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Miche
+ lin Grand Prix of France\nSource: https://www.motogp.com/en/calendar
+LOCATION:Le Mans\, France
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:e40e78ab9bfd67a6d86785c2389d7e83@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260509T131000Z
+SUMMARY:Moto3 - Q - Michelin Grand Prix of France
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Miche
+ lin Grand Prix of France\nSource: https://www.motogp.com/en/calendar
+LOCATION:Le Mans\, France
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:9fd517a1a7f6cf911c8029a2167b26a1@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260510T110000Z
+SUMMARY:Moto3 - RAC - Michelin Grand Prix of France
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Mic
+ helin Grand Prix of France\nSource: https://www.motogp.com/en/calendar
+LOCATION:Le Mans\, France
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:c872f0fee0d9f912e8399a713e3bf84e@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260515T090000Z
+SUMMARY:Moto3 - FP - Monster Energy Grand Prix of Catalonia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Mons
+ ter Energy Grand Prix of Catalonia\nSource: https://www.motogp.com/en/cale
+ ndar
+LOCATION:Circuit de Barcelona-Catalunya\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:f5014b8e70b6f6dd61c1a4a61ec8c538@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260515T131500Z
+SUMMARY:Moto3 - PR - Monster Energy Grand Prix of Catalonia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Mons
+ ter Energy Grand Prix of Catalonia\nSource: https://www.motogp.com/en/cale
+ ndar
+LOCATION:Circuit de Barcelona-Catalunya\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:0121aa2485074d161936b2ae926010eb@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260516T084000Z
+SUMMARY:Moto3 - FP - Monster Energy Grand Prix of Catalonia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Mons
+ ter Energy Grand Prix of Catalonia\nSource: https://www.motogp.com/en/cale
+ ndar
+LOCATION:Circuit de Barcelona-Catalunya\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:6f0aec77c4c9b410e3120640a6bcf73b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260516T124500Z
+SUMMARY:Moto3 - Q - Monster Energy Grand Prix of Catalonia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Monst
+ er Energy Grand Prix of Catalonia\nSource: https://www.motogp.com/en/calen
+ dar
+LOCATION:Circuit de Barcelona-Catalunya\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:a7b955b8a4f3b95ba9073873b180c4e0@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260516T131000Z
+SUMMARY:Moto3 - Q - Monster Energy Grand Prix of Catalonia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Monst
+ er Energy Grand Prix of Catalonia\nSource: https://www.motogp.com/en/calen
+ dar
+LOCATION:Circuit de Barcelona-Catalunya\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:f6880a6e0a90e83a2820f67c94903aa3@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260517T110000Z
+SUMMARY:Moto3 - RAC - Monster Energy Grand Prix of Catalonia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Mon
+ ster Energy Grand Prix of Catalonia\nSource: https://www.motogp.com/en/cal
+ endar
+LOCATION:Circuit de Barcelona-Catalunya\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:711bf34112cff18d78ffc42e1ca4d343@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260529T090000Z
+SUMMARY:Moto3 - FP - Brembo Grand Prix of Italy
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Brem
+ bo Grand Prix of Italy\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autodromo Internazionale del Mugello\, Italy
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:5ed3b2bc2e5d0a0e8478c144d4e0a8b3@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260529T131500Z
+SUMMARY:Moto3 - PR - Brembo Grand Prix of Italy
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Brem
+ bo Grand Prix of Italy\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autodromo Internazionale del Mugello\, Italy
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:52293c6cf8be00e33d6870aee6bf3038@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260530T084000Z
+SUMMARY:Moto3 - FP - Brembo Grand Prix of Italy
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Brem
+ bo Grand Prix of Italy\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autodromo Internazionale del Mugello\, Italy
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:6c52281595c5fe418b0261fbe8419ce0@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260530T124500Z
+SUMMARY:Moto3 - Q - Brembo Grand Prix of Italy
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Bremb
+ o Grand Prix of Italy\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autodromo Internazionale del Mugello\, Italy
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:85185c698238f89977f6437838913802@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260530T131000Z
+SUMMARY:Moto3 - Q - Brembo Grand Prix of Italy
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Bremb
+ o Grand Prix of Italy\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autodromo Internazionale del Mugello\, Italy
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:66745e93d5ab794ed1dd3bb8c989e56a@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260531T110000Z
+SUMMARY:Moto3 - RAC - Brembo Grand Prix of Italy
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Bre
+ mbo Grand Prix of Italy\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autodromo Internazionale del Mugello\, Italy
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:e6d9e31002176e5d3badc0a3fd725861@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260605T090000Z
+SUMMARY:Moto3 - FP - Grand Prix of Hungary
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of Hungary\nSource: https://www.motogp.com/en/calendar
+LOCATION:Balaton Park Circuit\, Hungary
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:0ae4b62c7a7f8148bc92ffd8375f485b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260605T131500Z
+SUMMARY:Moto3 - PR - Grand Prix of Hungary
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Gran
+ d Prix of Hungary\nSource: https://www.motogp.com/en/calendar
+LOCATION:Balaton Park Circuit\, Hungary
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:d736f6f258b777e0e843ba739c042a85@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260606T084000Z
+SUMMARY:Moto3 - FP - Grand Prix of Hungary
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of Hungary\nSource: https://www.motogp.com/en/calendar
+LOCATION:Balaton Park Circuit\, Hungary
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:0223ab1dadca2361cdcc91a0c34252e3@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260606T124500Z
+SUMMARY:Moto3 - Q - Grand Prix of Hungary
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of Hungary\nSource: https://www.motogp.com/en/calendar
+LOCATION:Balaton Park Circuit\, Hungary
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:dbc90739b544c2b4cd05b2dfafb0ecf1@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260606T131000Z
+SUMMARY:Moto3 - Q - Grand Prix of Hungary
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of Hungary\nSource: https://www.motogp.com/en/calendar
+LOCATION:Balaton Park Circuit\, Hungary
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:c771a0ab493e6613e384ed243e98cd76@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260607T110000Z
+SUMMARY:Moto3 - RAC - Grand Prix of Hungary
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Gra
+ nd Prix of Hungary\nSource: https://www.motogp.com/en/calendar
+LOCATION:Balaton Park Circuit\, Hungary
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:82c1824c753e5c6011f60cdfbaa7aba5@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260619T090000Z
+SUMMARY:Moto3 - FP - Grand Prix of Czechia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of Czechia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Automotodrom Brno\, Czechia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:5256a14b53b537410a0eaa3ecd281ae6@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260619T131500Z
+SUMMARY:Moto3 - PR - Grand Prix of Czechia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Gran
+ d Prix of Czechia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Automotodrom Brno\, Czechia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:48454994f398d83006c781936175435a@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260620T084000Z
+SUMMARY:Moto3 - FP - Grand Prix of Czechia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of Czechia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Automotodrom Brno\, Czechia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:3e4669064e9498985aa8a3166f50cce7@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260620T124500Z
+SUMMARY:Moto3 - Q - Grand Prix of Czechia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of Czechia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Automotodrom Brno\, Czechia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:104de8745e139d0c185261fea450073f@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260620T131000Z
+SUMMARY:Moto3 - Q - Grand Prix of Czechia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of Czechia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Automotodrom Brno\, Czechia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:dd0d7fc3a1fdcadf635e26b957a27d53@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260621T110000Z
+SUMMARY:Moto3 - RAC - Grand Prix of Czechia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Gra
+ nd Prix of Czechia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Automotodrom Brno\, Czechia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:66a1c34a8cc8a731e5bda340c7c27cd8@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260626T090000Z
+SUMMARY:Moto3 - FP - Grand Prix of The Netherlands
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of The Netherlands\nSource: https://www.motogp.com/en/calendar
+LOCATION:TT Circuit Assen\, Netherlands
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:649a9c3a722bfb849823bd2af7df190b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260626T131500Z
+SUMMARY:Moto3 - PR - Grand Prix of The Netherlands
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Gran
+ d Prix of The Netherlands\nSource: https://www.motogp.com/en/calendar
+LOCATION:TT Circuit Assen\, Netherlands
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:b5cf120112aa65237eece2e2ccedfa9c@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260627T084000Z
+SUMMARY:Moto3 - FP - Grand Prix of The Netherlands
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of The Netherlands\nSource: https://www.motogp.com/en/calendar
+LOCATION:TT Circuit Assen\, Netherlands
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:acdf36381e55ff0804c738474f4e7f09@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260627T124500Z
+SUMMARY:Moto3 - Q - Grand Prix of The Netherlands
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of The Netherlands\nSource: https://www.motogp.com/en/calendar
+LOCATION:TT Circuit Assen\, Netherlands
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:d3e465ab2db5c5f924892d289c118a74@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260627T131000Z
+SUMMARY:Moto3 - Q - Grand Prix of The Netherlands
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of The Netherlands\nSource: https://www.motogp.com/en/calendar
+LOCATION:TT Circuit Assen\, Netherlands
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:45ea2a3b3fa3673ef728ecb2bf844f96@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260628T110000Z
+SUMMARY:Moto3 - RAC - Grand Prix of The Netherlands
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Gra
+ nd Prix of The Netherlands\nSource: https://www.motogp.com/en/calendar
+LOCATION:TT Circuit Assen\, Netherlands
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:02e5a735a75f2813386527dcd6330ed7@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260710T090000Z
+SUMMARY:Moto3 - FP - Liqui Moly Grand Prix of Germany
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Liqu
+ i Moly Grand Prix of Germany\nSource: https://www.motogp.com/en/calendar
+LOCATION:Sachsenring\, Germany
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:88809b146f4d552e377a6837577de8ef@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260710T131500Z
+SUMMARY:Moto3 - PR - Liqui Moly Grand Prix of Germany
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Liqu
+ i Moly Grand Prix of Germany\nSource: https://www.motogp.com/en/calendar
+LOCATION:Sachsenring\, Germany
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:cd49cc2b12128f9467a8dea9113c04c3@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260711T084000Z
+SUMMARY:Moto3 - FP - Liqui Moly Grand Prix of Germany
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Liqu
+ i Moly Grand Prix of Germany\nSource: https://www.motogp.com/en/calendar
+LOCATION:Sachsenring\, Germany
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:d7969b307dcfd76ca99ff4b7d3bdb799@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260711T124500Z
+SUMMARY:Moto3 - Q - Liqui Moly Grand Prix of Germany
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Liqui
+  Moly Grand Prix of Germany\nSource: https://www.motogp.com/en/calendar
+LOCATION:Sachsenring\, Germany
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:0a3582037d1aefdb56a4cbe5d6266c81@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260711T131000Z
+SUMMARY:Moto3 - Q - Liqui Moly Grand Prix of Germany
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Liqui
+  Moly Grand Prix of Germany\nSource: https://www.motogp.com/en/calendar
+LOCATION:Sachsenring\, Germany
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:020afaaf41c9f1e81ae6dc77653cf839@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260712T110000Z
+SUMMARY:Moto3 - RAC - Liqui Moly Grand Prix of Germany
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Liq
+ ui Moly Grand Prix of Germany\nSource: https://www.motogp.com/en/calendar
+LOCATION:Sachsenring\, Germany
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:d81a7246430b18de8a553183d744548f@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260807T100000Z
+SUMMARY:Moto3 - FP - Grand Prix of United Kingdom
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of United Kingdom\nSource: https://www.motogp.com/en/calendar
+LOCATION:Silverstone Circuit\, United Kingdom of Great Britain and Northern
+  Ireland
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:958333c2ca843e4b88874376ca96acad@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260807T141500Z
+SUMMARY:Moto3 - PR - Grand Prix of United Kingdom
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Gran
+ d Prix of United Kingdom\nSource: https://www.motogp.com/en/calendar
+LOCATION:Silverstone Circuit\, United Kingdom of Great Britain and Northern
+  Ireland
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:a6301673688743be0c99fdd44084f537@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260808T094000Z
+SUMMARY:Moto3 - FP - Grand Prix of United Kingdom
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of United Kingdom\nSource: https://www.motogp.com/en/calendar
+LOCATION:Silverstone Circuit\, United Kingdom of Great Britain and Northern
+  Ireland
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:eef88cbb0ae22a3c7a0809cf5d1cd57b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260808T134500Z
+SUMMARY:Moto3 - Q - Grand Prix of United Kingdom
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of United Kingdom\nSource: https://www.motogp.com/en/calendar
+LOCATION:Silverstone Circuit\, United Kingdom of Great Britain and Northern
+  Ireland
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:66aab9324294754272d99972ec4fe6b0@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260808T141000Z
+SUMMARY:Moto3 - Q - Grand Prix of United Kingdom
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of United Kingdom\nSource: https://www.motogp.com/en/calendar
+LOCATION:Silverstone Circuit\, United Kingdom of Great Britain and Northern
+  Ireland
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:ddc191d7024b39b321d3463ec3f64155@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260809T143000Z
+SUMMARY:Moto3 - RAC - Grand Prix of United Kingdom
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Gra
+ nd Prix of United Kingdom\nSource: https://www.motogp.com/en/calendar
+LOCATION:Silverstone Circuit\, United Kingdom of Great Britain and Northern
+  Ireland
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:8f193ba1efb6ac613c0dff5f78b48bb0@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260828T090000Z
+SUMMARY:Moto3 - FP - Grand Prix of Aragon
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of Aragon\nSource: https://www.motogp.com/en/calendar
+LOCATION:MotorLand Aragón\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:1401cf04e7379c7ea12624394ed03325@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260828T131500Z
+SUMMARY:Moto3 - PR - Grand Prix of Aragon
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Gran
+ d Prix of Aragon\nSource: https://www.motogp.com/en/calendar
+LOCATION:MotorLand Aragón\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:9eaa647d5a3d514683a5f9ded2470b02@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260829T084000Z
+SUMMARY:Moto3 - FP - Grand Prix of Aragon
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of Aragon\nSource: https://www.motogp.com/en/calendar
+LOCATION:MotorLand Aragón\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:faa6fe51e947d88dc067b8dd904af514@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260829T124500Z
+SUMMARY:Moto3 - Q - Grand Prix of Aragon
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of Aragon\nSource: https://www.motogp.com/en/calendar
+LOCATION:MotorLand Aragón\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:5aac01b1c43c82288f500aeeb3e1cf4d@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260829T131000Z
+SUMMARY:Moto3 - Q - Grand Prix of Aragon
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of Aragon\nSource: https://www.motogp.com/en/calendar
+LOCATION:MotorLand Aragón\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:b1bb378a031fba36916d51f6291df9ee@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260830T110000Z
+SUMMARY:Moto3 - RAC - Grand Prix of Aragon
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Gra
+ nd Prix of Aragon\nSource: https://www.motogp.com/en/calendar
+LOCATION:MotorLand Aragón\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:01b4a387bec20abb242b70fc2ad1cf81@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260911T090000Z
+SUMMARY:Moto3 - FP - Red Bull Grand Prix of San Marino and The Rimini Rivie
+ ra
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Red 
+ Bull Grand Prix of San Marino and The Rimini Riviera\nSource: https://www.
+ motogp.com/en/calendar
+LOCATION:Misano World Circuit Marco Simoncelli\, San Marino
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:4476cc04584cad19200295a11085fe65@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260911T131500Z
+SUMMARY:Moto3 - PR - Red Bull Grand Prix of San Marino and The Rimini Rivie
+ ra
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Red 
+ Bull Grand Prix of San Marino and The Rimini Riviera\nSource: https://www.
+ motogp.com/en/calendar
+LOCATION:Misano World Circuit Marco Simoncelli\, San Marino
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:50483ea9629c9460362ddc9442f0d040@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260912T084000Z
+SUMMARY:Moto3 - FP - Red Bull Grand Prix of San Marino and The Rimini Rivie
+ ra
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Red 
+ Bull Grand Prix of San Marino and The Rimini Riviera\nSource: https://www.
+ motogp.com/en/calendar
+LOCATION:Misano World Circuit Marco Simoncelli\, San Marino
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:86000398067edcaffe0ad9724a09e4ef@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260912T124500Z
+SUMMARY:Moto3 - Q - Red Bull Grand Prix of San Marino and The Rimini Rivier
+ a
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Red B
+ ull Grand Prix of San Marino and The Rimini Riviera\nSource: https://www.m
+ otogp.com/en/calendar
+LOCATION:Misano World Circuit Marco Simoncelli\, San Marino
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:45ff45377904573577150db5dd4f714f@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260912T131000Z
+SUMMARY:Moto3 - Q - Red Bull Grand Prix of San Marino and The Rimini Rivier
+ a
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Red B
+ ull Grand Prix of San Marino and The Rimini Riviera\nSource: https://www.m
+ otogp.com/en/calendar
+LOCATION:Misano World Circuit Marco Simoncelli\, San Marino
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:f22108156a380cda8cea662a431aace0@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260913T110000Z
+SUMMARY:Moto3 - RAC - Red Bull Grand Prix of San Marino and The Rimini Rivi
+ era
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Red
+  Bull Grand Prix of San Marino and The Rimini Riviera\nSource: https://www
+ .motogp.com/en/calendar
+LOCATION:Misano World Circuit Marco Simoncelli\, San Marino
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:208b787fe0b2f13fb19e416ca8882729@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260918T090000Z
+SUMMARY:Moto3 - FP - Grand Prix of Austria
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of Austria\nSource: https://www.motogp.com/en/calendar
+LOCATION:Red Bull Ring - Spielberg\, Austria
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:74a3d509ccc5f041a02be881ac2a106e@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260918T131500Z
+SUMMARY:Moto3 - PR - Grand Prix of Austria
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Gran
+ d Prix of Austria\nSource: https://www.motogp.com/en/calendar
+LOCATION:Red Bull Ring - Spielberg\, Austria
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:4c765539e99870598209f23bad289f7f@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260919T084000Z
+SUMMARY:Moto3 - FP - Grand Prix of Austria
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of Austria\nSource: https://www.motogp.com/en/calendar
+LOCATION:Red Bull Ring - Spielberg\, Austria
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:eb78aba2d5634f9b4d2f97e45f301195@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260919T124500Z
+SUMMARY:Moto3 - Q - Grand Prix of Austria
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of Austria\nSource: https://www.motogp.com/en/calendar
+LOCATION:Red Bull Ring - Spielberg\, Austria
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:96427f955c3a51ead1ea702a6b11e909@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260919T131000Z
+SUMMARY:Moto3 - Q - Grand Prix of Austria
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of Austria\nSource: https://www.motogp.com/en/calendar
+LOCATION:Red Bull Ring - Spielberg\, Austria
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:56297f549da2e11922b4227bfe3adaac@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260920T110000Z
+SUMMARY:Moto3 - RAC - Grand Prix of Austria
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Gra
+ nd Prix of Austria\nSource: https://www.motogp.com/en/calendar
+LOCATION:Red Bull Ring - Spielberg\, Austria
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:f5b54c73341375d161eed1dd3a761401@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261002T090000Z
+SUMMARY:Moto3 - FP - Motul Grand Prix of Japan
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Motu
+ l Grand Prix of Japan\nSource: https://www.motogp.com/en/calendar
+LOCATION:Mobility Resort Motegi\, Japan
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:05529ac9b4299af575c399d1c0a2335d@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261002T131500Z
+SUMMARY:Moto3 - PR - Motul Grand Prix of Japan
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Motu
+ l Grand Prix of Japan\nSource: https://www.motogp.com/en/calendar
+LOCATION:Mobility Resort Motegi\, Japan
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:a535a4c07d2763e77bfd6d6f7d71d9f9@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261003T084000Z
+SUMMARY:Moto3 - FP - Motul Grand Prix of Japan
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Motu
+ l Grand Prix of Japan\nSource: https://www.motogp.com/en/calendar
+LOCATION:Mobility Resort Motegi\, Japan
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:7bf16432ca6185dceadaadcf105a33d6@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261003T124500Z
+SUMMARY:Moto3 - Q - Motul Grand Prix of Japan
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Motul
+  Grand Prix of Japan\nSource: https://www.motogp.com/en/calendar
+LOCATION:Mobility Resort Motegi\, Japan
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:a0fc67badbb44a850934e92013d3d6cd@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261003T131000Z
+SUMMARY:Moto3 - Q - Motul Grand Prix of Japan
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Motul
+  Grand Prix of Japan\nSource: https://www.motogp.com/en/calendar
+LOCATION:Mobility Resort Motegi\, Japan
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:b174faa67f0020978cae589c76c8e988@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261004T110000Z
+SUMMARY:Moto3 - RAC - Motul Grand Prix of Japan
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Mot
+ ul Grand Prix of Japan\nSource: https://www.motogp.com/en/calendar
+LOCATION:Mobility Resort Motegi\, Japan
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:d9d67d2a693d2ccce3dfb6149bfc525c@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261009T090000Z
+SUMMARY:Moto3 - FP - Pertamina Grand Prix of Indonesia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Pert
+ amina Grand Prix of Indonesia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Pertamina Mandalika Circuit\, Indonesia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:1341a1620e31959af130bc83691bad6c@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261009T131500Z
+SUMMARY:Moto3 - PR - Pertamina Grand Prix of Indonesia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Pert
+ amina Grand Prix of Indonesia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Pertamina Mandalika Circuit\, Indonesia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:336714a5b28a02c93586ccd6a127c208@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261010T084000Z
+SUMMARY:Moto3 - FP - Pertamina Grand Prix of Indonesia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Pert
+ amina Grand Prix of Indonesia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Pertamina Mandalika Circuit\, Indonesia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:877f9606768480a896010c5a6252f8fa@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261010T124500Z
+SUMMARY:Moto3 - Q - Pertamina Grand Prix of Indonesia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Perta
+ mina Grand Prix of Indonesia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Pertamina Mandalika Circuit\, Indonesia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:214e0193dac574f858bb77293ff3fe32@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261010T131000Z
+SUMMARY:Moto3 - Q - Pertamina Grand Prix of Indonesia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Perta
+ mina Grand Prix of Indonesia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Pertamina Mandalika Circuit\, Indonesia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:adcdd9773b15664640b8cee8f3db8c08@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261011T110000Z
+SUMMARY:Moto3 - RAC - Pertamina Grand Prix of Indonesia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Per
+ tamina Grand Prix of Indonesia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Pertamina Mandalika Circuit\, Indonesia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:f78850b708066d3ddbca186efe668c05@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261023T090000Z
+SUMMARY:Moto3 - FP - Grand Prix of Australia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of Australia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Phillip Island\, Australia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:fa7b0fa7151337c2904dc0dfbba34851@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261023T131500Z
+SUMMARY:Moto3 - PR - Grand Prix of Australia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Gran
+ d Prix of Australia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Phillip Island\, Australia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:6e74602c2358dc2256cfd607e705edad@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261024T084000Z
+SUMMARY:Moto3 - FP - Grand Prix of Australia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Gran
+ d Prix of Australia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Phillip Island\, Australia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:caa8a3c1e2df080f11a2c4397b2d8e67@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261024T124500Z
+SUMMARY:Moto3 - Q - Grand Prix of Australia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of Australia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Phillip Island\, Australia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:28f50caf34dfceafb7d77cb18122eef8@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261024T131000Z
+SUMMARY:Moto3 - Q - Grand Prix of Australia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Grand
+  Prix of Australia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Phillip Island\, Australia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:d3555646e8e4301a2a9672c00892bd0c@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261025T110000Z
+SUMMARY:Moto3 - RAC - Grand Prix of Australia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Gra
+ nd Prix of Australia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Phillip Island\, Australia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:c56bb8691bd6e5406b3b9a0078a8e78d@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261030T090000Z
+SUMMARY:Moto3 - FP - Petronas Grand Prix of Malaysia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Petr
+ onas Grand Prix of Malaysia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Petronas Sepang International Circuit\, Malaysia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:c03e75d4b155b7fd9c1d55be320f779d@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261030T131500Z
+SUMMARY:Moto3 - PR - Petronas Grand Prix of Malaysia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Petr
+ onas Grand Prix of Malaysia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Petronas Sepang International Circuit\, Malaysia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:7b2363b134b46c88e13843e0de6cb63a@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261031T084000Z
+SUMMARY:Moto3 - FP - Petronas Grand Prix of Malaysia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Petr
+ onas Grand Prix of Malaysia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Petronas Sepang International Circuit\, Malaysia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:b9d6f48c210b74a6ca188b0e2b125778@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261031T124500Z
+SUMMARY:Moto3 - Q - Petronas Grand Prix of Malaysia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Petro
+ nas Grand Prix of Malaysia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Petronas Sepang International Circuit\, Malaysia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:2ff7c61a19f0bd7346e0cea5ea76cbb9@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261031T131000Z
+SUMMARY:Moto3 - Q - Petronas Grand Prix of Malaysia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Petro
+ nas Grand Prix of Malaysia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Petronas Sepang International Circuit\, Malaysia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:e676deee5807c799d0279830c0a9b972@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261101T110000Z
+SUMMARY:Moto3 - RAC - Petronas Grand Prix of Malaysia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Pet
+ ronas Grand Prix of Malaysia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Petronas Sepang International Circuit\, Malaysia
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:28e7f65baab178cf234e557d01da1edd@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261113T090000Z
+SUMMARY:Moto3 - FP - Repsol Grand Prix of Portugal
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Reps
+ ol Grand Prix of Portugal\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autódromo Internacional do Algarve\, Portugal
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:67fad614981583865ec8b7efd213282d@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261113T131500Z
+SUMMARY:Moto3 - PR - Repsol Grand Prix of Portugal
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Reps
+ ol Grand Prix of Portugal\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autódromo Internacional do Algarve\, Portugal
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:20f86fa7d3edee27d35cf065e062fe0d@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261114T084000Z
+SUMMARY:Moto3 - FP - Repsol Grand Prix of Portugal
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Reps
+ ol Grand Prix of Portugal\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autódromo Internacional do Algarve\, Portugal
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:6ee4737d6085360394a34929c0ea4a8d@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261114T124500Z
+SUMMARY:Moto3 - Q - Repsol Grand Prix of Portugal
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Repso
+ l Grand Prix of Portugal\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autódromo Internacional do Algarve\, Portugal
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:96e1d051f5e2ca8fffa2fde6f7437833@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261114T131000Z
+SUMMARY:Moto3 - Q - Repsol Grand Prix of Portugal
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Repso
+ l Grand Prix of Portugal\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autódromo Internacional do Algarve\, Portugal
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:bb104f34bcef576b1ae2fe0adda14d48@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261115T143000Z
+SUMMARY:Moto3 - RAC - Repsol Grand Prix of Portugal
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Rep
+ sol Grand Prix of Portugal\nSource: https://www.motogp.com/en/calendar
+LOCATION:Autódromo Internacional do Algarve\, Portugal
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:7509712e761bf8bbaa3ff69158bc3a04@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261120T090000Z
+SUMMARY:Moto3 - FP - Motul Grand Prix of Valencia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Motu
+ l Grand Prix of Valencia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Circuit Ricardo Tormo\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:50fe9f11dc44060e4bfddd8ede523692@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261120T131500Z
+SUMMARY:Moto3 - PR - Motul Grand Prix of Valencia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: PR\nEvent: Motu
+ l Grand Prix of Valencia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Circuit Ricardo Tormo\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:724334859c94b6e5c9315407aae3f823@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261121T084000Z
+SUMMARY:Moto3 - FP - Motul Grand Prix of Valencia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: FP\nEvent: Motu
+ l Grand Prix of Valencia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Circuit Ricardo Tormo\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:96fe14f2cedf46244161d472b76bfb90@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261121T124500Z
+SUMMARY:Moto3 - Q - Motul Grand Prix of Valencia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Motul
+  Grand Prix of Valencia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Circuit Ricardo Tormo\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:dfcb4851dfcaa01f3dbf3f138469938b@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261121T131000Z
+SUMMARY:Moto3 - Q - Motul Grand Prix of Valencia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: Q\nEvent: Motul
+  Grand Prix of Valencia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Circuit Ricardo Tormo\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+BEGIN:VEVENT
+UID:62c427d56d2199c9dac2ab0198cedfc8@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261122T110000Z
+SUMMARY:Moto3 - RAC - Motul Grand Prix of Valencia
+DESCRIPTION:Championship: MotoGP\nCategory: Moto3\nSession: RAC\nEvent: Mot
+ ul Grand Prix of Valencia\nSource: https://www.motogp.com/en/calendar
+LOCATION:Circuit Ricardo Tormo\, Spain
+URL:https://www.motogp.com/en/calendar
+END:VEVENT
+END:VCALENDAR

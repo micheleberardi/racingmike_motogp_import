@@ -1,0 +1,140 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//racingmike//MotoGP and WorldSBK Calendars//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:WorldWCR 2026 - Races Only
+X-WR-TIMEZONE:UTC
+BEGIN:VEVENT
+UID:f9b9f4132ca305e3b33faa0108bca941@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260328T110000Z
+SUMMARY:WorldWCR - Race 1 - Pirelli Portuguese Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 1\nEv
+ ent: Pirelli Portuguese Round\nSource: https://www.worldsbk.com/en/event/P
+ OR/2026
+LOCATION:Pirelli Portuguese Round
+URL:https://www.worldsbk.com/en/event/POR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:6f4b6464666288f413f507156f86a5ff@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260329T110000Z
+SUMMARY:WorldWCR - Race 2 - Pirelli Portuguese Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 2\nEv
+ ent: Pirelli Portuguese Round\nSource: https://www.worldsbk.com/en/event/P
+ OR/2026
+LOCATION:Pirelli Portuguese Round
+URL:https://www.worldsbk.com/en/event/POR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:9acc182ab586e624c85ea08b61a765d3@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260418T100000Z
+SUMMARY:WorldWCR - Race 1 - Pirelli Dutch Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 1\nEv
+ ent: Pirelli Dutch Round\nSource: https://www.worldsbk.com/en/event/NED/20
+ 26
+LOCATION:Pirelli Dutch Round
+URL:https://www.worldsbk.com/en/event/NED/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:9bb99a61344e00d50dc24c8cd392d620@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260419T100000Z
+SUMMARY:WorldWCR - Race 2 - Pirelli Dutch Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 2\nEv
+ ent: Pirelli Dutch Round\nSource: https://www.worldsbk.com/en/event/NED/20
+ 26
+LOCATION:Pirelli Dutch Round
+URL:https://www.worldsbk.com/en/event/NED/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:82f28a63bf6d20509946ede707c370d2@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260502T110000Z
+SUMMARY:WorldWCR - Race 1 - Motul Hungarian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 1\nEv
+ ent: Motul Hungarian Round\nSource: https://www.worldsbk.com/en/event/HUN/
+ 2026
+LOCATION:Motul Hungarian Round
+URL:https://www.worldsbk.com/en/event/HUN/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:f1173f91d3e0fb03850c328709a919d0@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260503T110000Z
+SUMMARY:WorldWCR - Race 2 - Motul Hungarian Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 2\nEv
+ ent: Motul Hungarian Round\nSource: https://www.worldsbk.com/en/event/HUN/
+ 2026
+LOCATION:Motul Hungarian Round
+URL:https://www.worldsbk.com/en/event/HUN/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:c50ec6cb2d0f4a5564d071f5a4a50bc2@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260613T100000Z
+SUMMARY:WorldWCR - Race 1 - Pirelli Emilia Romagna Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 1\nEv
+ ent: Pirelli Emilia Romagna Round\nSource: https://www.worldsbk.com/en/eve
+ nt/ITA/2026
+LOCATION:Pirelli Emilia Romagna Round
+URL:https://www.worldsbk.com/en/event/ITA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:3d61d5bbe36f1574b37945de349d3012@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260614T095000Z
+SUMMARY:WorldWCR - Race 2 - Pirelli Emilia Romagna Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 2\nEv
+ ent: Pirelli Emilia Romagna Round\nSource: https://www.worldsbk.com/en/eve
+ nt/ITA/2026
+LOCATION:Pirelli Emilia Romagna Round
+URL:https://www.worldsbk.com/en/event/ITA/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:dbf709b745c579faee42d8fb4e8d93fc@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260711T120000Z
+SUMMARY:WorldWCR - Race 1 - Prosecco DOC UK Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 1\nEv
+ ent: Prosecco DOC UK Round\nSource: https://www.worldsbk.com/en/event/GBR/
+ 2026
+LOCATION:Prosecco DOC UK Round
+URL:https://www.worldsbk.com/en/event/GBR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:46d5fce8257151407831e69892c425b2@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20260712T120000Z
+SUMMARY:WorldWCR - Race 2 - Prosecco DOC UK Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 2\nEv
+ ent: Prosecco DOC UK Round\nSource: https://www.worldsbk.com/en/event/GBR/
+ 2026
+LOCATION:Prosecco DOC UK Round
+URL:https://www.worldsbk.com/en/event/GBR/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:0c1d606abd8e9709d9c98c168733bb8c@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261017T100000Z
+SUMMARY:WorldWCR - Race 1 - Pirelli Spanish Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 1\nEv
+ ent: Pirelli Spanish Round\nSource: https://www.worldsbk.com/en/event/JER/
+ 2026
+LOCATION:Pirelli Spanish Round
+URL:https://www.worldsbk.com/en/event/JER/2026
+END:VEVENT
+BEGIN:VEVENT
+UID:1c4887f49127d63d52b79589113a9f6e@racingmike.calendar
+DTSTAMP:20260302T230903Z
+DTSTART:20261018T100000Z
+SUMMARY:WorldWCR - Race 2 - Pirelli Spanish Round
+DESCRIPTION:Championship: WorldSBK\nCategory: WorldWCR\nSession: Race 2\nEv
+ ent: Pirelli Spanish Round\nSource: https://www.worldsbk.com/en/event/JER/
+ 2026
+LOCATION:Pirelli Spanish Round
+URL:https://www.worldsbk.com/en/event/JER/2026
+END:VEVENT
+END:VCALENDAR
