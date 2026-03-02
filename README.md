@@ -4,6 +4,12 @@ Python scripts to import MotoGP data from public endpoints into a MySQL database
 
 This project is designed for recurring seasonal imports and live updates, with robust HTTP handling, configurable target year, and idempotent upserts.
 
+## Public Results Link
+
+View results and dashboard here:
+
+- `https://api.micheleberardi.com/racingmike/`
+
 ## Features
 
 - Imports seasons, events, categories, sessions, results, standings, teams, and live timing.
