@@ -72,14 +72,24 @@ def get_db_connection() -> pymysql.connections.Connection:
 
 def get_http_session() -> requests.Session:
     session = requests.Session()
-    retry = Retry(
-        total=3,
-        connect=3,
-        read=3,
-        backoff_factor=0.5,
-        status_forcelist=(429, 500, 502, 503, 504),
-        allowed_methods=frozenset(["GET", "HEAD", "OPTIONS"]),
-    )
+    retry_kwargs = {
+        "total": 3,
+        "connect": 3,
+        "read": 3,
+        "backoff_factor": 0.5,
+        "status_forcelist": (429, 500, 502, 503, 504),
+    }
+    try:
+        retry = Retry(
+            **retry_kwargs,
+            allowed_methods=frozenset(["GET", "HEAD", "OPTIONS"]),
+        )
+    except TypeError:
+        # urllib3<1.26 compatibility
+        retry = Retry(
+            **retry_kwargs,
+            method_whitelist=frozenset(["GET", "HEAD", "OPTIONS"]),
+        )
     adapter = HTTPAdapter(max_retries=retry)
     session.mount("http://", adapter)
     session.mount("https://", adapter)

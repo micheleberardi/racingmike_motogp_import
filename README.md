@@ -92,6 +92,16 @@ python3 liveresult.py
 python3 calendar2024.py
 ```
 
+### Pipeline runner (events -> sessions -> results)
+
+```bash
+# one-shot run
+python3 run_pipeline.py --year 2026
+
+# continuous loop every 15 minutes
+python3 run_pipeline.py --year 2026 --loop --sleep-seconds 900
+```
+
 ## Suggested Execution Order
 
 For a full seasonal refresh:
