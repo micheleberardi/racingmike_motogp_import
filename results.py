@@ -3,6 +3,8 @@ import json
 import logging
 import time as time_module
 
+from requests import HTTPError
+
 from runtime import get_db_connection, get_http_session, parse_year_arg, request_json, setup_logging
 
 
@@ -120,6 +122,46 @@ ON DUPLICATE KEY UPDATE
 """
 
 
+def fetch_classification_with_retry(session, url: str, session_id: str, max_attempts: int = 4):
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return request_json(session, url)
+        except HTTPError as exc:
+            status_code = exc.response.status_code if exc.response is not None else None
+            should_retry = status_code in (403, 429, 500, 502, 503, 504)
+            if should_retry and attempt < max_attempts:
+                wait_seconds = 1.5 * attempt
+                logging.warning(
+                    "Retry %s/%s session %s after HTTP %s (sleep %.1fs)",
+                    attempt,
+                    max_attempts,
+                    session_id,
+                    status_code,
+                    wait_seconds,
+                )
+                time_module.sleep(wait_seconds)
+                continue
+            logging.error("Errore fetch risultati session %s: %s", session_id, exc)
+            return None
+        except Exception as exc:
+            if attempt < max_attempts:
+                wait_seconds = 1.0 * attempt
+                logging.warning(
+                    "Retry %s/%s session %s after generic error (%s) (sleep %.1fs)",
+                    attempt,
+                    max_attempts,
+                    session_id,
+                    exc,
+                    wait_seconds,
+                )
+                time_module.sleep(wait_seconds)
+                continue
+            logging.error("Errore fetch risultati session %s: %s", session_id, exc)
+            return None
+
+    return None
+
+
 def main() -> int:
     setup_logging()
     target_year = parse_year_arg()
@@ -136,8 +178,7 @@ def main() -> int:
                 SELECT *
                 FROM sessions
                 WHERE year = %s
-                  AND date >= CURDATE() - INTERVAL 30 DAY
-                  AND date < CURDATE() + INTERVAL 1 DAY
+                  AND COALESCE(status, '') = 'FINISHED'
                 ORDER BY date DESC
                 """,
                 (target_year,),
@@ -153,10 +194,8 @@ def main() -> int:
                     "https://api.motogp.pulselive.com/motogp/v1/results/session/"
                     f"{session_id}/classification?test=false"
                 )
-                try:
-                    data = request_json(session, url)
-                except Exception as exc:
-                    logging.error("Errore fetch risultati session %s: %s", session_id, exc)
+                data = fetch_classification_with_retry(session, url, session_id)
+                if data is None:
                     continue
 
                 classifications = data.get("classification", [])
