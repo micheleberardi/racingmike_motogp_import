@@ -148,6 +148,21 @@ python3 run_pipeline.py --year 2026
 python3 run_pipeline.py --year 2026 --loop --sleep-seconds 900
 ```
 
+### Streamlit dashboard (results, standings, stats)
+
+Start local UI:
+
+```bash
+streamlit run streamlit_dashboard.py
+```
+
+What it shows:
+
+- Season overview (finished/upcoming rounds)
+- Championship standings by category
+- Session results by event/session
+- "Stats Lab" with custom metrics (`Power Index`, `Consistency`) and a what-if simulator
+
 ## Suggested Execution Order
 
 For a full seasonal refresh:
@@ -227,6 +242,6 @@ To publish it:
 
 Your public page URL will be:
 
-- `https://<your-username>.github.io/<your-repo>/`
+- `https://micheleberardi.github.io/racingmike_motogp_import/`
 
 From that page, users can click each `.ics` and download/import it.
