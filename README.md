@@ -92,6 +92,52 @@ python3 liveresult.py
 python3 calendar2024.py
 ```
 
+### ICS calendar generator (MotoGP + WorldSBK)
+
+Generate the 2026 calendars in `.ics` format:
+
+```bash
+python3 generate_calendars_ics.py --year 2026
+```
+
+Default output directory:
+
+`calendars/2026/`
+
+- `calendars/2026/motogp/` (9 files)
+  - `motogp_2026_all_sessions.ics`
+  - `moto2_2026_all_sessions.ics`
+  - `moto3_2026_all_sessions.ics`
+  - `motogp_2026_qualify_plus_races_only.ics`
+  - `moto2_2026_qualify_plus_races_only.ics`
+  - `moto3_2026_qualify_plus_races_only.ics`
+  - `motogp_2026_races_only.ics`
+  - `moto2_2026_races_only.ics`
+  - `moto3_2026_races_only.ics`
+
+- `calendars/2026/worldsbk/` (15 files)
+  - `worldsbk_2026_all_sessions.ics`
+  - `worldssp_2026_all_sessions.ics`
+  - `worldspb_2026_all_sessions.ics`
+  - `r3_blu_cru_champ_2026_all_sessions.ics`
+  - `worldwcr_2026_all_sessions.ics`
+  - `worldsbk_2026_superpole_plus_races_only.ics`
+  - `worldssp_2026_superpole_plus_races_only.ics`
+  - `worldspb_2026_superpole_plus_races_only.ics`
+  - `r3_blu_cru_champ_2026_superpole_plus_races_only.ics`
+  - `worldwcr_2026_superpole_plus_races_only.ics`
+  - `worldsbk_2026_races_only.ics`
+  - `worldssp_2026_races_only.ics`
+  - `worldspb_2026_races_only.ics`
+  - `r3_blu_cru_champ_2026_races_only.ics`
+  - `worldwcr_2026_races_only.ics`
+
+Optional custom output directory:
+
+```bash
+python3 generate_calendars_ics.py --year 2026 --output-dir /path/to/output
+```
+
 ### Pipeline runner (events -> sessions -> results)
 
 ```bash
@@ -164,3 +210,23 @@ Use the data responsibly and according to applicable terms.
 ## License
 
 MIT (see `LICENSE.md`).
+
+## Publish Download Page (GitHub Pages)
+
+This repository includes a ready markdown page with clickable calendar files:
+
+- `index.md`
+
+To publish it:
+
+1. Push the repository to GitHub.
+2. In GitHub: **Settings -> Pages**:
+   - **Source**: `Deploy from a branch`
+   - **Branch**: `main` (or your default branch), folder `/ (root)`
+3. Save and wait for deployment.
+
+Your public page URL will be:
+
+- `https://<your-username>.github.io/<your-repo>/`
+
+From that page, users can click each `.ics` and download/import it.
