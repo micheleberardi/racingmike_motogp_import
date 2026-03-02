@@ -249,7 +249,15 @@ def render_standings_tab(standings_payload: Dict[str, Any]) -> Tuple[pd.DataFram
         return pd.DataFrame(), []
 
     rows = build_standings_rows(classification)
-    df = pd.DataFrame(rows).sort_values(["Pos", "Points"], ascending=[True, False])
+    df = pd.DataFrame(rows)
+    if df.empty:
+        st.warning("Standings are currently unavailable for this selection.")
+        return pd.DataFrame(), classification
+    if "Pos" not in df.columns:
+        df["Pos"] = range(1, len(df) + 1)
+    if "Points" not in df.columns:
+        df["Points"] = 0
+    df = df.sort_values(["Pos", "Points"], ascending=[True, False])
 
     leader_row = df.iloc[0]
     col1, col2, col3, col4 = st.columns(4)
@@ -281,6 +289,9 @@ def render_results_tab(
         key=lambda e: e.get("date_end") or "",
         reverse=True,
     )
+    if not ordered_events:
+        st.info("No rounds with valid IDs are available.")
+        return
     selected_event = st.selectbox(
         "Select round",
         ordered_events,
@@ -296,6 +307,9 @@ def render_results_tab(
         [s for s in sessions if s.get("id")],
         key=lambda s: s.get("date") or "",
     )
+    if not sessions_sorted:
+        st.info("No valid sessions are available for this round/category.")
+        return
     selected_session = st.selectbox(
         "Select session",
         sessions_sorted,
@@ -305,6 +319,8 @@ def render_results_tab(
     payload = get_session_classification(selected_session["id"])
     rows = []
     for item in payload.get("classification") or []:
+        if not isinstance(item, dict):
+            continue
         rider = item.get("rider") or {}
         team = item.get("team") or {}
         constructor = item.get("constructor") or {}
@@ -326,10 +342,13 @@ def render_results_tab(
             }
         )
 
-    results_df = pd.DataFrame(rows).sort_values("Pos")
+    results_df = pd.DataFrame(rows)
     if results_df.empty:
         st.warning("Session classification is not available yet.")
         return
+    if "Pos" not in results_df.columns:
+        results_df["Pos"] = range(1, len(results_df) + 1)
+    results_df = results_df.sort_values("Pos")
 
     winner = results_df.iloc[0]
     col1, col2, col3 = st.columns(3)
