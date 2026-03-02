@@ -1,15 +1,14 @@
-import math
 import logging
-import time
-from datetime import datetime
+import math
+from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import pandas as pd
 import streamlit as st
 
-from runtime import get_http_session, request_json
+from runtime import get_db_connection
 
-MOTOGP_RESULTS_BASE = "https://api.motogp.pulselive.com/motogp/v1/results"
+RACE_SESSION_TYPES = ("RAC", "SPR", "Race 1", "Race 2", "Superpole Race")
 
 
 def _safe_int(value: Any, default: int = 0) -> int:
@@ -30,12 +29,18 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
         return default
 
 
-def _parse_iso_date(value: str) -> Optional[datetime]:
-    raw = (value or "").strip()
+def _as_date(value: Any) -> Optional[date]:
+    if value is None:
+        return None
+    if isinstance(value, date):
+        return value
+    if isinstance(value, datetime):
+        return value.date()
+    raw = str(value).strip()
     if not raw:
         return None
     try:
-        return datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        return datetime.fromisoformat(raw[:10]).date()
     except ValueError:
         return None
 
@@ -44,357 +49,482 @@ def _event_title(event: Dict[str, Any]) -> str:
     return (event.get("sponsored_name") or event.get("name") or "Unknown Event").strip()
 
 
-def _position_samples(item: Dict[str, Any]) -> List[int]:
-    values: List[int] = []
-    for key in ("last_positions", "sprint_last_positions"):
-        mapping = item.get(key) or {}
-        if not isinstance(mapping, dict):
-            continue
-        for pos in mapping.values():
-            number = _safe_int(pos, default=0)
-            if number > 0:
-                values.append(number)
-    return values
-
-
-def _form_score(item: Dict[str, Any]) -> float:
-    positions = _position_samples(item)
-    if not positions:
-        return 0.0
-    weighted = [max(0.0, 30.0 - float(pos * 3)) for pos in positions]
-    return round(sum(weighted) / len(weighted), 1)
-
-
-def _consistency_score(item: Dict[str, Any]) -> float:
-    positions = _position_samples(item)
-    if not positions:
-        return 0.0
-    if len(positions) == 1:
-        return round(max(0.0, 100.0 - (positions[0] - 1) * 8.0), 1)
-    mean = sum(float(x) for x in positions) / len(positions)
-    variance = sum((float(x) - mean) ** 2 for x in positions) / len(positions)
-    std = math.sqrt(variance)
-    return round(max(0.0, 100.0 - std * 18.0), 1)
-
-
-def _power_index(item: Dict[str, Any]) -> int:
-    points = _safe_int(item.get("points"))
-    race_wins = _safe_int(item.get("race_wins"))
-    podiums = _safe_int(item.get("podiums"))
-    sprint_wins = _safe_int(item.get("sprint_wins"))
-    sprint_podiums = _safe_int(item.get("sprint_podiums"))
-    return points + race_wins * 12 + podiums * 5 + sprint_wins * 4 + sprint_podiums * 2
-
-
-@st.cache_data(ttl=600, show_spinner=False)
-def api_get_json(url: str) -> Any:
-    session = get_http_session()
-    return request_json(session, url)
-
-
-@st.cache_data(ttl=3600, show_spinner=False)
-def get_seasons() -> List[Dict[str, Any]]:
+def _db_fetchall(query: str, params: Tuple[Any, ...] = ()) -> List[Dict[str, Any]]:
     try:
-        payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/seasons")
+        with get_db_connection() as cnx:
+            with cnx.cursor() as cursor:
+                cursor.execute(query, params)
+                return list(cursor.fetchall())
     except Exception as exc:
-        logging.warning("Failed to fetch seasons: %s", exc)
+        logging.warning("DB query failed: %s", exc)
         return []
-    return payload if isinstance(payload, list) else []
 
 
-@st.cache_data(ttl=3600, show_spinner=False)
-def get_categories(season_uuid: str) -> List[Dict[str, Any]]:
-    try:
-        payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/categories?seasonUuid={season_uuid}")
-    except Exception as exc:
-        logging.warning("Failed to fetch categories for season=%s: %s", season_uuid, exc)
-        return []
-    return payload if isinstance(payload, list) else []
+@st.cache_data(ttl=1800, show_spinner=False)
+def get_available_years() -> List[int]:
+    rows = _db_fetchall(
+        """
+        SELECT DISTINCT year
+        FROM seasons
+        WHERE year IS NOT NULL
+        ORDER BY year DESC
+        """
+    )
+    years = [_safe_int(row.get("year")) for row in rows if _safe_int(row.get("year")) > 0]
+    if years:
+        return years
+
+    fallback = _db_fetchall(
+        """
+        SELECT DISTINCT year
+        FROM events
+        WHERE year IS NOT NULL
+        ORDER BY year DESC
+        """
+    )
+    return [_safe_int(row.get("year")) for row in fallback if _safe_int(row.get("year")) > 0]
 
 
-def get_events(season_uuid: str, is_finished: bool) -> List[Dict[str, Any]]:
-    url = f"{MOTOGP_RESULTS_BASE}/events?seasonUuid={season_uuid}&isFinished={str(is_finished).lower()}"
-    try:
-        raw = api_get_json(url)
-    except Exception as exc:
-        logging.warning("Failed to fetch events for season=%s finished=%s: %s", season_uuid, is_finished, exc)
-        return []
-    if not isinstance(raw, list):
-        return []
-    return [event for event in raw if not event.get("test")]
+@st.cache_data(ttl=1800, show_spinner=False)
+def get_categories_for_year(year: int) -> List[Dict[str, Any]]:
+    rows = _db_fetchall(
+        """
+        SELECT DISTINCT id, name, COALESCE(legacy_id, 999) AS legacy_id
+        FROM categories_general
+        WHERE year = %s
+        ORDER BY legacy_id ASC, name ASC
+        """,
+        (year,),
+    )
+    if rows:
+        return rows
+
+    return _db_fetchall(
+        """
+        SELECT DISTINCT category_id AS id, category_name AS name, 999 AS legacy_id
+        FROM results
+        WHERE year = %s
+          AND category_id IS NOT NULL
+          AND category_name IS NOT NULL
+        ORDER BY name ASC
+        """,
+        (year,),
+    )
 
 
-def get_standings(season_uuid: str, category_uuid: str) -> Dict[str, Any]:
-    url = f"{MOTOGP_RESULTS_BASE}/standings?seasonUuid={season_uuid}&categoryUuid={category_uuid}"
-    last_error: Optional[Exception] = None
-    for attempt in range(1, 4):
-        try:
-            payload = api_get_json(url)
-            if isinstance(payload, dict):
-                return payload
-            return {}
-        except Exception as exc:
-            last_error = exc
-            logging.warning(
-                "Standings fetch attempt %s/3 failed for season=%s category=%s: %s",
-                attempt,
-                season_uuid,
-                category_uuid,
-                exc,
-            )
-            time.sleep(0.35 * attempt)
-
-    return {"classification": [], "_error": str(last_error) if last_error else "Unknown standings error"}
-
-
-def get_sessions(event_uuid: str, category_uuid: str) -> List[Dict[str, Any]]:
-    try:
-        payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/sessions?eventUuid={event_uuid}&categoryUuid={category_uuid}")
-    except Exception as exc:
-        logging.warning("Failed to fetch sessions for event=%s category=%s: %s", event_uuid, category_uuid, exc)
-        return []
-    return payload if isinstance(payload, list) else []
+@st.cache_data(ttl=900, show_spinner=False)
+def get_events_for_year(year: int) -> List[Dict[str, Any]]:
+    return _db_fetchall(
+        """
+        SELECT
+            id,
+            name,
+            sponsored_name,
+            date_start,
+            date_end,
+            country_name,
+            circuit_name,
+            status
+        FROM events
+        WHERE year = %s
+          AND COALESCE(test, 0) <> 1
+        ORDER BY date_start ASC, id ASC
+        """,
+        (year,),
+    )
 
 
-def get_session_classification(session_uuid: str) -> Dict[str, Any]:
-    try:
-        payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/session/{session_uuid}/classification?test=false")
-    except Exception as exc:
-        logging.warning("Failed to fetch classification for session=%s: %s", session_uuid, exc)
-        return {}
-    return payload if isinstance(payload, dict) else {}
+@st.cache_data(ttl=300, show_spinner=False)
+def get_standings_rows(year: int, category_id: str) -> List[Dict[str, Any]]:
+    rows = _db_fetchall(
+        """
+        SELECT
+            position,
+            rider_id,
+            rider_full_name,
+            rider_number,
+            team_name,
+            constructor_name,
+            points
+        FROM standing_riders
+        WHERE year = %s
+          AND category_id = %s
+        ORDER BY
+            CASE
+                WHEN CAST(position AS CHAR) REGEXP '^[0-9]+$' THEN CAST(position AS UNSIGNED)
+                ELSE 9999
+            END ASC,
+            points DESC,
+            rider_full_name ASC
+        """,
+        (year, category_id),
+    )
+
+    dedup: Dict[str, Dict[str, Any]] = {}
+    for row in rows:
+        key = str(row.get("rider_id") or row.get("rider_full_name") or "")
+        if key and key not in dedup:
+            dedup[key] = row
+    return list(dedup.values())
 
 
-def render_overview_tab(
-    year: int,
-    finished_events: Sequence[Dict[str, Any]],
-    upcoming_events: Sequence[Dict[str, Any]],
-) -> None:
+@st.cache_data(ttl=300, show_spinner=False)
+def get_sessions_for_event(year: int, event_id: str, category_id: str) -> List[Dict[str, Any]]:
+    rows = _db_fetchall(
+        """
+        SELECT
+            id AS session_id,
+            type AS session_type,
+            number AS session_number,
+            date AS session_date
+        FROM sessions
+        WHERE year = %s
+          AND event_id = %s
+          AND category_id = %s
+        ORDER BY session_date ASC, session_number ASC, session_id ASC
+        """,
+        (year, event_id, category_id),
+    )
+    if rows:
+        return rows
+
+    return _db_fetchall(
+        """
+        SELECT
+            r.session_id,
+            MAX(r.session_type) AS session_type,
+            MAX(r.session_number) AS session_number,
+            MAX(s.date) AS session_date
+        FROM results r
+        LEFT JOIN sessions s ON s.id = r.session_id
+        WHERE r.year = %s
+          AND r.event_id = %s
+          AND r.category_id = %s
+        GROUP BY r.session_id
+        ORDER BY session_date ASC, session_number ASC, r.session_id ASC
+        """,
+        (year, event_id, category_id),
+    )
+
+
+@st.cache_data(ttl=180, show_spinner=False)
+def get_session_results(session_id: str) -> List[Dict[str, Any]]:
+    return _db_fetchall(
+        """
+        SELECT
+            position,
+            rider_id,
+            rider_full_name,
+            rider_number,
+            team_name,
+            constructor_name,
+            total_laps,
+            time,
+            gap_first,
+            average_speed,
+            top_speed,
+            points,
+            status,
+            file
+        FROM results
+        WHERE session_id = %s
+        ORDER BY
+            CASE
+                WHEN CAST(position AS CHAR) REGEXP '^[0-9]+$' THEN CAST(position AS UNSIGNED)
+                ELSE 9999
+            END ASC,
+            rider_full_name ASC
+        """,
+        (session_id,),
+    )
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_rider_performance(year: int, category_id: str) -> List[Dict[str, Any]]:
+    return _db_fetchall(
+        """
+        SELECT
+            rider_id,
+            MAX(rider_full_name) AS rider_name,
+            SUM(
+                CASE
+                    WHEN session_type IN %s
+                     AND CAST(position AS CHAR) REGEXP '^[0-9]+$'
+                     AND CAST(position AS UNSIGNED) = 1
+                    THEN 1 ELSE 0
+                END
+            ) AS wins,
+            SUM(
+                CASE
+                    WHEN session_type IN %s
+                     AND CAST(position AS CHAR) REGEXP '^[0-9]+$'
+                     AND CAST(position AS UNSIGNED) <= 3
+                    THEN 1 ELSE 0
+                END
+            ) AS podiums,
+            AVG(
+                CASE
+                    WHEN session_type IN %s
+                     AND CAST(position AS CHAR) REGEXP '^[0-9]+$'
+                    THEN CAST(position AS UNSIGNED)
+                    ELSE NULL
+                END
+            ) AS avg_finish
+        FROM results
+        WHERE year = %s
+          AND category_id = %s
+        GROUP BY rider_id
+        """,
+        (RACE_SESSION_TYPES, RACE_SESSION_TYPES, RACE_SESSION_TYPES, year, category_id),
+    )
+
+
+def render_overview_tab(year: int, events: Sequence[Dict[str, Any]]) -> None:
     st.subheader("Season overview")
+    today = date.today()
 
-    now = datetime.utcnow().date()
-    finished_in_year = [e for e in finished_events if (e.get("date_start") or "").startswith(str(year))]
-    upcoming_in_year = [e for e in upcoming_events if (e.get("date_start") or "").startswith(str(year))]
-
-    next_round = None
-    if upcoming_in_year:
-        next_round = sorted(upcoming_in_year, key=lambda e: e.get("date_start") or "")[0]
-    last_round = None
-    if finished_in_year:
-        last_round = sorted(finished_in_year, key=lambda e: e.get("date_end") or "", reverse=True)[0]
-
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Completed rounds", len(finished_in_year))
-    col2.metric("Upcoming rounds", len(upcoming_in_year))
-    col3.metric("Last round", _event_title(last_round) if last_round else "-")
-    col4.metric("Next round", _event_title(next_round) if next_round else "-")
-
+    finished: List[Dict[str, Any]] = []
+    upcoming: List[Dict[str, Any]] = []
     timeline_rows: List[Dict[str, Any]] = []
-    for event in finished_in_year + upcoming_in_year:
-        start = _parse_iso_date(f"{event.get('date_start', '')}T00:00:00+00:00")
-        end = _parse_iso_date(f"{event.get('date_end', '')}T00:00:00+00:00")
-        country = (event.get("country") or {}).get("name", "")
-        circuit = (event.get("circuit") or {}).get("name", "")
-        status = event.get("status") or ("FINISHED" if event in finished_in_year else "NOT-STARTED")
+
+    for event in events:
+        start_date = _as_date(event.get("date_start"))
+        end_date = _as_date(event.get("date_end"))
+        status = str(event.get("status") or "").upper()
+
+        is_finished = status == "FINISHED" or (end_date is not None and end_date < today)
+        is_upcoming = status == "NOT-STARTED" or (start_date is not None and start_date >= today)
+
+        if is_finished:
+            finished.append(event)
+        elif is_upcoming:
+            upcoming.append(event)
+        else:
+            finished.append(event)
+
         timeline_rows.append(
             {
-                "Start": start.date().isoformat() if start else "",
-                "End": end.date().isoformat() if end else "",
+                "Start": start_date.isoformat() if start_date else "",
+                "End": end_date.isoformat() if end_date else "",
                 "Event": _event_title(event),
-                "Country": country,
-                "Circuit": circuit,
-                "Status": status,
+                "Country": event.get("country_name") or "",
+                "Circuit": event.get("circuit_name") or "",
+                "Status": status or ("FINISHED" if is_finished else "NOT-STARTED"),
             }
         )
 
-    timeline_df = pd.DataFrame(timeline_rows).sort_values("Start")
+    next_round = sorted(upcoming, key=lambda e: _as_date(e.get("date_start")) or date.max)[0] if upcoming else None
+    last_round = sorted(finished, key=lambda e: _as_date(e.get("date_end")) or date.min, reverse=True)[0] if finished else None
+
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Completed rounds", len(finished))
+    col2.metric("Upcoming rounds", len(upcoming))
+    col3.metric("Last round", _event_title(last_round) if last_round else "-")
+    col4.metric("Next round", _event_title(next_round) if next_round else "-")
+
+    timeline_df = pd.DataFrame(timeline_rows)
+    if timeline_df.empty:
+        st.info(f"No events found in DB for {year}.")
+        return
+
+    timeline_df = timeline_df.sort_values("Start")
     st.dataframe(timeline_df, hide_index=True, use_container_width=True)
 
-    if not timeline_df.empty:
-        timeline_df["Day"] = pd.to_datetime(timeline_df["Start"], errors="coerce")
-        monthly_df = timeline_df.dropna(subset=["Day"]).copy()
+    timeline_df["Day"] = pd.to_datetime(timeline_df["Start"], errors="coerce")
+    monthly_df = timeline_df.dropna(subset=["Day"]).copy()
+    if not monthly_df.empty:
         per_month = monthly_df.groupby(monthly_df["Day"].dt.to_period("M")).size()
         per_month.index = per_month.index.astype(str)
         st.caption("Rounds by month")
         st.bar_chart(per_month)
 
-    st.caption(f"Data source: MotoGP API (UTC snapshot date {now.isoformat()}).")
+    st.caption("Data source: local MySQL database.")
 
 
-def build_standings_rows(classification: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    rows: List[Dict[str, Any]] = []
-    for item in classification:
-        rider = item.get("rider") or {}
-        team = item.get("team") or {}
-        constructor = item.get("constructor") or {}
-        rows.append(
+def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
+    st.subheader("Championship standings")
+    rows = get_standings_rows(year, category_id)
+    if not rows:
+        st.warning("Standings are currently unavailable for this selection.")
+        return pd.DataFrame()
+
+    mapped_rows: List[Dict[str, Any]] = []
+    for item in rows:
+        points = _safe_int(item.get("points"))
+        mapped_rows.append(
             {
-                "Pos": _safe_int(item.get("position")),
-                "Rider": rider.get("full_name", ""),
-                "#": _safe_int(rider.get("number")),
-                "Team": team.get("name", ""),
-                "Constructor": constructor.get("name", ""),
-                "Points": _safe_int(item.get("points")),
-                "Race Wins": _safe_int(item.get("race_wins")),
-                "Podiums": _safe_int(item.get("podiums")),
-                "Sprint Wins": _safe_int(item.get("sprint_wins")),
-                "Sprint Podiums": _safe_int(item.get("sprint_podiums")),
-                "Power Index": _power_index(item),
-                "Form Score": _form_score(item),
-                "Consistency": _consistency_score(item),
+                "Pos": _safe_int(item.get("position"), default=9999),
+                "Rider": item.get("rider_full_name") or "",
+                "#": _safe_int(item.get("rider_number")),
+                "Team": item.get("team_name") or "",
+                "Constructor": item.get("constructor_name") or "",
+                "Points": points,
+                "Power Index": points,
+                "Consistency": 0.0,
+                "Rider ID": item.get("rider_id") or "",
             }
         )
-    return rows
 
-
-def render_standings_tab(standings_payload: Dict[str, Any]) -> Tuple[pd.DataFrame, List[Dict[str, Any]]]:
-    st.subheader("Championship standings")
-    if standings_payload.get("_error"):
-        st.error(f"Standings API error: {standings_payload.get('_error')}")
-    classification = standings_payload.get("classification") or []
-    if not classification:
-        st.warning("Standings are currently unavailable for this selection.")
-        return pd.DataFrame(), []
-
-    rows = build_standings_rows(classification)
-    df = pd.DataFrame(rows)
+    df = pd.DataFrame(mapped_rows)
     if df.empty:
         st.warning("Standings are currently unavailable for this selection.")
-        return pd.DataFrame(), classification
-    if "Pos" not in df.columns:
-        df["Pos"] = range(1, len(df) + 1)
-    if "Points" not in df.columns:
-        df["Points"] = 0
-    df = df.sort_values(["Pos", "Points"], ascending=[True, False])
+        return pd.DataFrame()
 
-    leader_row = df.iloc[0]
+    perf_rows = get_rider_performance(year, category_id)
+    perf_map = {str(row.get("rider_id")): row for row in perf_rows}
+
+    for idx, row in df.iterrows():
+        rider_id = str(row.get("Rider ID") or "")
+        perf = perf_map.get(rider_id) or {}
+        wins = _safe_int(perf.get("wins"))
+        podiums = _safe_int(perf.get("podiums"))
+        avg_finish = _safe_float(perf.get("avg_finish"), default=0.0)
+        consistency = 0.0
+        if avg_finish > 0:
+            consistency = max(0.0, 100.0 - (avg_finish - 1.0) * 12.0)
+        df.at[idx, "Power Index"] = int(_safe_int(row.get("Points")) + wins * 12 + podiums * 4)
+        df.at[idx, "Consistency"] = round(consistency, 1)
+
+    df = df.sort_values(["Pos", "Points"], ascending=[True, False]).reset_index(drop=True)
+
+    leader = df.iloc[0]
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Leader", leader_row["Rider"])
-    col2.metric("Leader points", int(leader_row["Points"]))
-    col3.metric("Leader power index", int(leader_row["Power Index"]))
+    col1.metric("Leader", leader["Rider"])
+    col2.metric("Leader points", int(leader["Points"]))
+    col3.metric("Leader power index", int(leader["Power Index"]))
     col4.metric("Riders in standings", int(len(df)))
 
-    st.dataframe(df, hide_index=True, use_container_width=True)
+    display_df = df.drop(columns=["Rider ID"], errors="ignore")
+    st.dataframe(display_df, hide_index=True, use_container_width=True)
 
     top_points = df.sort_values("Points", ascending=False).head(10).set_index("Rider")["Points"]
     st.caption("Top 10 by points")
     st.bar_chart(top_points)
 
-    return df, classification
+    return df
 
 
-def render_results_tab(
-    category_uuid: str,
-    finished_events: Sequence[Dict[str, Any]],
-) -> None:
+def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, Any]]) -> None:
     st.subheader("Session results")
-    if not finished_events:
-        st.info("No completed events are available.")
+    if not events:
+        st.info("No events available.")
         return
 
     ordered_events = sorted(
-        [e for e in finished_events if e.get("id")],
-        key=lambda e: e.get("date_end") or "",
+        [event for event in events if event.get("id")],
+        key=lambda event: _as_date(event.get("date_end")) or date.min,
         reverse=True,
     )
     if not ordered_events:
         st.info("No rounds with valid IDs are available.")
         return
+
     selected_event = st.selectbox(
         "Select round",
         ordered_events,
-        format_func=lambda e: f"{e.get('date_start', '')} - {_event_title(e)}",
+        format_func=lambda event: f"{_as_date(event.get('date_start')) or ''} - {_event_title(event)}",
     )
 
-    sessions = get_sessions(selected_event["id"], category_uuid)
+    sessions = get_sessions_for_event(year, str(selected_event["id"]), category_id)
     if not sessions:
         st.info("No sessions are available for this round/category.")
         return
 
     sessions_sorted = sorted(
-        [s for s in sessions if s.get("id")],
-        key=lambda s: s.get("date") or "",
+        [session for session in sessions if session.get("session_id")],
+        key=lambda session: (
+            _as_date(session.get("session_date")) or date.min,
+            _safe_int(session.get("session_number"), default=999),
+            str(session.get("session_id")),
+        ),
     )
     if not sessions_sorted:
         st.info("No valid sessions are available for this round/category.")
         return
+
     selected_session = st.selectbox(
         "Select session",
         sessions_sorted,
-        format_func=lambda s: f"{s.get('date', '')} - {s.get('type', '')}",
+        format_func=lambda session: (
+            f"{session.get('session_date') or '-'} | "
+            f"{session.get('session_type') or 'UNKNOWN'} | "
+            f"N{_safe_int(session.get('session_number'), default=0)}"
+        ),
     )
 
-    payload = get_session_classification(selected_session["id"])
-    rows = []
-    for item in payload.get("classification") or []:
-        if not isinstance(item, dict):
-            continue
-        rider = item.get("rider") or {}
-        team = item.get("team") or {}
-        constructor = item.get("constructor") or {}
-        gap = item.get("gap") or {}
-        rows.append(
+    rows = get_session_results(str(selected_session["session_id"]))
+    if not rows:
+        st.warning("Session classification is not available yet.")
+        return
+
+    result_rows: List[Dict[str, Any]] = []
+    for item in rows:
+        result_rows.append(
             {
-                "Pos": _safe_int(item.get("position")),
-                "Rider": rider.get("full_name", ""),
-                "#": _safe_int(rider.get("number")),
-                "Team": team.get("name", ""),
-                "Constructor": constructor.get("name", ""),
+                "Pos": _safe_int(item.get("position"), default=9999),
+                "Rider": item.get("rider_full_name") or "",
+                "#": _safe_int(item.get("rider_number")),
+                "Team": item.get("team_name") or "",
+                "Constructor": item.get("constructor_name") or "",
                 "Laps": _safe_int(item.get("total_laps")),
-                "Time": item.get("time", ""),
-                "Gap": gap.get("first", ""),
+                "Time": item.get("time") or "",
+                "Gap": item.get("gap_first") or "",
                 "Avg Speed": _safe_float(item.get("average_speed")),
                 "Top Speed": _safe_float(item.get("top_speed")),
                 "Points": _safe_int(item.get("points")),
-                "Status": item.get("status", ""),
+                "Status": item.get("status") or "",
+                "File URL": item.get("file") or "",
             }
         )
 
-    results_df = pd.DataFrame(rows)
+    results_df = pd.DataFrame(result_rows).sort_values("Pos").reset_index(drop=True)
     if results_df.empty:
         st.warning("Session classification is not available yet.")
         return
-    if "Pos" not in results_df.columns:
-        results_df["Pos"] = range(1, len(results_df) + 1)
-    results_df = results_df.sort_values("Pos")
 
     winner = results_df.iloc[0]
     col1, col2, col3 = st.columns(3)
     col1.metric("Winner", winner["Rider"])
-    col2.metric("Session", selected_session.get("type", "-"))
+    col2.metric("Session", selected_session.get("session_type") or "-")
     col3.metric("Winner points", int(winner["Points"]))
 
-    file_url = payload.get("file")
+    file_url = ""
+    for value in results_df["File URL"].tolist():
+        if str(value).strip():
+            file_url = str(value).strip()
+            break
     if file_url:
         st.link_button("Open official session PDF", file_url)
 
-    st.dataframe(results_df, hide_index=True, use_container_width=True)
+    st.dataframe(results_df.drop(columns=["File URL"]), hide_index=True, use_container_width=True)
 
 
-def render_stats_lab(df: pd.DataFrame) -> None:
+def render_stats_lab(standings_df: pd.DataFrame) -> None:
     st.subheader("Stats Lab")
-    st.caption("Experimental metrics to evaluate form and future scenarios.")
-    if df.empty:
+    st.caption("Experimental metrics calculated from local DB data.")
+    if standings_df.empty:
         st.info("Standings data is required to compute these stats.")
         return
 
     col1, col2 = st.columns(2)
     with col1:
-        top_power = df.sort_values("Power Index", ascending=False).head(10).set_index("Rider")["Power Index"]
+        top_power = standings_df.sort_values("Power Index", ascending=False).head(10).set_index("Rider")["Power Index"]
         st.markdown("**Power Index Top 10**")
         st.bar_chart(top_power)
     with col2:
-        top_consistency = df.sort_values("Consistency", ascending=False).head(10).set_index("Rider")["Consistency"]
+        top_consistency = (
+            standings_df.sort_values("Consistency", ascending=False).head(10).set_index("Rider")["Consistency"]
+        )
         st.markdown("**Consistency Top 10**")
         st.bar_chart(top_consistency)
 
     st.markdown("**What-if simulator (next weekend)**")
-    riders = df["Rider"].tolist()
+    riders = standings_df["Rider"].tolist()
     rider_pick = st.selectbox("Rider to simulate", riders, key="sim_rider")
     extra_race_points = st.slider("Extra race points", min_value=0, max_value=25, value=10, key="sim_race")
     extra_sprint_points = st.slider("Extra sprint points", min_value=0, max_value=12, value=4, key="sim_sprint")
 
-    projected = df[["Rider", "Points"]].copy()
+    projected = standings_df[["Rider", "Points"]].copy()
     projected["Projected Points"] = projected["Points"]
     mask = projected["Rider"] == rider_pick
     projected.loc[mask, "Projected Points"] = (
@@ -403,17 +533,11 @@ def render_stats_lab(df: pd.DataFrame) -> None:
     projected = projected.sort_values("Projected Points", ascending=False).reset_index(drop=True)
     projected["Projected Pos"] = projected.index + 1
 
-    st.dataframe(projected[["Projected Pos", "Rider", "Points", "Projected Points"]], hide_index=True, use_container_width=True)
-
-
-def _build_season_lookup(seasons: Sequence[Dict[str, Any]]) -> Dict[int, str]:
-    mapping: Dict[int, str] = {}
-    for row in seasons:
-        year = row.get("year")
-        sid = row.get("id")
-        if isinstance(year, int) and sid:
-            mapping[year] = sid
-    return mapping
+    st.dataframe(
+        projected[["Projected Pos", "Rider", "Points", "Projected Points"]],
+        hide_index=True,
+        use_container_width=True,
+    )
 
 
 def main() -> None:
@@ -429,9 +553,9 @@ def main() -> None:
         unsafe_allow_html=True,
     )
 
-    st.title("MotoGP Race Hub 2026")
+    st.title("MotoGP Race Hub")
     st.markdown(
-        '<p class="app-subtitle">Results, standings, and advanced stats in near real-time.</p>',
+        '<p class="app-subtitle">Results, standings, and advanced stats from your local database.</p>',
         unsafe_allow_html=True,
     )
 
@@ -441,46 +565,38 @@ def main() -> None:
             st.cache_data.clear()
             st.rerun()
 
-        seasons = get_seasons()
-        season_lookup = _build_season_lookup(seasons)
-        years = sorted(season_lookup.keys(), reverse=True)
+        years = get_available_years()
         if not years:
-            st.error("No seasons available from the API.")
+            st.error("No season data available in database.")
             st.stop()
-        default_year = 2026 if 2026 in years else (years[0] if years else datetime.utcnow().year)
-        selected_year = st.selectbox("Season", years, index=years.index(default_year) if default_year in years else 0)
-        season_uuid = season_lookup[selected_year]
 
-        categories = get_categories(season_uuid)
-        categories_sorted = sorted(categories, key=lambda c: c.get("legacy_id", 999))
-        if not categories_sorted:
-            st.error("No categories available for this season.")
+        default_year = 2026 if 2026 in years else years[0]
+        selected_year = st.selectbox("Season", years, index=years.index(default_year))
+
+        categories = get_categories_for_year(selected_year)
+        if not categories:
+            st.error("No categories available for this season in database.")
             st.stop()
-        category = st.selectbox("Category", categories_sorted, format_func=lambda c: c.get("name", "Unknown"))
-        category_uuid = category["id"]
+        selected_category = st.selectbox("Category", categories, format_func=lambda row: row.get("name", "Unknown"))
+        selected_category_id = str(selected_category["id"])
 
-        st.caption("Data source: MotoGP Public API")
+        st.caption("Data source: local MySQL DB")
 
-    finished_events = get_events(season_uuid, is_finished=True)
-    upcoming_events = get_events(season_uuid, is_finished=False)
-    standings_payload = get_standings(season_uuid, category_uuid)
+    events = get_events_for_year(selected_year)
 
-    tab_overview, tab_standings, tab_results, tab_stats = st.tabs(
-        ["Overview", "Standings", "Results", "Stats Lab"]
-    )
+    tab_overview, tab_standings, tab_results, tab_stats = st.tabs(["Overview", "Standings", "Results", "Stats Lab"])
 
     with tab_overview:
-        render_overview_tab(selected_year, finished_events, upcoming_events)
+        render_overview_tab(selected_year, events)
 
     with tab_standings:
-        standings_df, _ = render_standings_tab(standings_payload)
+        standings_df = render_standings_tab(selected_year, selected_category_id)
 
     with tab_results:
-        render_results_tab(category_uuid, finished_events)
+        render_results_tab(selected_year, selected_category_id, events)
 
     with tab_stats:
-        standings_df = standings_df if "standings_df" in locals() else pd.DataFrame()
-        render_stats_lab(standings_df)
+        render_stats_lab(standings_df if "standings_df" in locals() else pd.DataFrame())
 
 
 if __name__ == "__main__":
