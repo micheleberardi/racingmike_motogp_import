@@ -1,4 +1,5 @@
 import math
+import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -92,33 +93,70 @@ def api_get_json(url: str) -> Any:
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def get_seasons() -> List[Dict[str, Any]]:
-    return api_get_json(f"{MOTOGP_RESULTS_BASE}/seasons")
+    try:
+        payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/seasons")
+    except Exception as exc:
+        logging.warning("Failed to fetch seasons: %s", exc)
+        return []
+    return payload if isinstance(payload, list) else []
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def get_categories(season_uuid: str) -> List[Dict[str, Any]]:
-    return api_get_json(f"{MOTOGP_RESULTS_BASE}/categories?seasonUuid={season_uuid}")
+    try:
+        payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/categories?seasonUuid={season_uuid}")
+    except Exception as exc:
+        logging.warning("Failed to fetch categories for season=%s: %s", season_uuid, exc)
+        return []
+    return payload if isinstance(payload, list) else []
 
 
 @st.cache_data(ttl=900, show_spinner=False)
 def get_events(season_uuid: str, is_finished: bool) -> List[Dict[str, Any]]:
-    raw = api_get_json(f"{MOTOGP_RESULTS_BASE}/events?seasonUuid={season_uuid}&isFinished={str(is_finished).lower()}")
+    url = f"{MOTOGP_RESULTS_BASE}/events?seasonUuid={season_uuid}&isFinished={str(is_finished).lower()}"
+    try:
+        raw = api_get_json(url)
+    except Exception as exc:
+        logging.warning("Failed to fetch events for season=%s finished=%s: %s", season_uuid, is_finished, exc)
+        return []
+    if not isinstance(raw, list):
+        return []
     return [event for event in raw if not event.get("test")]
 
 
 @st.cache_data(ttl=300, show_spinner=False)
 def get_standings(season_uuid: str, category_uuid: str) -> Dict[str, Any]:
-    return api_get_json(f"{MOTOGP_RESULTS_BASE}/standings?seasonUuid={season_uuid}&categoryUuid={category_uuid}")
+    try:
+        payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/standings?seasonUuid={season_uuid}&categoryUuid={category_uuid}")
+    except Exception as exc:
+        logging.warning(
+            "Failed to fetch standings for season=%s category=%s: %s",
+            season_uuid,
+            category_uuid,
+            exc,
+        )
+        return {}
+    return payload if isinstance(payload, dict) else {}
 
 
 @st.cache_data(ttl=300, show_spinner=False)
 def get_sessions(event_uuid: str, category_uuid: str) -> List[Dict[str, Any]]:
-    return api_get_json(f"{MOTOGP_RESULTS_BASE}/sessions?eventUuid={event_uuid}&categoryUuid={category_uuid}")
+    try:
+        payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/sessions?eventUuid={event_uuid}&categoryUuid={category_uuid}")
+    except Exception as exc:
+        logging.warning("Failed to fetch sessions for event=%s category=%s: %s", event_uuid, category_uuid, exc)
+        return []
+    return payload if isinstance(payload, list) else []
 
 
 @st.cache_data(ttl=180, show_spinner=False)
 def get_session_classification(session_uuid: str) -> Dict[str, Any]:
-    return api_get_json(f"{MOTOGP_RESULTS_BASE}/session/{session_uuid}/classification?test=false")
+    try:
+        payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/session/{session_uuid}/classification?test=false")
+    except Exception as exc:
+        logging.warning("Failed to fetch classification for session=%s: %s", session_uuid, exc)
+        return {}
+    return payload if isinstance(payload, dict) else {}
 
 
 def render_overview_tab(
@@ -126,7 +164,7 @@ def render_overview_tab(
     finished_events: Sequence[Dict[str, Any]],
     upcoming_events: Sequence[Dict[str, Any]],
 ) -> None:
-    st.subheader("Overview stagione")
+    st.subheader("Season overview")
 
     now = datetime.utcnow().date()
     finished_in_year = [e for e in finished_events if (e.get("date_start") or "").startswith(str(year))]
@@ -140,10 +178,10 @@ def render_overview_tab(
         last_round = sorted(finished_in_year, key=lambda e: e.get("date_end") or "", reverse=True)[0]
 
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Round chiusi", len(finished_in_year))
-    col2.metric("Round in arrivo", len(upcoming_in_year))
-    col3.metric("Ultimo round", _event_title(last_round) if last_round else "-")
-    col4.metric("Prossimo round", _event_title(next_round) if next_round else "-")
+    col1.metric("Completed rounds", len(finished_in_year))
+    col2.metric("Upcoming rounds", len(upcoming_in_year))
+    col3.metric("Last round", _event_title(last_round) if last_round else "-")
+    col4.metric("Next round", _event_title(next_round) if next_round else "-")
 
     timeline_rows: List[Dict[str, Any]] = []
     for event in finished_in_year + upcoming_in_year:
@@ -171,10 +209,10 @@ def render_overview_tab(
         monthly_df = timeline_df.dropna(subset=["Day"]).copy()
         per_month = monthly_df.groupby(monthly_df["Day"].dt.to_period("M")).size()
         per_month.index = per_month.index.astype(str)
-        st.caption("Distribuzione round per mese")
+        st.caption("Rounds by month")
         st.bar_chart(per_month)
 
-    st.caption(f"Dati aggiornati rispetto all'API MotoGP in data UTC {now.isoformat()}.")
+    st.caption(f"Data source: MotoGP API (UTC snapshot date {now.isoformat()}).")
 
 
 def build_standings_rows(classification: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -204,10 +242,10 @@ def build_standings_rows(classification: Sequence[Dict[str, Any]]) -> List[Dict[
 
 
 def render_standings_tab(standings_payload: Dict[str, Any]) -> Tuple[pd.DataFrame, List[Dict[str, Any]]]:
-    st.subheader("Classifica campionato")
+    st.subheader("Championship standings")
     classification = standings_payload.get("classification") or []
     if not classification:
-        st.warning("Classifica non disponibile per la selezione corrente.")
+        st.warning("Standings are currently unavailable for this selection.")
         return pd.DataFrame(), []
 
     rows = build_standings_rows(classification)
@@ -216,14 +254,14 @@ def render_standings_tab(standings_payload: Dict[str, Any]) -> Tuple[pd.DataFram
     leader_row = df.iloc[0]
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Leader", leader_row["Rider"])
-    col2.metric("Punti leader", int(leader_row["Points"]))
-    col3.metric("Power Index leader", int(leader_row["Power Index"]))
-    col4.metric("Rider in classifica", int(len(df)))
+    col2.metric("Leader points", int(leader_row["Points"]))
+    col3.metric("Leader power index", int(leader_row["Power Index"]))
+    col4.metric("Riders in standings", int(len(df)))
 
     st.dataframe(df, hide_index=True, use_container_width=True)
 
     top_points = df.sort_values("Points", ascending=False).head(10).set_index("Rider")["Points"]
-    st.caption("Top 10 punti")
+    st.caption("Top 10 by points")
     st.bar_chart(top_points)
 
     return df, classification
@@ -233,9 +271,9 @@ def render_results_tab(
     category_uuid: str,
     finished_events: Sequence[Dict[str, Any]],
 ) -> None:
-    st.subheader("Risultati sessione")
+    st.subheader("Session results")
     if not finished_events:
-        st.info("Nessun evento concluso disponibile.")
+        st.info("No completed events are available.")
         return
 
     ordered_events = sorted(
@@ -244,14 +282,14 @@ def render_results_tab(
         reverse=True,
     )
     selected_event = st.selectbox(
-        "Seleziona round",
+        "Select round",
         ordered_events,
         format_func=lambda e: f"{e.get('date_start', '')} - {_event_title(e)}",
     )
 
     sessions = get_sessions(selected_event["id"], category_uuid)
     if not sessions:
-        st.info("Nessuna sessione disponibile per questo round/categoria.")
+        st.info("No sessions are available for this round/category.")
         return
 
     sessions_sorted = sorted(
@@ -259,7 +297,7 @@ def render_results_tab(
         key=lambda s: s.get("date") or "",
     )
     selected_session = st.selectbox(
-        "Seleziona sessione",
+        "Select session",
         sessions_sorted,
         format_func=lambda s: f"{s.get('date', '')} - {s.get('type', '')}",
     )
@@ -290,27 +328,27 @@ def render_results_tab(
 
     results_df = pd.DataFrame(rows).sort_values("Pos")
     if results_df.empty:
-        st.warning("Classifica sessione non ancora disponibile.")
+        st.warning("Session classification is not available yet.")
         return
 
     winner = results_df.iloc[0]
     col1, col2, col3 = st.columns(3)
     col1.metric("Winner", winner["Rider"])
     col2.metric("Session", selected_session.get("type", "-"))
-    col3.metric("Punti winner", int(winner["Points"]))
+    col3.metric("Winner points", int(winner["Points"]))
 
     file_url = payload.get("file")
     if file_url:
-        st.link_button("Apri PDF ufficiale sessione", file_url)
+        st.link_button("Open official session PDF", file_url)
 
     st.dataframe(results_df, hide_index=True, use_container_width=True)
 
 
 def render_stats_lab(df: pd.DataFrame) -> None:
     st.subheader("Stats Lab")
-    st.caption("Metriche sperimentali per leggere forma e scenari futuri.")
+    st.caption("Experimental metrics to evaluate form and future scenarios.")
     if df.empty:
-        st.info("Classifica necessaria per calcolare le statistiche.")
+        st.info("Standings data is required to compute these stats.")
         return
 
     col1, col2 = st.columns(2)
@@ -323,11 +361,11 @@ def render_stats_lab(df: pd.DataFrame) -> None:
         st.markdown("**Consistency Top 10**")
         st.bar_chart(top_consistency)
 
-    st.markdown("**What-if simulator (prossimo weekend)**")
+    st.markdown("**What-if simulator (next weekend)**")
     riders = df["Rider"].tolist()
-    rider_pick = st.selectbox("Rider da simulare", riders, key="sim_rider")
-    extra_race_points = st.slider("Punti gara extra", min_value=0, max_value=25, value=10, key="sim_race")
-    extra_sprint_points = st.slider("Punti sprint extra", min_value=0, max_value=12, value=4, key="sim_sprint")
+    rider_pick = st.selectbox("Rider to simulate", riders, key="sim_rider")
+    extra_race_points = st.slider("Extra race points", min_value=0, max_value=25, value=10, key="sim_race")
+    extra_sprint_points = st.slider("Extra sprint points", min_value=0, max_value=12, value=4, key="sim_sprint")
 
     projected = df[["Rider", "Points"]].copy()
     projected["Projected Points"] = projected["Points"]
@@ -365,11 +403,14 @@ def main() -> None:
     )
 
     st.title("MotoGP Race Hub 2026")
-    st.markdown('<p class="app-subtitle">Risultati, classifiche e statistiche avanzate in tempo quasi reale.</p>', unsafe_allow_html=True)
+    st.markdown(
+        '<p class="app-subtitle">Results, standings, and advanced stats in near real-time.</p>',
+        unsafe_allow_html=True,
+    )
 
     with st.sidebar:
-        st.header("Controlli")
-        if st.button("Aggiorna dati ora"):
+        st.header("Controls")
+        if st.button("Refresh data now"):
             st.cache_data.clear()
             st.rerun()
 
@@ -377,25 +418,28 @@ def main() -> None:
         season_lookup = _build_season_lookup(seasons)
         years = sorted(season_lookup.keys(), reverse=True)
         if not years:
-            st.error("Nessuna stagione disponibile dall'API.")
+            st.error("No seasons available from the API.")
             st.stop()
         default_year = 2026 if 2026 in years else (years[0] if years else datetime.utcnow().year)
-        selected_year = st.selectbox("Stagione", years, index=years.index(default_year) if default_year in years else 0)
+        selected_year = st.selectbox("Season", years, index=years.index(default_year) if default_year in years else 0)
         season_uuid = season_lookup[selected_year]
 
         categories = get_categories(season_uuid)
         categories_sorted = sorted(categories, key=lambda c: c.get("legacy_id", 999))
-        category = st.selectbox("Categoria", categories_sorted, format_func=lambda c: c.get("name", "Unknown"))
+        if not categories_sorted:
+            st.error("No categories available for this season.")
+            st.stop()
+        category = st.selectbox("Category", categories_sorted, format_func=lambda c: c.get("name", "Unknown"))
         category_uuid = category["id"]
 
-        st.caption("Fonte dati: MotoGP Public API")
+        st.caption("Data source: MotoGP Public API")
 
     finished_events = get_events(season_uuid, is_finished=True)
     upcoming_events = get_events(season_uuid, is_finished=False)
     standings_payload = get_standings(season_uuid, category_uuid)
 
     tab_overview, tab_standings, tab_results, tab_stats = st.tabs(
-        ["Overview", "Classifiche", "Risultati", "Stats Lab"]
+        ["Overview", "Standings", "Results", "Stats Lab"]
     )
 
     with tab_overview:
