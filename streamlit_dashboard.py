@@ -1,5 +1,6 @@
 import math
 import logging
+import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -111,7 +112,6 @@ def get_categories(season_uuid: str) -> List[Dict[str, Any]]:
     return payload if isinstance(payload, list) else []
 
 
-@st.cache_data(ttl=900, show_spinner=False)
 def get_events(season_uuid: str, is_finished: bool) -> List[Dict[str, Any]]:
     url = f"{MOTOGP_RESULTS_BASE}/events?seasonUuid={season_uuid}&isFinished={str(is_finished).lower()}"
     try:
@@ -124,22 +124,29 @@ def get_events(season_uuid: str, is_finished: bool) -> List[Dict[str, Any]]:
     return [event for event in raw if not event.get("test")]
 
 
-@st.cache_data(ttl=300, show_spinner=False)
 def get_standings(season_uuid: str, category_uuid: str) -> Dict[str, Any]:
-    try:
-        payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/standings?seasonUuid={season_uuid}&categoryUuid={category_uuid}")
-    except Exception as exc:
-        logging.warning(
-            "Failed to fetch standings for season=%s category=%s: %s",
-            season_uuid,
-            category_uuid,
-            exc,
-        )
-        return {}
-    return payload if isinstance(payload, dict) else {}
+    url = f"{MOTOGP_RESULTS_BASE}/standings?seasonUuid={season_uuid}&categoryUuid={category_uuid}"
+    last_error: Optional[Exception] = None
+    for attempt in range(1, 4):
+        try:
+            payload = api_get_json(url)
+            if isinstance(payload, dict):
+                return payload
+            return {}
+        except Exception as exc:
+            last_error = exc
+            logging.warning(
+                "Standings fetch attempt %s/3 failed for season=%s category=%s: %s",
+                attempt,
+                season_uuid,
+                category_uuid,
+                exc,
+            )
+            time.sleep(0.35 * attempt)
+
+    return {"classification": [], "_error": str(last_error) if last_error else "Unknown standings error"}
 
 
-@st.cache_data(ttl=300, show_spinner=False)
 def get_sessions(event_uuid: str, category_uuid: str) -> List[Dict[str, Any]]:
     try:
         payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/sessions?eventUuid={event_uuid}&categoryUuid={category_uuid}")
@@ -149,7 +156,6 @@ def get_sessions(event_uuid: str, category_uuid: str) -> List[Dict[str, Any]]:
     return payload if isinstance(payload, list) else []
 
 
-@st.cache_data(ttl=180, show_spinner=False)
 def get_session_classification(session_uuid: str) -> Dict[str, Any]:
     try:
         payload = api_get_json(f"{MOTOGP_RESULTS_BASE}/session/{session_uuid}/classification?test=false")
@@ -243,6 +249,8 @@ def build_standings_rows(classification: Sequence[Dict[str, Any]]) -> List[Dict[
 
 def render_standings_tab(standings_payload: Dict[str, Any]) -> Tuple[pd.DataFrame, List[Dict[str, Any]]]:
     st.subheader("Championship standings")
+    if standings_payload.get("_error"):
+        st.error(f"Standings API error: {standings_payload.get('_error')}")
     classification = standings_payload.get("classification") or []
     if not classification:
         st.warning("Standings are currently unavailable for this selection.")
