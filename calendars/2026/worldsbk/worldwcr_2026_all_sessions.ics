@@ -1,4 +1,4 @@
-BEGIN:VCALENDAR
+python3 results.py --year 2026BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//racingmike//MotoGP and WorldSBK Calendars//EN
 CALSCALE:GREGORIAN

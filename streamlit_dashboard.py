@@ -123,8 +123,7 @@ def get_events_for_year(year: int) -> List[Dict[str, Any]]:
             date_start,
             date_end,
             country_name,
-            circuit_name,
-            status
+            circuit_name
         FROM events
         WHERE year = %s
           AND COALESCE(test, 0) <> 1
