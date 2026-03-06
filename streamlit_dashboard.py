@@ -5,11 +5,15 @@ from hashlib import md5
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-import altair as alt
 import pandas as pd
 import streamlit as st
 
 from runtime import get_db_connection
+
+try:
+    import altair as alt
+except Exception:  # pragma: no cover - optional dependency fallback
+    alt = None
 
 RACE_SESSION_TYPES = ("RAC", "SPR", "Race 1", "Race 2", "Superpole Race")
 FALLBACK_COLORS = (
@@ -154,7 +158,7 @@ def get_categories_for_year(year: int) -> List[Dict[str, Any]]:
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def get_rider_colors(year: int) -> Dict[str, str]:
+def get_rider_colors(year: int, category_id: str) -> Dict[str, str]:
     rows = _db_fetchall(
         """
         SELECT
@@ -163,11 +167,12 @@ def get_rider_colors(year: int) -> Dict[str, str]:
             COALESCE(rider_current, 0) AS rider_current
         FROM TeamRiders
         WHERE year = %s
+          AND category_id = %s
           AND rider_id IS NOT NULL
           AND rider_id <> ''
         ORDER BY rider_current DESC
         """,
-        (str(year),),
+        (str(year), category_id),
     )
     colors: Dict[str, str] = {}
     for row in rows:
@@ -210,6 +215,7 @@ def get_standings_rows(year: int, category_id: str) -> List[Dict[str, Any]]:
         SELECT
             position,
             rider_id,
+            riders_api_uuid,
             rider_full_name,
             rider_number,
             team_name,
@@ -283,6 +289,7 @@ def get_session_results(session_id: str) -> List[Dict[str, Any]]:
         SELECT
             position,
             rider_id,
+            riders_api_uuid,
             rider_full_name,
             rider_number,
             team_name,
@@ -363,6 +370,11 @@ def render_colored_bar_chart(
     base = base.sort_values(value_col, ascending=False).head(top_n).sort_values(value_col, ascending=True)
     if base.empty:
         st.info("Chart not available.")
+        return
+
+    if alt is None:
+        st.caption(f"{title} (altair not available, fallback chart)")
+        st.bar_chart(base.set_index("Rider")[value_col])
         return
 
     chart = (
@@ -448,11 +460,12 @@ def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
         st.warning("Standings are currently unavailable for this selection.")
         return pd.DataFrame()
 
-    rider_colors = get_rider_colors(year)
+    rider_colors = get_rider_colors(year, category_id)
     mapped_rows: List[Dict[str, Any]] = []
     for item in rows:
         points = _safe_int(item.get("points"))
         rider_id = item.get("rider_id") or ""
+        rider_color_key = item.get("riders_api_uuid") or rider_id
         rider_name = item.get("rider_full_name") or ""
         mapped_rows.append(
             {
@@ -467,7 +480,8 @@ def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
                 "Wins": 0,
                 "Podiums": 0,
                 "Rider ID": rider_id,
-                "BarColor": _rider_color(rider_id, rider_name, rider_colors),
+                "Rider Color Key": rider_color_key,
+                "BarColor": _rider_color(rider_color_key, rider_name, rider_colors),
             }
         )
 
@@ -502,7 +516,7 @@ def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
     col3.metric("Leader power index", int(leader["Power Index"]))
     col4.metric("Riders in standings", int(len(df)))
 
-    display_df = df.drop(columns=["Rider ID", "BarColor"], errors="ignore")
+    display_df = df.drop(columns=["Rider ID", "Rider Color Key", "BarColor"], errors="ignore")
     st.dataframe(display_df, hide_index=True, use_container_width=True)
 
     chart_col1, chart_col2 = st.columns(2)
@@ -567,10 +581,11 @@ def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, A
         st.warning("Session classification is not available yet.")
         return
 
-    rider_colors = get_rider_colors(year)
+    rider_colors = get_rider_colors(year, category_id)
     result_rows: List[Dict[str, Any]] = []
     for item in rows:
         rider_id = item.get("rider_id") or ""
+        rider_color_key = item.get("riders_api_uuid") or rider_id
         rider_name = item.get("rider_full_name") or ""
         result_rows.append(
             {
@@ -588,7 +603,8 @@ def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, A
                 "Status": item.get("status") or "",
                 "File URL": item.get("file") or "",
                 "Rider ID": rider_id,
-                "BarColor": _rider_color(rider_id, rider_name, rider_colors),
+                "Rider Color Key": rider_color_key,
+                "BarColor": _rider_color(rider_color_key, rider_name, rider_colors),
             }
         )
 
@@ -612,7 +628,7 @@ def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, A
         st.link_button("Open official session PDF", file_url)
 
     st.dataframe(
-        results_df.drop(columns=["File URL", "Rider ID", "BarColor"], errors="ignore"),
+        results_df.drop(columns=["File URL", "Rider ID", "Rider Color Key", "BarColor"], errors="ignore"),
         hide_index=True,
         use_container_width=True,
     )
@@ -642,7 +658,7 @@ def render_stats_lab(standings_df: pd.DataFrame) -> None:
         render_colored_bar_chart(standings_df, value_col="Podiums", title="Podiums Top 10", top_n=10)
 
     scatter_df = standings_df.copy()
-    if not scatter_df.empty:
+    if not scatter_df.empty and alt is not None:
         scatter_chart = (
             alt.Chart(scatter_df)
             .mark_circle(size=85)
@@ -662,26 +678,7 @@ def render_stats_lab(standings_df: pd.DataFrame) -> None:
         )
         st.altair_chart(scatter_chart, use_container_width=True)
 
-    st.markdown("**What-if simulator (next weekend)**")
-    riders = standings_df["Rider"].tolist()
-    rider_pick = st.selectbox("Rider to simulate", riders, key="sim_rider")
-    extra_race_points = st.slider("Extra race points", min_value=0, max_value=25, value=10, key="sim_race")
-    extra_sprint_points = st.slider("Extra sprint points", min_value=0, max_value=12, value=4, key="sim_sprint")
-
-    projected = standings_df[["Rider", "Points"]].copy()
-    projected["Projected Points"] = projected["Points"]
-    mask = projected["Rider"] == rider_pick
-    projected.loc[mask, "Projected Points"] = (
-        projected.loc[mask, "Projected Points"] + extra_race_points + extra_sprint_points
-    )
-    projected = projected.sort_values("Projected Points", ascending=False).reset_index(drop=True)
-    projected["Projected Pos"] = projected.index + 1
-
-    st.dataframe(
-        projected[["Projected Pos", "Rider", "Points", "Projected Points"]],
-        hide_index=True,
-        use_container_width=True,
-    )
+    st.caption("Charts are calculated from synchronized local DB data.")
 
 
 def main() -> None:
@@ -721,7 +718,19 @@ def main() -> None:
         if not categories:
             st.error("No categories available for this season in database.")
             st.stop()
-        selected_category = st.selectbox("Category", categories, format_func=lambda row: row.get("name", "Unknown"))
+        default_category_index = 0
+        for idx, row in enumerate(categories):
+            name = str(row.get("name") or "").lower()
+            legacy = _safe_int(row.get("legacy_id"), default=999)
+            if "motogp" in name or legacy == 3:
+                default_category_index = idx
+                break
+        selected_category = st.selectbox(
+            "Category",
+            categories,
+            index=default_category_index,
+            format_func=lambda row: row.get("name", "Unknown"),
+        )
         selected_category_id = str(selected_category["id"])
 
         st.caption("Data source: local MySQL DB")
