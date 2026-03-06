@@ -1,14 +1,30 @@
 import logging
 import math
+import re
+from hashlib import md5
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
+import altair as alt
 import pandas as pd
 import streamlit as st
 
 from runtime import get_db_connection
 
 RACE_SESSION_TYPES = ("RAC", "SPR", "Race 1", "Race 2", "Superpole Race")
+FALLBACK_COLORS = (
+    "#e10600",
+    "#1e88e5",
+    "#43a047",
+    "#fb8c00",
+    "#8e24aa",
+    "#00897b",
+    "#6d4c41",
+    "#3949ab",
+    "#f4511e",
+    "#546e7a",
+)
+HEX_COLOR_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}){1,2}$")
 
 
 def _safe_int(value: Any, default: int = 0) -> int:
@@ -43,6 +59,31 @@ def _as_date(value: Any) -> Optional[date]:
         return datetime.fromisoformat(raw[:10]).date()
     except ValueError:
         return None
+
+
+def _normalize_hex_color(value: Any) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    if not raw.startswith("#"):
+        raw = f"#{raw}"
+    if HEX_COLOR_RE.match(raw):
+        return raw.lower()
+    return ""
+
+
+def _fallback_color(key: str) -> str:
+    digest = md5(key.encode("utf-8")).hexdigest()
+    index = int(digest[:8], 16) % len(FALLBACK_COLORS)
+    return FALLBACK_COLORS[index]
+
+
+def _rider_color(rider_id: Any, rider_name: Any, color_map: Dict[str, str]) -> str:
+    rider_key = str(rider_id or "").strip()
+    if rider_key and rider_key in color_map:
+        return color_map[rider_key]
+    fallback_key = rider_key or str(rider_name or "unknown")
+    return _fallback_color(fallback_key)
 
 
 def _event_title(event: Dict[str, Any]) -> str:
@@ -110,6 +151,35 @@ def get_categories_for_year(year: int) -> List[Dict[str, Any]]:
         """,
         (year,),
     )
+
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def get_rider_colors(year: int) -> Dict[str, str]:
+    rows = _db_fetchall(
+        """
+        SELECT
+            rider_id,
+            team_color,
+            COALESCE(rider_current, 0) AS rider_current
+        FROM TeamRiders
+        WHERE year = %s
+          AND rider_id IS NOT NULL
+          AND rider_id <> ''
+        ORDER BY rider_current DESC
+        """,
+        (str(year),),
+    )
+    colors: Dict[str, str] = {}
+    for row in rows:
+        rider_id = str(row.get("rider_id") or "").strip()
+        if not rider_id:
+            continue
+        normalized = _normalize_hex_color(row.get("team_color"))
+        if rider_id not in colors:
+            colors[rider_id] = normalized or _fallback_color(rider_id)
+        elif not _normalize_hex_color(colors.get(rider_id)) and normalized:
+            colors[rider_id] = normalized
+    return colors
 
 
 @st.cache_data(ttl=900, show_spinner=False)
@@ -278,6 +348,37 @@ def get_rider_performance(year: int, category_id: str) -> List[Dict[str, Any]]:
     )
 
 
+def render_colored_bar_chart(
+    frame: pd.DataFrame,
+    value_col: str,
+    title: str,
+    top_n: int = 10,
+) -> None:
+    if frame.empty or value_col not in frame.columns:
+        st.info("Chart not available.")
+        return
+
+    base = frame[["Rider", "BarColor", value_col]].copy()
+    base[value_col] = pd.to_numeric(base[value_col], errors="coerce").fillna(0)
+    base = base.sort_values(value_col, ascending=False).head(top_n).sort_values(value_col, ascending=True)
+    if base.empty:
+        st.info("Chart not available.")
+        return
+
+    chart = (
+        alt.Chart(base)
+        .mark_bar(cornerRadiusEnd=4)
+        .encode(
+            x=alt.X(f"{value_col}:Q", title=value_col),
+            y=alt.Y("Rider:N", sort=None, title=""),
+            color=alt.Color("BarColor:N", scale=None, legend=None),
+            tooltip=[alt.Tooltip("Rider:N"), alt.Tooltip(f"{value_col}:Q")],
+        )
+        .properties(title=title, height=max(280, len(base) * 24))
+    )
+    st.altair_chart(chart, use_container_width=True)
+
+
 def render_overview_tab(year: int, events: Sequence[Dict[str, Any]]) -> None:
     st.subheader("Season overview")
     today = date.today()
@@ -347,20 +448,26 @@ def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
         st.warning("Standings are currently unavailable for this selection.")
         return pd.DataFrame()
 
+    rider_colors = get_rider_colors(year)
     mapped_rows: List[Dict[str, Any]] = []
     for item in rows:
         points = _safe_int(item.get("points"))
+        rider_id = item.get("rider_id") or ""
+        rider_name = item.get("rider_full_name") or ""
         mapped_rows.append(
             {
                 "Pos": _safe_int(item.get("position"), default=9999),
-                "Rider": item.get("rider_full_name") or "",
+                "Rider": rider_name,
                 "#": _safe_int(item.get("rider_number")),
                 "Team": item.get("team_name") or "",
                 "Constructor": item.get("constructor_name") or "",
                 "Points": points,
                 "Power Index": points,
                 "Consistency": 0.0,
-                "Rider ID": item.get("rider_id") or "",
+                "Wins": 0,
+                "Podiums": 0,
+                "Rider ID": rider_id,
+                "BarColor": _rider_color(rider_id, rider_name, rider_colors),
             }
         )
 
@@ -383,6 +490,8 @@ def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
             consistency = max(0.0, 100.0 - (avg_finish - 1.0) * 12.0)
         df.at[idx, "Power Index"] = int(_safe_int(row.get("Points")) + wins * 12 + podiums * 4)
         df.at[idx, "Consistency"] = round(consistency, 1)
+        df.at[idx, "Wins"] = wins
+        df.at[idx, "Podiums"] = podiums
 
     df = df.sort_values(["Pos", "Points"], ascending=[True, False]).reset_index(drop=True)
 
@@ -393,12 +502,14 @@ def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
     col3.metric("Leader power index", int(leader["Power Index"]))
     col4.metric("Riders in standings", int(len(df)))
 
-    display_df = df.drop(columns=["Rider ID"], errors="ignore")
+    display_df = df.drop(columns=["Rider ID", "BarColor"], errors="ignore")
     st.dataframe(display_df, hide_index=True, use_container_width=True)
 
-    top_points = df.sort_values("Points", ascending=False).head(10).set_index("Rider")["Points"]
-    st.caption("Top 10 by points")
-    st.bar_chart(top_points)
+    chart_col1, chart_col2 = st.columns(2)
+    with chart_col1:
+        render_colored_bar_chart(df, value_col="Points", title="Top 10 by points", top_n=10)
+    with chart_col2:
+        render_colored_bar_chart(df, value_col="Power Index", title="Top 10 by power index", top_n=10)
 
     return df
 
@@ -456,12 +567,15 @@ def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, A
         st.warning("Session classification is not available yet.")
         return
 
+    rider_colors = get_rider_colors(year)
     result_rows: List[Dict[str, Any]] = []
     for item in rows:
+        rider_id = item.get("rider_id") or ""
+        rider_name = item.get("rider_full_name") or ""
         result_rows.append(
             {
                 "Pos": _safe_int(item.get("position"), default=9999),
-                "Rider": item.get("rider_full_name") or "",
+                "Rider": rider_name,
                 "#": _safe_int(item.get("rider_number")),
                 "Team": item.get("team_name") or "",
                 "Constructor": item.get("constructor_name") or "",
@@ -473,6 +587,8 @@ def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, A
                 "Points": _safe_int(item.get("points")),
                 "Status": item.get("status") or "",
                 "File URL": item.get("file") or "",
+                "Rider ID": rider_id,
+                "BarColor": _rider_color(rider_id, rider_name, rider_colors),
             }
         )
 
@@ -495,7 +611,15 @@ def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, A
     if file_url:
         st.link_button("Open official session PDF", file_url)
 
-    st.dataframe(results_df.drop(columns=["File URL"]), hide_index=True, use_container_width=True)
+    st.dataframe(
+        results_df.drop(columns=["File URL", "Rider ID", "BarColor"], errors="ignore"),
+        hide_index=True,
+        use_container_width=True,
+    )
+
+    speed_df = results_df[results_df["Top Speed"] > 0].copy()
+    if not speed_df.empty:
+        render_colored_bar_chart(speed_df, value_col="Top Speed", title="Top speed by rider", top_n=10)
 
 
 def render_stats_lab(standings_df: pd.DataFrame) -> None:
@@ -507,15 +631,36 @@ def render_stats_lab(standings_df: pd.DataFrame) -> None:
 
     col1, col2 = st.columns(2)
     with col1:
-        top_power = standings_df.sort_values("Power Index", ascending=False).head(10).set_index("Rider")["Power Index"]
-        st.markdown("**Power Index Top 10**")
-        st.bar_chart(top_power)
+        render_colored_bar_chart(standings_df, value_col="Power Index", title="Power Index Top 10", top_n=10)
     with col2:
-        top_consistency = (
-            standings_df.sort_values("Consistency", ascending=False).head(10).set_index("Rider")["Consistency"]
+        render_colored_bar_chart(standings_df, value_col="Consistency", title="Consistency Top 10", top_n=10)
+
+    col3, col4 = st.columns(2)
+    with col3:
+        render_colored_bar_chart(standings_df, value_col="Wins", title="Wins Top 10", top_n=10)
+    with col4:
+        render_colored_bar_chart(standings_df, value_col="Podiums", title="Podiums Top 10", top_n=10)
+
+    scatter_df = standings_df.copy()
+    if not scatter_df.empty:
+        scatter_chart = (
+            alt.Chart(scatter_df)
+            .mark_circle(size=85)
+            .encode(
+                x=alt.X("Consistency:Q", title="Consistency"),
+                y=alt.Y("Points:Q", title="Points"),
+                color=alt.Color("BarColor:N", scale=None, legend=None),
+                tooltip=[
+                    alt.Tooltip("Rider:N"),
+                    alt.Tooltip("Points:Q"),
+                    alt.Tooltip("Consistency:Q"),
+                    alt.Tooltip("Wins:Q"),
+                    alt.Tooltip("Podiums:Q"),
+                ],
+            )
+            .properties(title="Points vs Consistency", height=360)
         )
-        st.markdown("**Consistency Top 10**")
-        st.bar_chart(top_consistency)
+        st.altair_chart(scatter_chart, use_container_width=True)
 
     st.markdown("**What-if simulator (next weekend)**")
     riders = standings_df["Rider"].tolist()
