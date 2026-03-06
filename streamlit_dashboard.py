@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 import pandas as pd
 import streamlit as st
 
-from runtime import get_db_connection
+from runtime import get_db_connection, get_http_session, request_json
 
 try:
     import altair as alt
@@ -29,6 +29,7 @@ FALLBACK_COLORS = (
     "#546e7a",
 )
 HEX_COLOR_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}){1,2}$")
+TEAM_NORMALIZE_RE = re.compile(r"[^a-z0-9]+")
 
 
 def _safe_int(value: Any, default: int = 0) -> int:
@@ -82,11 +83,40 @@ def _fallback_color(key: str) -> str:
     return FALLBACK_COLORS[index]
 
 
-def _rider_color(rider_id: Any, rider_name: Any, color_map: Dict[str, str]) -> str:
-    rider_key = str(rider_id or "").strip()
-    if rider_key and rider_key in color_map:
-        return color_map[rider_key]
-    fallback_key = rider_key or str(rider_name or "unknown")
+def _normalize_team_name(value: Any) -> str:
+    raw = str(value or "").strip().lower()
+    if not raw:
+        return ""
+    return TEAM_NORMALIZE_RE.sub("", raw)
+
+
+def _normalize_category_name(value: Any) -> str:
+    raw = str(value or "").strip().lower()
+    raw = raw.replace("™", "").replace(" ", "")
+    return TEAM_NORMALIZE_RE.sub("", raw)
+
+
+def _hex_to_rgb(hex_color: str) -> Tuple[int, int, int]:
+    normalized = _normalize_hex_color(hex_color)
+    if not normalized:
+        return (0, 0, 0)
+    value = normalized.lstrip("#")
+    if len(value) == 3:
+        value = "".join(ch * 2 for ch in value)
+    return tuple(int(value[i : i + 2], 16) for i in (0, 2, 4))
+
+
+def _contrast_text_color(hex_color: str) -> str:
+    r, g, b = _hex_to_rgb(hex_color)
+    yiq = (r * 299 + g * 587 + b * 114) / 1000
+    return "#111111" if yiq >= 150 else "#f5f5f5"
+
+
+def _team_color(team_name: Any, color_map: Dict[str, str]) -> str:
+    team_key = _normalize_team_name(team_name)
+    if team_key and team_key in color_map:
+        return color_map[team_key]
+    fallback_key = team_key or str(team_name or "unknown")
     return _fallback_color(fallback_key)
 
 
@@ -158,38 +188,47 @@ def get_categories_for_year(year: int) -> List[Dict[str, Any]]:
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def get_rider_colors(year: int, category_id: str) -> Dict[str, str]:
+def get_team_colors(year: int, category_id: str, category_name: str) -> Dict[str, str]:
     rows = _db_fetchall(
         """
         SELECT
-            rider_id,
+            team_name,
             team_color,
+            category_id,
+            category_name,
             COALESCE(rider_current, 0) AS rider_current
         FROM TeamRiders
         WHERE year = %s
-          AND category_id = %s
-          AND rider_id IS NOT NULL
-          AND rider_id <> ''
+          AND team_name IS NOT NULL
+          AND team_name <> ''
         ORDER BY rider_current DESC
         """,
-        (str(year), category_id),
+        (str(year),),
     )
+    wanted_category_id = str(category_id or "").strip()
+    wanted_category_name = _normalize_category_name(category_name)
+
     colors: Dict[str, str] = {}
     for row in rows:
-        rider_id = str(row.get("rider_id") or "").strip()
-        if not rider_id:
+        row_category_id = str(row.get("category_id") or "").strip()
+        row_category_name = _normalize_category_name(row.get("category_name"))
+        if row_category_id != wanted_category_id and row_category_name != wanted_category_name:
+            continue
+
+        team_key = _normalize_team_name(row.get("team_name"))
+        if not team_key:
             continue
         normalized = _normalize_hex_color(row.get("team_color"))
-        if rider_id not in colors:
-            colors[rider_id] = normalized or _fallback_color(rider_id)
-        elif not _normalize_hex_color(colors.get(rider_id)) and normalized:
-            colors[rider_id] = normalized
+        if team_key not in colors:
+            colors[team_key] = normalized or _fallback_color(team_key)
+        elif not _normalize_hex_color(colors.get(team_key)) and normalized:
+            colors[team_key] = normalized
     return colors
 
 
 @st.cache_data(ttl=900, show_spinner=False)
 def get_events_for_year(year: int) -> List[Dict[str, Any]]:
-    return _db_fetchall(
+    db_events = _db_fetchall(
         """
         SELECT
             id,
@@ -206,6 +245,47 @@ def get_events_for_year(year: int) -> List[Dict[str, Any]]:
         """,
         (year,),
     )
+    merged: Dict[str, Dict[str, Any]] = {str(event.get("id")): dict(event) for event in db_events if event.get("id")}
+
+    try:
+        http = get_http_session()
+        seasons = request_json(http, "https://api.motogp.pulselive.com/motogp/v1/results/seasons")
+        season = next((row for row in seasons if _safe_int(row.get("year")) == year), None)
+        if season and season.get("id"):
+            events = request_json(
+                http,
+                f"https://api.motogp.pulselive.com/motogp/v1/results/events?seasonUuid={season['id']}",
+            )
+            for row in events:
+                if row.get("test"):
+                    continue
+                event_id = str(row.get("id") or "").strip()
+                if not event_id:
+                    continue
+                api_event = {
+                    "id": event_id,
+                    "name": row.get("name"),
+                    "sponsored_name": row.get("sponsored_name"),
+                    "date_start": row.get("date_start"),
+                    "date_end": row.get("date_end"),
+                    "country_name": (row.get("country") or {}).get("name"),
+                    "circuit_name": (row.get("circuit") or {}).get("name"),
+                    "short_name": row.get("short_name"),
+                    "status": row.get("status"),
+                }
+                existing = merged.get(event_id, {})
+                merged[event_id] = {**existing, **api_event}
+    except Exception as exc:
+        logging.warning("API events fetch failed for year %s: %s", year, exc)
+
+    events_list = list(merged.values())
+    events_list.sort(
+        key=lambda item: (
+            _as_date(item.get("date_start")) or date.max,
+            str(item.get("id") or ""),
+        )
+    )
+    return events_list
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -366,6 +446,8 @@ def render_colored_bar_chart(
         return
 
     base = frame[["Rider", "BarColor", value_col]].copy()
+    base["Rider"] = base["Rider"].astype(str).str.strip()
+    base = base[base["Rider"] != ""]
     base[value_col] = pd.to_numeric(base[value_col], errors="coerce").fillna(0)
     base = base.sort_values(value_col, ascending=False).head(top_n).sort_values(value_col, ascending=True)
     if base.empty:
@@ -382,13 +464,31 @@ def render_colored_bar_chart(
         .mark_bar(cornerRadiusEnd=4)
         .encode(
             x=alt.X(f"{value_col}:Q", title=value_col),
-            y=alt.Y("Rider:N", sort=None, title=""),
+            y=alt.Y(
+                "Rider:N",
+                sort=None,
+                title="",
+                axis=alt.Axis(labelLimit=340, labelOverlap=False),
+            ),
             color=alt.Color("BarColor:N", scale=None, legend=None),
             tooltip=[alt.Tooltip("Rider:N"), alt.Tooltip(f"{value_col}:Q")],
         )
         .properties(title=title, height=max(280, len(base) * 24))
     )
     st.altair_chart(chart, use_container_width=True)
+
+
+def style_rows_by_team(frame: pd.DataFrame):
+    def _row_style(row: pd.Series) -> List[str]:
+        color = _normalize_hex_color(row.get("TeamColor"))
+        if not color:
+            return [""] * len(row)
+        r, g, b = _hex_to_rgb(color)
+        text = _contrast_text_color(color)
+        style = f"background-color: rgba({r}, {g}, {b}, 0.18); color: {text};"
+        return [style] * len(row)
+
+    return frame.style.apply(_row_style, axis=1)
 
 
 def render_overview_tab(year: int, events: Sequence[Dict[str, Any]]) -> None:
@@ -453,26 +553,27 @@ def render_overview_tab(year: int, events: Sequence[Dict[str, Any]]) -> None:
     st.caption("Data source: local MySQL database.")
 
 
-def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
+def render_standings_tab(year: int, category_id: str, category_name: str) -> pd.DataFrame:
     st.subheader("Championship standings")
     rows = get_standings_rows(year, category_id)
     if not rows:
         st.warning("Standings are currently unavailable for this selection.")
         return pd.DataFrame()
 
-    rider_colors = get_rider_colors(year, category_id)
+    team_colors = get_team_colors(year, category_id, category_name)
     mapped_rows: List[Dict[str, Any]] = []
     for item in rows:
         points = _safe_int(item.get("points"))
         rider_id = item.get("rider_id") or ""
-        rider_color_key = item.get("riders_api_uuid") or rider_id
         rider_name = item.get("rider_full_name") or ""
+        team_name = item.get("team_name") or ""
+        team_color = _team_color(team_name, team_colors)
         mapped_rows.append(
             {
                 "Pos": _safe_int(item.get("position"), default=9999),
                 "Rider": rider_name,
                 "#": _safe_int(item.get("rider_number")),
-                "Team": item.get("team_name") or "",
+                "Team": team_name,
                 "Constructor": item.get("constructor_name") or "",
                 "Points": points,
                 "Power Index": points,
@@ -480,8 +581,8 @@ def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
                 "Wins": 0,
                 "Podiums": 0,
                 "Rider ID": rider_id,
-                "Rider Color Key": rider_color_key,
-                "BarColor": _rider_color(rider_color_key, rider_name, rider_colors),
+                "TeamColor": team_color,
+                "BarColor": team_color,
             }
         )
 
@@ -516,8 +617,8 @@ def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
     col3.metric("Leader power index", int(leader["Power Index"]))
     col4.metric("Riders in standings", int(len(df)))
 
-    display_df = df.drop(columns=["Rider ID", "Rider Color Key", "BarColor"], errors="ignore")
-    st.dataframe(display_df, hide_index=True, use_container_width=True)
+    display_df = df.drop(columns=["Rider ID", "BarColor"], errors="ignore")
+    st.dataframe(style_rows_by_team(display_df), hide_index=True, use_container_width=True)
 
     chart_col1, chart_col2 = st.columns(2)
     with chart_col1:
@@ -528,7 +629,7 @@ def render_standings_tab(year: int, category_id: str) -> pd.DataFrame:
     return df
 
 
-def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, Any]]) -> None:
+def render_results_tab(year: int, category_id: str, category_name: str, events: Sequence[Dict[str, Any]]) -> None:
     st.subheader("Session results")
     if not events:
         st.info("No events available.")
@@ -581,18 +682,19 @@ def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, A
         st.warning("Session classification is not available yet.")
         return
 
-    rider_colors = get_rider_colors(year, category_id)
+    team_colors = get_team_colors(year, category_id, category_name)
     result_rows: List[Dict[str, Any]] = []
     for item in rows:
         rider_id = item.get("rider_id") or ""
-        rider_color_key = item.get("riders_api_uuid") or rider_id
         rider_name = item.get("rider_full_name") or ""
+        team_name = item.get("team_name") or ""
+        team_color = _team_color(team_name, team_colors)
         result_rows.append(
             {
                 "Pos": _safe_int(item.get("position"), default=9999),
                 "Rider": rider_name,
                 "#": _safe_int(item.get("rider_number")),
-                "Team": item.get("team_name") or "",
+                "Team": team_name,
                 "Constructor": item.get("constructor_name") or "",
                 "Laps": _safe_int(item.get("total_laps")),
                 "Time": item.get("time") or "",
@@ -603,8 +705,8 @@ def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, A
                 "Status": item.get("status") or "",
                 "File URL": item.get("file") or "",
                 "Rider ID": rider_id,
-                "Rider Color Key": rider_color_key,
-                "BarColor": _rider_color(rider_color_key, rider_name, rider_colors),
+                "TeamColor": team_color,
+                "BarColor": team_color,
             }
         )
 
@@ -627,11 +729,8 @@ def render_results_tab(year: int, category_id: str, events: Sequence[Dict[str, A
     if file_url:
         st.link_button("Open official session PDF", file_url)
 
-    st.dataframe(
-        results_df.drop(columns=["File URL", "Rider ID", "Rider Color Key", "BarColor"], errors="ignore"),
-        hide_index=True,
-        use_container_width=True,
-    )
+    results_display_df = results_df.drop(columns=["File URL", "Rider ID", "BarColor"], errors="ignore")
+    st.dataframe(style_rows_by_team(results_display_df), hide_index=True, use_container_width=True)
 
     speed_df = results_df[results_df["Top Speed"] > 0].copy()
     if not speed_df.empty:
@@ -732,6 +831,7 @@ def main() -> None:
             format_func=lambda row: row.get("name", "Unknown"),
         )
         selected_category_id = str(selected_category["id"])
+        selected_category_name = str(selected_category.get("name") or "")
 
         st.caption("Data source: local MySQL DB")
 
@@ -743,10 +843,10 @@ def main() -> None:
         render_overview_tab(selected_year, events)
 
     with tab_standings:
-        standings_df = render_standings_tab(selected_year, selected_category_id)
+        standings_df = render_standings_tab(selected_year, selected_category_id, selected_category_name)
 
     with tab_results:
-        render_results_tab(selected_year, selected_category_id, events)
+        render_results_tab(selected_year, selected_category_id, selected_category_name, events)
 
     with tab_stats:
         render_stats_lab(standings_df if "standings_df" in locals() else pd.DataFrame())
