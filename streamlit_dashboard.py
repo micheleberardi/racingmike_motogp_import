@@ -112,12 +112,39 @@ def _contrast_text_color(hex_color: str) -> str:
     return "#111111" if yiq >= 150 else "#f5f5f5"
 
 
+def _lighten_hex(hex_color: str, factor: float) -> str:
+    normalized = _normalize_hex_color(hex_color)
+    if not normalized:
+        return ""
+    ratio = min(max(factor, 0.0), 1.0)
+    r, g, b = _hex_to_rgb(normalized)
+    r = int(r + (255 - r) * ratio)
+    g = int(g + (255 - g) * ratio)
+    b = int(b + (255 - b) * ratio)
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def _display_team_color(hex_color: str) -> str:
+    normalized = _normalize_hex_color(hex_color)
+    if not normalized:
+        return ""
+    r, g, b = _hex_to_rgb(normalized)
+    brightness = (r * 299 + g * 587 + b * 114) / 1000
+    if brightness < 70:
+        return _lighten_hex(normalized, 0.68)
+    if brightness < 100:
+        return _lighten_hex(normalized, 0.56)
+    if brightness < 140:
+        return _lighten_hex(normalized, 0.40)
+    return _lighten_hex(normalized, 0.20)
+
+
 def _team_color(team_name: Any, color_map: Dict[str, str]) -> str:
     team_key = _normalize_team_name(team_name)
     if team_key and team_key in color_map:
-        return color_map[team_key]
+        return _display_team_color(color_map[team_key])
     fallback_key = team_key or str(team_name or "unknown")
-    return _fallback_color(fallback_key)
+    return _display_team_color(_fallback_color(fallback_key))
 
 
 def _event_title(event: Dict[str, Any]) -> str:
@@ -449,6 +476,8 @@ def render_colored_bar_chart(
     base["Rider"] = base["Rider"].astype(str).str.strip()
     base = base[base["Rider"] != ""]
     base[value_col] = pd.to_numeric(base[value_col], errors="coerce").fillna(0)
+    # Keep a single bar per rider (highest value) to avoid duplicated labels/bars.
+    base = base.sort_values(value_col, ascending=False).groupby("Rider", as_index=False).first()
     base = base.sort_values(value_col, ascending=False).head(top_n).sort_values(value_col, ascending=True)
     if base.empty:
         st.info("Chart not available.")
@@ -478,14 +507,21 @@ def render_colored_bar_chart(
     st.altair_chart(chart, use_container_width=True)
 
 
-def style_rows_by_team(frame: pd.DataFrame):
+def style_rows_by_team(frame: pd.DataFrame, team_colors: Optional[pd.Series] = None):
+    normalized_colors: Optional[pd.Series] = None
+    if team_colors is not None:
+        normalized_colors = team_colors.reindex(frame.index)
+
     def _row_style(row: pd.Series) -> List[str]:
-        color = _normalize_hex_color(row.get("TeamColor"))
+        color = ""
+        if normalized_colors is not None:
+            color = _normalize_hex_color(normalized_colors.get(row.name))
+        if not color:
+            color = _normalize_hex_color(row.get("TeamColor"))
         if not color:
             return [""] * len(row)
         r, g, b = _hex_to_rgb(color)
-        text = _contrast_text_color(color)
-        style = f"background-color: rgba({r}, {g}, {b}, 0.18); color: {text};"
+        style = f"background-color: rgba({r}, {g}, {b}, 0.14);"
         return [style] * len(row)
 
     return frame.style.apply(_row_style, axis=1)
@@ -617,8 +653,8 @@ def render_standings_tab(year: int, category_id: str, category_name: str) -> pd.
     col3.metric("Leader power index", int(leader["Power Index"]))
     col4.metric("Riders in standings", int(len(df)))
 
-    display_df = df.drop(columns=["Rider ID", "BarColor"], errors="ignore")
-    st.dataframe(style_rows_by_team(display_df), hide_index=True, use_container_width=True)
+    display_df = df.drop(columns=["Rider ID", "BarColor", "TeamColor"], errors="ignore")
+    st.dataframe(style_rows_by_team(display_df, df.get("TeamColor")), hide_index=True, use_container_width=True)
 
     chart_col1, chart_col2 = st.columns(2)
     with chart_col1:
@@ -644,10 +680,17 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
         st.info("No rounds with valid IDs are available.")
         return
 
-    selected_event = st.selectbox(
-        "Select round",
-        ordered_events,
-        format_func=lambda event: f"{_as_date(event.get('date_start')) or ''} - {_event_title(event)}",
+    today = date.today()
+    finished_events: List[Dict[str, Any]] = []
+    for event in ordered_events:
+        status = str(event.get("status") or "").upper()
+        end_date = _as_date(event.get("date_end"))
+        if status == "FINISHED" or (end_date is not None and end_date <= today):
+            finished_events.append(event)
+    selected_event = finished_events[0] if finished_events else ordered_events[0]
+    st.caption(
+        f"Latest round: {_event_title(selected_event)} "
+        f"({_as_date(selected_event.get('date_start')) or '-'} to {_as_date(selected_event.get('date_end')) or '-'})"
     )
 
     sessions = get_sessions_for_event(year, str(selected_event["id"]), category_id)
@@ -729,8 +772,12 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
     if file_url:
         st.link_button("Open official session PDF", file_url)
 
-    results_display_df = results_df.drop(columns=["File URL", "Rider ID", "BarColor"], errors="ignore")
-    st.dataframe(style_rows_by_team(results_display_df), hide_index=True, use_container_width=True)
+    results_display_df = results_df.drop(columns=["File URL", "Rider ID", "BarColor", "TeamColor"], errors="ignore")
+    st.dataframe(
+        style_rows_by_team(results_display_df, results_df.get("TeamColor")),
+        hide_index=True,
+        use_container_width=True,
+    )
 
     speed_df = results_df[results_df["Top Speed"] > 0].copy()
     if not speed_df.empty:
