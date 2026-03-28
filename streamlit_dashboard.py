@@ -680,16 +680,18 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
         st.info("No rounds with valid IDs are available.")
         return
 
-    today = date.today()
-    finished_events: List[Dict[str, Any]] = []
-    for event in ordered_events:
-        status = str(event.get("status") or "").upper()
-        end_date = _as_date(event.get("date_end"))
-        if status == "FINISHED" or (end_date is not None and end_date <= today):
-            finished_events.append(event)
-    selected_event = finished_events[0] if finished_events else ordered_events[0]
+    selected_event = st.selectbox(
+        "Select round / circuit",
+        ordered_events,
+        index=0,
+        format_func=lambda event: (
+            f"{_as_date(event.get('date_start')) or '-'} | "
+            f"{event.get('circuit_name') or 'Unknown circuit'} | "
+            f"{_event_title(event)}"
+        ),
+    )
     st.caption(
-        f"Latest round: {_event_title(selected_event)} "
+        f"Selected round: {_event_title(selected_event)} "
         f"({_as_date(selected_event.get('date_start')) or '-'} to {_as_date(selected_event.get('date_end')) or '-'})"
     )
 

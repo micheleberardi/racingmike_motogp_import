@@ -7,6 +7,97 @@ from requests import HTTPError
 
 from runtime import get_db_connection, get_http_session, parse_year_arg, request_json, setup_logging
 
+RESULTS_FIELDS = [
+    "result_id",
+    "position",
+    "rider_id",
+    "rider_full_name",
+    "rider_country_iso",
+    "rider_country_name",
+    "rider_region_iso",
+    "rider_legacy_id",
+    "rider_number",
+    "riders_api_uuid",
+    "team_id",
+    "team_name",
+    "team_legacy_id",
+    "team_season_id",
+    "team_season_year",
+    "team_season_current",
+    "constructor_id",
+    "constructor_name",
+    "constructor_legacy_id",
+    "average_speed",
+    "gap_first",
+    "gap_lap",
+    "total_laps",
+    "time",
+    "points",
+    "status",
+    "file",
+    "files",
+    "session_id",
+    "event_id",
+    "year",
+    "md5",
+    "gap_prev",
+    "top_speed",
+    "best_lap_number",
+    "best_lap_time",
+    "track_condition",
+    "air_condition",
+    "humidity_condition",
+    "ground_condition",
+    "weather_condition",
+    "category_id",
+    "session_number",
+    "circuit_name",
+    "session_type",
+    "category_name",
+    "event_name",
+    "event_sponsored_name",
+    "event_season",
+    "circuit_id",
+    "circuit_legacy_id",
+    "circuit_place",
+    "circuit_nation",
+    "circuit_country_iso",
+    "circuit_country_name",
+    "circuit_country_region_iso",
+    "event_short_name",
+]
+
+RECORDS_FIELDS = [
+    "record_type",
+    "rider_id",
+    "rider_full_name",
+    "rider_country_iso",
+    "rider_country_name",
+    "rider_region_iso",
+    "rider_legacy_id",
+    "bestLap_number",
+    "bestLap_time",
+    "speed",
+    "record_year",
+    "isNewRecord",
+    "event_id",
+    "md5",
+    "category_id",
+    "category_name",
+    "event_name",
+    "event_sponsored_name",
+    "year",
+    "circuit_id",
+    "circuit_legacy_id",
+    "circuit_place",
+    "circuit_nation",
+    "circuit_country_iso",
+    "circuit_country_name",
+    "circuit_country_region_iso",
+    "event_short_name",
+    "session_id",
+]
+
 
 RESULTS_QUERY = """
 INSERT INTO results (
@@ -162,6 +253,56 @@ def fetch_classification_with_retry(session, url: str, session_id: str, max_atte
     return None
 
 
+def get_text_column_limits(cursor, table_name: str) -> dict[str, int]:
+    cursor.execute(
+        """
+        SELECT column_name, character_maximum_length
+        FROM information_schema.columns
+        WHERE table_schema = DATABASE()
+          AND table_name = %s
+          AND data_type IN ('char', 'varchar', 'text', 'mediumtext', 'longtext')
+        """,
+        (table_name,),
+    )
+    return {
+        row["column_name"]: int(row["character_maximum_length"])
+        for row in cursor.fetchall()
+        if row.get("character_maximum_length")
+    }
+
+
+def normalize_text_value(value):
+    if value is None:
+        return None
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, sort_keys=True, default=str)
+    if isinstance(value, str):
+        return value
+    return str(value)
+
+
+def sanitize_payload(payload: dict, text_limits: dict[str, int], context: str) -> dict:
+    sanitized = dict(payload)
+    for field_name, max_len in text_limits.items():
+        if field_name not in sanitized:
+            continue
+        value = normalize_text_value(sanitized[field_name])
+        if value is None:
+            sanitized[field_name] = None
+            continue
+        if len(value) > max_len:
+            logging.warning(
+                "Truncating %s for %s from %s to %s chars",
+                field_name,
+                context,
+                len(value),
+                max_len,
+            )
+            value = value[:max_len]
+        sanitized[field_name] = value
+    return sanitized
+
+
 def main() -> int:
     setup_logging()
     target_year = parse_year_arg()
@@ -173,6 +314,9 @@ def main() -> int:
 
     with get_db_connection() as cnx:
         with cnx.cursor() as cursor:
+            results_text_limits = get_text_column_limits(cursor, "results")
+            records_text_limits = get_text_column_limits(cursor, "records")
+
             cursor.execute(
                 """
                 SELECT *
@@ -220,67 +364,73 @@ def main() -> int:
                         f"{rider_id}{session_id}{event_id}{row['year']}{category_id}".encode("utf-8")
                     ).hexdigest()
 
+                    result_payload = sanitize_payload(
+                        {
+                            "result_id": item.get("id"),
+                            "position": item.get("position"),
+                            "rider_id": rider_id,
+                            "rider_full_name": rider.get("full_name"),
+                            "rider_country_iso": rider_country.get("iso"),
+                            "rider_country_name": rider_country.get("name"),
+                            "rider_region_iso": rider_country.get("region_iso"),
+                            "rider_legacy_id": rider.get("legacy_id"),
+                            "rider_number": rider.get("number"),
+                            "riders_api_uuid": rider.get("riders_api_uuid"),
+                            "team_id": team.get("id"),
+                            "team_name": team.get("name"),
+                            "team_legacy_id": team.get("legacy_id"),
+                            "team_season_id": season.get("id"),
+                            "team_season_year": season.get("year"),
+                            "team_season_current": season.get("current"),
+                            "constructor_id": constructor.get("id"),
+                            "constructor_name": constructor.get("name"),
+                            "constructor_legacy_id": constructor.get("legacy_id"),
+                            "average_speed": item.get("average_speed"),
+                            "gap_first": gap.get("first"),
+                            "gap_lap": gap.get("lap"),
+                            "total_laps": item.get("total_laps"),
+                            "time": item.get("time"),
+                            "points": item.get("points"),
+                            "status": item.get("status"),
+                            "file": file_url,
+                            "files": files,
+                            "session_id": session_id,
+                            "event_id": event_id,
+                            "year": row["year"],
+                            "md5": digest,
+                            "gap_prev": gap.get("prev"),
+                            "top_speed": item.get("top_speed"),
+                            "best_lap_number": best_lap.get("number"),
+                            "best_lap_time": best_lap.get("time"),
+                            "track_condition": row.get("track_condition"),
+                            "air_condition": row.get("air_condition"),
+                            "humidity_condition": row.get("humidity_condition"),
+                            "ground_condition": row.get("ground_condition"),
+                            "weather_condition": row.get("weather_condition"),
+                            "category_id": category_id,
+                            "session_number": row.get("number"),
+                            "circuit_name": row.get("circuit_name"),
+                            "session_type": row.get("type"),
+                            "category_name": row.get("category_name"),
+                            "event_name": row.get("event_name"),
+                            "event_sponsored_name": row.get("event_sponsored_name"),
+                            "event_season": row.get("year"),
+                            "circuit_id": row.get("circuit_id"),
+                            "circuit_legacy_id": row.get("circuit_legacy_id"),
+                            "circuit_place": row.get("circuit_place"),
+                            "circuit_nation": row.get("circuit_nation"),
+                            "circuit_country_iso": row.get("country_iso"),
+                            "circuit_country_name": row.get("country_name"),
+                            "circuit_country_region_iso": row.get("country_region_iso"),
+                            "event_short_name": row.get("event_short_name"),
+                        },
+                        results_text_limits,
+                        f"results session={session_id} rider={rider_id}",
+                    )
+
                     cursor.execute(
                         RESULTS_QUERY,
-                        (
-                            item.get("id"),
-                            item.get("position"),
-                            rider_id,
-                            rider.get("full_name"),
-                            rider_country.get("iso"),
-                            rider_country.get("name"),
-                            rider_country.get("region_iso"),
-                            rider.get("legacy_id"),
-                            rider.get("number"),
-                            rider.get("riders_api_uuid"),
-                            team.get("id"),
-                            team.get("name"),
-                            team.get("legacy_id"),
-                            season.get("id"),
-                            season.get("year"),
-                            season.get("current"),
-                            constructor.get("id"),
-                            constructor.get("name"),
-                            constructor.get("legacy_id"),
-                            item.get("average_speed"),
-                            gap.get("first"),
-                            gap.get("lap"),
-                            item.get("total_laps"),
-                            item.get("time"),
-                            item.get("points"),
-                            item.get("status"),
-                            file_url,
-                            files,
-                            session_id,
-                            event_id,
-                            row["year"],
-                            digest,
-                            gap.get("prev"),
-                            item.get("top_speed"),
-                            best_lap.get("number"),
-                            best_lap.get("time"),
-                            row.get("track_condition"),
-                            row.get("air_condition"),
-                            row.get("humidity_condition"),
-                            row.get("ground_condition"),
-                            row.get("weather_condition"),
-                            category_id,
-                            row.get("number"),
-                            row.get("circuit_name"),
-                            row.get("type"),
-                            row.get("category_name"),
-                            row.get("event_name"),
-                            row.get("event_sponsored_name"),
-                            row.get("year"),
-                            row.get("circuit_id"),
-                            row.get("circuit_legacy_id"),
-                            row.get("circuit_place"),
-                            row.get("circuit_nation"),
-                            row.get("country_iso"),
-                            row.get("country_name"),
-                            row.get("country_region_iso"),
-                            row.get("event_short_name"),
-                        ),
+                        tuple(result_payload[field_name] for field_name in RESULTS_FIELDS),
                     )
                     processed_results += 1
 
@@ -298,38 +448,44 @@ def main() -> int:
                         f"{record_type}{rider_id}{session_id}{event_id}{record_year}{category_id}".encode("utf-8")
                     ).hexdigest()
 
+                    record_payload = sanitize_payload(
+                        {
+                            "record_type": record_type,
+                            "rider_id": rider_id,
+                            "rider_full_name": rider.get("full_name"),
+                            "rider_country_iso": rider_country.get("iso"),
+                            "rider_country_name": rider_country.get("name"),
+                            "rider_region_iso": rider_country.get("region_iso"),
+                            "rider_legacy_id": rider.get("legacy_id"),
+                            "bestLap_number": best_lap.get("number"),
+                            "bestLap_time": best_lap.get("time"),
+                            "speed": record.get("speed"),
+                            "record_year": record_year,
+                            "isNewRecord": record.get("isNewRecord"),
+                            "event_id": event_id,
+                            "md5": digest,
+                            "category_id": category_id,
+                            "category_name": row.get("category_name"),
+                            "event_name": row.get("event_name"),
+                            "event_sponsored_name": row.get("event_sponsored_name"),
+                            "year": row.get("year"),
+                            "circuit_id": row.get("circuit_id"),
+                            "circuit_legacy_id": row.get("circuit_legacy_id"),
+                            "circuit_place": row.get("circuit_place"),
+                            "circuit_nation": row.get("circuit_nation"),
+                            "circuit_country_iso": row.get("country_iso"),
+                            "circuit_country_name": row.get("country_name"),
+                            "circuit_country_region_iso": row.get("country_region_iso"),
+                            "event_short_name": row.get("event_short_name"),
+                            "session_id": session_id,
+                        },
+                        records_text_limits,
+                        f"records session={session_id} rider={rider_id} type={record_type}",
+                    )
+
                     cursor.execute(
                         RECORDS_QUERY,
-                        (
-                            record_type,
-                            rider_id,
-                            rider.get("full_name"),
-                            rider_country.get("iso"),
-                            rider_country.get("name"),
-                            rider_country.get("region_iso"),
-                            rider.get("legacy_id"),
-                            best_lap.get("number"),
-                            best_lap.get("time"),
-                            record.get("speed"),
-                            record_year,
-                            record.get("isNewRecord"),
-                            event_id,
-                            digest,
-                            category_id,
-                            row.get("category_name"),
-                            row.get("event_name"),
-                            row.get("event_sponsored_name"),
-                            row.get("year"),
-                            row.get("circuit_id"),
-                            row.get("circuit_legacy_id"),
-                            row.get("circuit_place"),
-                            row.get("circuit_nation"),
-                            row.get("country_iso"),
-                            row.get("country_name"),
-                            row.get("country_region_iso"),
-                            row.get("event_short_name"),
-                            session_id,
-                        ),
+                        tuple(record_payload[field_name] for field_name in RECORDS_FIELDS),
                     )
                     processed_records += 1
 
