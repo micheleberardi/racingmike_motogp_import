@@ -66,6 +66,17 @@ def _as_date(value: Any) -> Optional[date]:
         return None
 
 
+def _session_label(session: Dict[str, Any]) -> str:
+    session_type = str(session.get("session_type") or "UNKNOWN").strip().upper()
+    session_number = _safe_int(session.get("session_number"), default=0)
+
+    if session_type in {"FP", "Q"} and session_number > 0:
+        return f"{session_type}{session_number}"
+    if session_type == "RAC":
+        return "RACE"
+    return session_type
+
+
 def _normalize_hex_color(value: Any) -> str:
     raw = str(value or "").strip()
     if not raw:
@@ -423,6 +434,31 @@ def get_session_results(session_id: str) -> List[Dict[str, Any]]:
 
 
 @st.cache_data(ttl=300, show_spinner=False)
+def get_latest_event_with_results(year: int, category_id: str) -> Optional[str]:
+    rows = _db_fetchall(
+        """
+        SELECT
+            r.event_id,
+            MAX(COALESCE(e.date_end, e.date_start)) AS event_date
+        FROM results r
+        LEFT JOIN events e
+          ON e.id = r.event_id
+         AND e.year = r.year
+        WHERE r.year = %s
+          AND r.category_id = %s
+          AND COALESCE(r.event_id, '') <> ''
+        GROUP BY r.event_id
+        ORDER BY event_date DESC, r.event_id DESC
+        LIMIT 1
+        """,
+        (year, category_id),
+    )
+    if not rows:
+        return None
+    return str(rows[0].get("event_id") or "").strip() or None
+
+
+@st.cache_data(ttl=300, show_spinner=False)
 def get_rider_performance(year: int, category_id: str) -> List[Dict[str, Any]]:
     return _db_fetchall(
         """
@@ -680,10 +716,37 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
         st.info("No rounds with valid IDs are available.")
         return
 
+    latest_event_with_results = get_latest_event_with_results(year, category_id)
+    default_event_index = 0
+    if latest_event_with_results:
+        matched_index = next(
+            (
+                idx
+                for idx, event in enumerate(ordered_events)
+                if str(event.get("id") or "") == latest_event_with_results
+            ),
+            None,
+        )
+        if matched_index is not None:
+            default_event_index = matched_index
+    else:
+        today = date.today()
+        latest_completed_index = next(
+            (
+                idx
+                for idx, event in enumerate(ordered_events)
+                if str(event.get("status") or "").strip().upper() == "FINISHED"
+                or ((_as_date(event.get("date_end")) or _as_date(event.get("date_start"))) and ((_as_date(event.get("date_end")) or _as_date(event.get("date_start"))) <= today))
+            ),
+            None,
+        )
+        if latest_completed_index is not None:
+            default_event_index = latest_completed_index
+
     selected_event = st.selectbox(
         "Select round / circuit",
         ordered_events,
-        index=0,
+        index=default_event_index,
         format_func=lambda event: (
             f"{_as_date(event.get('date_start')) or '-'} | "
             f"{event.get('circuit_name') or 'Unknown circuit'} | "
@@ -712,10 +775,12 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
         st.info("No valid sessions are available for this round/category.")
         return
 
+    default_session_index = max(len(sessions_sorted) - 1, 0)
     selected_session = st.selectbox(
         "Select session",
         sessions_sorted,
-        format_func=lambda session: str(session.get("session_type") or "UNKNOWN").strip(),
+        index=default_session_index,
+        format_func=_session_label,
     )
 
     rows = get_session_results(str(selected_session["session_id"]))
@@ -759,7 +824,7 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
     winner = results_df.iloc[0]
     col1, col2, col3 = st.columns(3)
     col1.metric("Winner", winner["Rider"])
-    col2.metric("Session", selected_session.get("session_type") or "-")
+    col2.metric("Session", _session_label(selected_session))
     col3.metric("Winner points", int(winner["Points"]))
 
     file_url = ""
