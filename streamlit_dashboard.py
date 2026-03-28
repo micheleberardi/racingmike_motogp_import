@@ -715,11 +715,7 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
     selected_session = st.selectbox(
         "Select session",
         sessions_sorted,
-        format_func=lambda session: (
-            f"{session.get('session_date') or '-'} | "
-            f"{session.get('session_type') or 'UNKNOWN'} | "
-            f"N{_safe_int(session.get('session_number'), default=0)}"
-        ),
+        format_func=lambda session: str(session.get("session_type") or "UNKNOWN").strip(),
     )
 
     rows = get_session_results(str(selected_session["session_id"]))
