@@ -1,7 +1,7 @@
 import argparse
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 import pymysql
@@ -33,7 +33,7 @@ def get_target_year(cli_year: Optional[int] = None) -> int:
             return int(env_value)
         except ValueError as exc:
             raise ValueError(f"Invalid TARGET_YEAR value: {env_value}") from exc
-    return datetime.utcnow().year
+    return datetime.now(timezone.utc).year
 
 
 def parse_year_arg(default: Optional[int] = None) -> int:
