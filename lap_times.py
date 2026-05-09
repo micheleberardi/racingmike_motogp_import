@@ -483,14 +483,27 @@ def main() -> int:
     setup_logging()
 
     parser = argparse.ArgumentParser(add_help=True)
-    parser.add_argument("--year", type=int, default=None)
+    parser.add_argument("--year", type=int, default=None,
+                        help="Single year to import")
+    parser.add_argument("--year-from", type=int, default=None,
+                        help="Start year for range import (e.g. 2002)")
+    parser.add_argument("--year-to", type=int, default=None,
+                        help="End year for range import (e.g. 2026)")
     parser.add_argument("--workers", type=int, default=4,
                         help="Parallel download workers (default: 4)")
     args = parser.parse_args()
 
     from runtime import get_target_year
-    target_year = get_target_year(args.year)
     workers = max(1, min(args.workers, 16))
+
+    # Build year list
+    if args.year_from is not None or args.year_to is not None:
+        from datetime import datetime
+        year_from = args.year_from or 2002
+        year_to   = args.year_to   or datetime.now().year
+        years = list(range(year_from, year_to + 1))
+    else:
+        years = [get_target_year(args.year)]
 
     if pdfplumber is None:
         logging.error("pdfplumber is required. Install with: pip install pdfplumber")
@@ -498,27 +511,28 @@ def main() -> int:
 
     http = get_http_session()
 
-    # Fetch session list (single connection, read-only)
+    # Fetch session list for all requested years (single connection, read-only)
     with get_db_connection() as cnx:
         with cnx.cursor() as cursor:
+            fmt = ",".join(["%s"] * len(years))
             cursor.execute(
-                """
+                f"""
                 SELECT s.id, s.type, s.year, s.event_id, s.category_id,
                        s.category_name, s.event_name, s.circuit_name,
                        s.analysis_url, s.status
                 FROM sessions s
-                WHERE s.year = %s
+                WHERE s.year IN ({fmt})
                   AND s.analysis_url IS NOT NULL
                   AND s.analysis_url != ''
                   AND COALESCE(s.status, '') = 'FINISHED'
                   AND s.type NOT IN ('WUP')
-                ORDER BY s.session_datetime ASC
+                ORDER BY s.year ASC, s.session_datetime ASC
                 """,
-                (target_year,),
+                tuple(years),
             )
             sessions = cursor.fetchall()
 
-    logging.info("Sessions to process: %s | workers: %s", len(sessions), workers)
+    logging.info("Years: %s | Sessions to process: %s | workers: %s", years, len(sessions), workers)
 
     total_sessions = 0
     total_laps = 0
@@ -553,8 +567,8 @@ def main() -> int:
                 )
 
     logging.info(
-        "Lap times import anno %s | sessions=%s skipped=%s errors=%s total_laps=%s",
-        target_year,
+        "Lap times import anni %s | sessions=%s skipped=%s errors=%s total_laps=%s",
+        years,
         total_sessions,
         total_skipped,
         total_errors,
