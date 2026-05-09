@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import StandingsChart from '@/components/charts/StandingsChart'
+import { apiUrl } from '@/lib/api'
 import type { Category, Standing } from '@/types'
 
 function getPositionColor(pos: number) {
@@ -21,23 +22,25 @@ export default function StandingsPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/years')
+    fetch(apiUrl('/api/years'))
       .then((r) => r.json())
       .then((data: number[]) => {
-        setYears(data)
-        if (data.length > 0) setSelectedYear(data[0])
+        const arr = Array.isArray(data) ? data : []
+        setYears(arr)
+        if (arr.length > 0) setSelectedYear(arr[0])
       })
       .catch(() => setError('Failed to load years'))
   }, [])
 
   useEffect(() => {
     if (!selectedYear) return
-    fetch(`/api/categories/${selectedYear}`)
+    fetch(apiUrl(`/api/categories/${selectedYear}`))
       .then((r) => r.json())
       .then((data: Category[]) => {
-        setCategories(data)
-        const motogp = data.find((c) => c.name.toLowerCase().includes('motogp'))
-        setSelectedCategory(motogp || data[0] || null)
+        const arr = Array.isArray(data) ? data : []
+        setCategories(arr)
+        const motogp = arr.find((c) => c.name.toLowerCase().includes('motogp'))
+        setSelectedCategory(motogp || arr[0] || null)
       })
       .catch(() => {})
   }, [selectedYear])
@@ -46,10 +49,10 @@ export default function StandingsPage() {
     if (!selectedYear || !selectedCategory) return
     setLoading(true)
     setError(null)
-    fetch(`/api/standings/${selectedYear}/${selectedCategory.id}`)
+    fetch(apiUrl(`/api/standings/${selectedYear}/${selectedCategory.id}`))
       .then((r) => r.json())
       .then((data: Standing[]) => {
-        setStandings(data)
+        setStandings(Array.isArray(data) ? data : [])
         setLoading(false)
       })
       .catch(() => {
@@ -57,10 +60,6 @@ export default function StandingsPage() {
         setLoading(false)
       })
   }, [selectedYear, selectedCategory])
-
-  // Compute wins / podiums from standings (if available — otherwise show '-')
-  // We don't have wins/podiums in standing_riders, so we'll skip for now
-  // and just show position/points/team
 
   return (
     <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import MetricCard from '@/components/ui/MetricCard'
 import StandingsChart from '@/components/charts/StandingsChart'
+import { apiUrl } from '@/lib/api'
 import type { Category, Event, Standing, Result, Session } from '@/types'
 
 function formatDate(dateStr: string) {
@@ -32,7 +33,7 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/years')
+    fetch(apiUrl('/api/years'))
       .then((r) => r.json())
       .then((data) => {
         const arr: number[] = Array.isArray(data) ? data : []
@@ -47,7 +48,7 @@ export default function HomePage() {
     setLoading(true)
     setCategories([])
     setSelectedCategory(null)
-    fetch(`/api/categories/${selectedYear}`)
+    fetch(apiUrl(`/api/categories/${selectedYear}`))
       .then((r) => r.json())
       .then((data) => {
         const arr: Category[] = Array.isArray(data) ? data : []
@@ -60,7 +61,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!selectedYear) return
-    fetch(`/api/events/${selectedYear}`)
+    fetch(apiUrl(`/api/events/${selectedYear}`))
       .then((r) => r.json())
       .then((data) => setEvents(Array.isArray(data) ? data : []))
       .catch(() => {})
@@ -69,7 +70,7 @@ export default function HomePage() {
   const loadStandings = useCallback(() => {
     if (!selectedYear || !selectedCategory) return
     setLoading(true)
-    fetch(`/api/standings/${selectedYear}/${selectedCategory.id}`)
+    fetch(apiUrl(`/api/standings/${selectedYear}/${selectedCategory.id}`))
       .then((r) => r.json())
       .then((data) => {
         setStandings(Array.isArray(data) ? data : [])
@@ -99,12 +100,12 @@ export default function HomePage() {
     setLastRaceEvent(lastEvent)
 
     // Get sessions for last event
-    fetch(`/api/sessions/${selectedYear}/${lastEvent.id}/${selectedCategory.id}`)
+    fetch(apiUrl(`/api/sessions/${selectedYear}/${lastEvent.id}/${selectedCategory.id}`))
       .then((r) => r.json())
       .then((sessions: Session[]) => {
-        const raceSession = sessions.find((s) => s.type === 'RAC' && s.status === 'Finished')
+        const raceSession = sessions.find((s) => s.type === 'RAC' && s.status?.toUpperCase() === 'FINISHED')
         if (!raceSession) return
-        return fetch(`/api/results/${raceSession.id}`)
+        return fetch(apiUrl(`/api/results/${raceSession.id}`))
       })
       .then((r) => r?.json())
       .then((results: Result[]) => {

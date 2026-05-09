@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import ReactECharts from 'echarts-for-react'
 import SessionSelector from '@/components/ui/SessionSelector'
+import { apiUrl } from '@/lib/api'
 import type { Session, Result, Event } from '@/types'
 
 function getPositionColor(pos: number | null) {
@@ -33,13 +34,12 @@ export default function RacePage() {
 
   // Fetch event info from all years
   useEffect(() => {
-    // We'll fetch events for recent years to find our event
     const fetchEvent = async () => {
       try {
-        const yearsRes = await fetch('/api/years')
+        const yearsRes = await fetch(apiUrl('/api/years'))
         const years: number[] = await yearsRes.json()
         for (const year of years) {
-          const eventsRes = await fetch(`/api/events/${year}`)
+          const eventsRes = await fetch(apiUrl(`/api/events/${year}`))
           const events: Event[] = await eventsRes.json()
           const found = events.find((e) => e.id === eventId)
           if (found) {
@@ -57,7 +57,7 @@ export default function RacePage() {
       if (!result) return
       const { event: foundEvent, year } = result
       // Get categories for this year
-      fetch(`/api/categories/${year}`)
+      fetch(apiUrl(`/api/categories/${year}`))
         .then((r) => r.json())
         .then((cats) => {
           const motogp = cats.find((c: { name: string }) =>
@@ -65,7 +65,7 @@ export default function RacePage() {
           )
           const cat = motogp || cats[0]
           if (!cat) return
-          return fetch(`/api/sessions/${year}/${foundEvent.id}/${cat.id}`)
+          return fetch(apiUrl(`/api/sessions/${year}/${foundEvent.id}/${cat.id}`))
         })
         .then((r) => r?.json())
         .then((sess: Session[]) => {
@@ -88,10 +88,10 @@ export default function RacePage() {
   useEffect(() => {
     if (!selectedSession) return
     setLoading(true)
-    fetch(`/api/results/${selectedSession.id}`)
+    fetch(apiUrl(`/api/results/${selectedSession.id}`))
       .then((r) => r.json())
       .then((data: Result[]) => {
-        setResults(data)
+        setResults(Array.isArray(data) ? data : [])
         setLoading(false)
       })
       .catch(() => {

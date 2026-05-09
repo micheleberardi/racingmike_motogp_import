@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import MetricCard from '@/components/ui/MetricCard'
+import { apiUrl } from '@/lib/api'
 import type { LapTimesResponse, LapTime } from '@/types'
 
 const RaceTraceChart = dynamic(() => import('@/components/charts/RaceTraceChart'), { ssr: false })
@@ -23,7 +24,7 @@ function msToStr(ms: number): string {
 
 export default function LapTimesPage() {
   const params = useParams()
-  const sessionId = parseInt(params.sessionId as string)
+  const sessionId = params.sessionId as string
 
   const [data, setData] = useState<LapTimesResponse | null>(null)
   const [loading, setLoading] = useState(true)
@@ -35,7 +36,7 @@ export default function LapTimesPage() {
 
   useEffect(() => {
     setLoading(true)
-    fetch(`/api/lap-times/${sessionId}`)
+    fetch(apiUrl(`/api/lap-times/${sessionId}`))
       .then((r) => r.json())
       .then((d: LapTimesResponse) => {
         setData(d)
