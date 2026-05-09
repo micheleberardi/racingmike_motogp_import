@@ -7,8 +7,8 @@ export async function GET(
 ) {
   try {
     const year = parseInt(params.year)
-    const eventId = parseInt(params.eventId)
-    const categoryId = parseInt(params.categoryId)
+    const eventId = params.eventId
+    const categoryId = params.categoryId
 
     const [rows] = await pool.execute(
       `SELECT id, type, year, event_id, category_id, category_name,

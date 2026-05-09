@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { sessionId: string } }
 ) {
   try {
-    const sessionId = parseInt(params.sessionId)
+    const sessionId = params.sessionId
 
     const [rows] = await pool.execute(
       `SELECT r.session_id, r.rider_id, r.rider_full_name, r.rider_number,

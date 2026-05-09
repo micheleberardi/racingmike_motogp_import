@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const year = parseInt(params.year)
-    const categoryId = parseInt(params.categoryId)
+    const categoryId = params.categoryId
 
     const [rows] = await pool.execute(
       `SELECT sr.year, sr.category_id, sr.category_name, sr.position,
