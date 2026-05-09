@@ -4,8 +4,8 @@ import type { Session } from '@/types'
 
 interface SessionSelectorProps {
   sessions: Session[]
-  selectedId: number | null
-  onSelect: (id: number) => void
+  selectedId: string | null
+  onSelect: (id: string) => void
 }
 
 const SESSION_ORDER = ['FP1', 'FP2', 'FP3', 'FP4', 'Q1', 'Q2', 'SPR', 'RAC', 'WUP']
@@ -44,7 +44,7 @@ export default function SessionSelector({
     <div className="flex flex-wrap gap-2">
       {sorted.map((session) => {
         const isSelected = session.id === selectedId
-        const isCompleted = session.status === 'Finished' || session.status === 'completed'
+        const isCompleted = session.status?.toUpperCase() === 'FINISHED'
         return (
           <button
             key={session.id}
