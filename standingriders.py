@@ -30,6 +30,7 @@ def main() -> int:
                     )
                     try:
                         data = request_json(session, url)
+                        print(data)
                     except Exception as exc:
                         logging.error("Errore standings season=%s category=%s: %s", season_id, category_id, exc)
                         continue

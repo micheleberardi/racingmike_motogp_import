@@ -33,7 +33,7 @@ def run_step(script_name: str, year: int | None) -> int:
 
 
 def run_once(year: int | None, continue_on_error: bool) -> int:
-    steps = ["events.py", "sessions.py", "results.py"]
+    steps = ["events.py", "sessions.py", "results.py", "lap_times.py"]
     for step in steps:
         code = run_step(step, year)
         if code != 0 and not continue_on_error:
