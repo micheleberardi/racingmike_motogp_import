@@ -31,6 +31,11 @@ FALLBACK_COLORS = (
 HEX_COLOR_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}){1,2}$")
 TEAM_NORMALIZE_RE = re.compile(r"[^a-z0-9]+")
 
+MOTOGP_RED = "#E8002D"
+GOLD = "#FFD700"
+SILVER = "#C0C0C0"
+BRONZE = "#CD7F32"
+
 
 def _safe_int(value: Any, default: int = 0) -> int:
     try:
@@ -433,6 +438,23 @@ def get_sessions_with_laps(year: int, event_id: str, category_id: str) -> List[s
 
 
 @st.cache_data(ttl=180, show_spinner=False)
+def get_rider_colors_for_session(session_id: str, year: int, category_id: str, category_name: str) -> Dict[str, str]:
+    """Returns rider_name -> display hex color using team colors from DB."""
+    team_colors = get_team_colors(year, category_id, category_name)
+    rows = _db_fetchall(
+        "SELECT rider_full_name, team_name FROM results WHERE session_id = %s",
+        (session_id,),
+    )
+    result: Dict[str, str] = {}
+    for row in rows:
+        name = str(row.get("rider_full_name") or "").strip()
+        team = str(row.get("team_name") or "").strip()
+        if name:
+            result[name] = _team_color(team, team_colors) if team else _fallback_color(name)
+    return result
+
+
+@st.cache_data(ttl=180, show_spinner=False)
 def get_session_results(session_id: str) -> List[Dict[str, Any]]:
     return _db_fetchall(
         """
@@ -530,6 +552,10 @@ def get_rider_performance(year: int, category_id: str) -> List[Dict[str, Any]]:
     )
 
 
+# ---------------------------------------------------------------------------
+# Chart helpers
+# ---------------------------------------------------------------------------
+
 def render_colored_bar_chart(
     frame: pd.DataFrame,
     value_col: str,
@@ -595,8 +621,39 @@ def style_rows_by_team(frame: pd.DataFrame, team_colors: Optional[pd.Series] = N
     return frame.style.apply(_row_style, axis=1)
 
 
+def _section_header(title: str) -> None:
+    """Render a styled section header with MotoGP red accent."""
+    st.markdown(
+        f'<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;'
+        f'letter-spacing:0.1em;color:{MOTOGP_RED};border-bottom:1px solid {MOTOGP_RED}33;'
+        f'padding-bottom:4px;margin-top:1.2rem;margin-bottom:0.6rem;">{title}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def _pos_badge(pos: int) -> str:
+    """Return HTML badge for a position number."""
+    if pos == 1:
+        bg, fg = GOLD, "#111"
+    elif pos == 2:
+        bg, fg = SILVER, "#111"
+    elif pos == 3:
+        bg, fg = BRONZE, "#fff"
+    else:
+        bg, fg = "#333", "#eee"
+    return (
+        f'<span style="display:inline-block;min-width:26px;text-align:center;'
+        f'background:{bg};color:{fg};border-radius:4px;padding:1px 6px;'
+        f'font-size:0.8rem;font-weight:700;">{pos}</span>'
+    )
+
+
+# ---------------------------------------------------------------------------
+# Tab renderers
+# ---------------------------------------------------------------------------
+
 def render_overview_tab(year: int, events: Sequence[Dict[str, Any]]) -> None:
-    st.subheader("Season overview")
+    _section_header("Season Calendar")
     today = date.today()
 
     finished: List[Dict[str, Any]] = []
@@ -633,10 +690,10 @@ def render_overview_tab(year: int, events: Sequence[Dict[str, Any]]) -> None:
     last_round = sorted(finished, key=lambda e: _as_date(e.get("date_end")) or date.min, reverse=True)[0] if finished else None
 
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Completed rounds", len(finished))
-    col2.metric("Upcoming rounds", len(upcoming))
-    col3.metric("Last round", _event_title(last_round) if last_round else "-")
-    col4.metric("Next round", _event_title(next_round) if next_round else "-")
+    col1.metric("Completed Rounds", len(finished))
+    col2.metric("Upcoming Rounds", len(upcoming))
+    col3.metric("Last Round", _event_title(last_round) if last_round else "-")
+    col4.metric("Next Round", _event_title(next_round) if next_round else "-")
 
     timeline_df = pd.DataFrame(timeline_rows)
     if timeline_df.empty:
@@ -644,11 +701,29 @@ def render_overview_tab(year: int, events: Sequence[Dict[str, Any]]) -> None:
         return
 
     timeline_df = timeline_df.sort_values("Start")
+
+    _section_header("All Rounds")
     st.dataframe(timeline_df, hide_index=True, use_container_width=True)
 
     timeline_df["Day"] = pd.to_datetime(timeline_df["Start"], errors="coerce")
     monthly_df = timeline_df.dropna(subset=["Day"]).copy()
-    if not monthly_df.empty:
+    if not monthly_df.empty and alt is not None:
+        _section_header("Rounds by Month")
+        per_month = monthly_df.groupby(monthly_df["Day"].dt.to_period("M")).size().reset_index()
+        per_month.columns = ["Month", "Rounds"]
+        per_month["Month"] = per_month["Month"].astype(str)
+        bar = (
+            alt.Chart(per_month)
+            .mark_bar(color=MOTOGP_RED, cornerRadiusEnd=4)
+            .encode(
+                x=alt.X("Month:N", title="Month"),
+                y=alt.Y("Rounds:Q", title="Number of rounds"),
+                tooltip=["Month:N", "Rounds:Q"],
+            )
+            .properties(height=220)
+        )
+        st.altair_chart(bar, use_container_width=True)
+    elif not monthly_df.empty:
         per_month = monthly_df.groupby(monthly_df["Day"].dt.to_period("M")).size()
         per_month.index = per_month.index.astype(str)
         st.caption("Rounds by month")
@@ -658,7 +733,7 @@ def render_overview_tab(year: int, events: Sequence[Dict[str, Any]]) -> None:
 
 
 def render_standings_tab(year: int, category_id: str, category_name: str) -> pd.DataFrame:
-    st.subheader("Championship standings")
+    _section_header("Championship Standings")
     rows = get_standings_rows(year, category_id)
     if not rows:
         st.warning("Standings are currently unavailable for this selection.")
@@ -717,24 +792,61 @@ def render_standings_tab(year: int, category_id: str, category_name: str) -> pd.
     leader = df.iloc[0]
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Leader", leader["Rider"])
-    col2.metric("Leader points", int(leader["Points"]))
-    col3.metric("Leader power index", int(leader["Power Index"]))
-    col4.metric("Riders in standings", int(len(df)))
+    col2.metric("Leader Points", int(leader["Points"]))
+    col3.metric("Power Index", int(leader["Power Index"]))
+    col4.metric("Riders in Standings", int(len(df)))
 
+    # Standings table with position badge rendered via HTML
+    _section_header("Full Classification")
+
+    # Build a display df without internal columns
     display_df = df.drop(columns=["Rider ID", "BarColor", "TeamColor"], errors="ignore")
-    st.dataframe(style_rows_by_team(display_df, df.get("TeamColor")), hide_index=True, use_container_width=True)
 
+    # Render position badge via styling
+    def _highlight_pos(row: pd.Series) -> List[str]:
+        pos = _safe_int(row.get("Pos"), default=9999)
+        team_color = ""
+        if "TeamColor" in df.columns:
+            tc_series = df.loc[df["Rider"] == row.get("Rider"), "TeamColor"]
+            if not tc_series.empty:
+                team_color = _normalize_hex_color(tc_series.iloc[0])
+
+        styles: List[str] = []
+        for col_name in row.index:
+            if col_name == "Pos":
+                if pos == 1:
+                    styles.append(f"background-color: {GOLD}33; font-weight: 800; color: #b8860b;")
+                elif pos == 2:
+                    styles.append(f"background-color: {SILVER}33; font-weight: 800; color: #777;")
+                elif pos == 3:
+                    styles.append(f"background-color: {BRONZE}33; font-weight: 800; color: #a0522d;")
+                else:
+                    styles.append("font-weight: 600;")
+            elif team_color:
+                r, g, b = _hex_to_rgb(team_color)
+                styles.append(f"background-color: rgba({r},{g},{b},0.10);")
+            else:
+                styles.append("")
+        return styles
+
+    st.dataframe(
+        display_df.style.apply(_highlight_pos, axis=1),
+        hide_index=True,
+        use_container_width=True,
+    )
+
+    _section_header("Performance Charts")
     chart_col1, chart_col2 = st.columns(2)
     with chart_col1:
-        render_colored_bar_chart(df, value_col="Points", title="Top 10 by points", top_n=10)
+        render_colored_bar_chart(df, value_col="Points", title="Top 10 — Points", top_n=10)
     with chart_col2:
-        render_colored_bar_chart(df, value_col="Power Index", title="Top 10 by power index", top_n=10)
+        render_colored_bar_chart(df, value_col="Power Index", title="Top 10 — Power Index", top_n=10)
 
     return df
 
 
 def render_results_tab(year: int, category_id: str, category_name: str, events: Sequence[Dict[str, Any]]) -> None:
-    st.subheader("Session results")
+    _section_header("Session Results")
     if not events:
         st.info("No events available.")
         return
@@ -768,7 +880,12 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
                 idx
                 for idx, event in enumerate(ordered_events)
                 if str(event.get("status") or "").strip().upper() == "FINISHED"
-                or ((_as_date(event.get("date_end")) or _as_date(event.get("date_start"))) and ((_as_date(event.get("date_end")) or _as_date(event.get("date_start"))) <= today))
+                or (
+                    (_as_date(event.get("date_end")) or _as_date(event.get("date_start")))
+                    and (
+                        (_as_date(event.get("date_end")) or _as_date(event.get("date_start"))) <= today
+                    )
+                )
             ),
             None,
         )
@@ -776,7 +893,7 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
             default_event_index = latest_completed_index
 
     selected_event = st.selectbox(
-        "Select round / circuit",
+        "Select Round / Circuit",
         ordered_events,
         index=default_event_index,
         format_func=lambda event: (
@@ -786,8 +903,8 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
         ),
     )
     st.caption(
-        f"Selected round: {_event_title(selected_event)} "
-        f"({_as_date(selected_event.get('date_start')) or '-'} to {_as_date(selected_event.get('date_end')) or '-'})"
+        f"Selected: **{_event_title(selected_event)}** "
+        f"({_as_date(selected_event.get('date_start')) or '-'} – {_as_date(selected_event.get('date_end')) or '-'})"
     )
 
     sessions = get_sessions_for_event(year, str(selected_event["id"]), category_id)
@@ -809,7 +926,7 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
 
     default_session_index = max(len(sessions_sorted) - 1, 0)
     selected_session = st.selectbox(
-        "Select session",
+        "Select Session",
         sessions_sorted,
         index=default_session_index,
         format_func=_session_label,
@@ -857,7 +974,7 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
     col1, col2, col3 = st.columns(3)
     col1.metric("Winner", winner["Rider"])
     col2.metric("Session", _session_label(selected_session))
-    col3.metric("Winner points", int(winner["Points"]))
+    col3.metric("Winner Points", int(winner["Points"]))
 
     file_url = ""
     for value in results_df["File URL"].tolist():
@@ -865,8 +982,9 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
             file_url = str(value).strip()
             break
     if file_url:
-        st.link_button("Open official session PDF", file_url)
+        st.link_button("Open Official Session PDF", file_url)
 
+    _section_header("Classification")
     results_display_df = results_df.drop(columns=["File URL", "Rider ID", "BarColor", "TeamColor"], errors="ignore")
     st.dataframe(
         style_rows_by_team(results_display_df, results_df.get("TeamColor")),
@@ -876,11 +994,12 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
 
     speed_df = results_df[results_df["Top Speed"] > 0].copy()
     if not speed_df.empty:
-        render_colored_bar_chart(speed_df, value_col="Top Speed", title="Top speed by rider", top_n=10)
+        _section_header("Top Speed Trap")
+        render_colored_bar_chart(speed_df, value_col="Top Speed", title="Top speed by rider (km/h)", top_n=10)
 
 
 def render_lap_times_tab(year: int, category_id: str, category_name: str, events: Sequence[Dict[str, Any]]) -> None:
-    st.subheader("Lap Times Analysis")
+    _section_header("Lap Times Analysis")
 
     if not events:
         st.info("No events available.")
@@ -892,16 +1011,18 @@ def render_lap_times_tab(year: int, category_id: str, category_name: str, events
         reverse=True,
     )
 
-    selected_event = st.selectbox(
-        "Select round",
-        ordered_events,
-        key="lt_event",
-        format_func=lambda e: (
-            f"{_as_date(e.get('date_start')) or '-'} | "
-            f"{e.get('circuit_name') or 'Unknown'} | "
-            f"{_event_title(e)}"
-        ),
-    )
+    col_ev, col_sess = st.columns([3, 1])
+    with col_ev:
+        selected_event = st.selectbox(
+            "Round",
+            ordered_events,
+            key="lt_event",
+            format_func=lambda e: (
+                f"{_as_date(e.get('date_start')) or '-'} | "
+                f"{e.get('circuit_name') or 'Unknown'} | "
+                f"{_event_title(e)}"
+            ),
+        )
 
     sessions = get_sessions_for_event(year, str(selected_event["id"]), category_id)
     sessions_sorted = sorted(
@@ -919,24 +1040,38 @@ def render_lap_times_tab(year: int, category_id: str, category_name: str, events
         st.info("No lap time data available for this round yet. Run `lap_times.py` to import.")
         return
 
-    selected_session = st.selectbox(
-        "Select session",
-        sessions_with_data,
-        key="lt_session",
-        index=len(sessions_with_data) - 1,
-        format_func=_session_label,
-    )
+    with col_sess:
+        selected_session = st.selectbox(
+            "Session",
+            sessions_with_data,
+            key="lt_session",
+            index=len(sessions_with_data) - 1,
+            format_func=_session_label,
+        )
 
-    laps = get_lap_times_for_session(str(selected_session["session_id"]))
+    session_id = str(selected_session["session_id"])
+    laps = get_lap_times_for_session(session_id)
     if not laps:
         st.info("No lap data found for this session.")
         return
 
     df = pd.DataFrame(laps)
-    df["lap_time_s"] = pd.to_numeric(df["lap_time_ms"], errors="coerce") / 1000
+    df["lap_time_ms"] = pd.to_numeric(df["lap_time_ms"], errors="coerce")
+    df["lap_time_s"] = df["lap_time_ms"] / 1000
+    df["lap_number"] = pd.to_numeric(df["lap_number"], errors="coerce")
 
+    # Rider colour map: prefer DB team colours, fall back to deterministic palette
+    rider_color_map = get_rider_colors_for_session(session_id, year, category_id, category_name)
+
+    # Rider filter
     riders_all = sorted(df["rider_name"].dropna().unique().tolist())
-    selected_riders = st.multiselect("Filter riders (all = everyone)", riders_all, default=riders_all, key="lt_riders")
+    selected_riders = st.multiselect(
+        "Filter riders (empty = all)",
+        riders_all,
+        default=[],
+        key="lt_riders",
+        placeholder="All riders",
+    )
     if selected_riders:
         df = df[df["rider_name"].isin(selected_riders)]
 
@@ -944,65 +1079,178 @@ def render_lap_times_tab(year: int, category_id: str, category_name: str, events
         st.info("No data for selected riders.")
         return
 
-    # --- Metrics ---
+    # --- KPI metrics ---
     valid = df[df["lap_time_ms"].notna() & (df["lap_time_ms"] > 0)]
     best_row = valid.loc[valid["lap_time_ms"].idxmin()] if not valid.empty else None
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total laps", len(df))
-    col2.metric("Riders", df["rider_name"].nunique())
-    col3.metric("Fastest lap", best_row["lap_time"] if best_row is not None else "-")
-    col4.metric("Fastest rider", best_row["rider_name"] if best_row is not None else "-")
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Total Laps", len(df))
+    m2.metric("Riders", df["rider_name"].nunique())
+    m3.metric("Fastest Lap", best_row["lap_time"] if best_row is not None else "-")
+    m4.metric("Fastest Rider", str(best_row["rider_name"]) if best_row is not None else "-")
 
-    # --- Pace chart ---
-    st.markdown("#### Race pace")
+    # Resolve colours for currently filtered riders
+    def _rider_color(name: str) -> str:
+        c = rider_color_map.get(str(name), "")
+        return c if c else _fallback_color(str(name))
+
+    rider_list_filtered = df["rider_name"].dropna().unique().tolist()
+    color_range = [_rider_color(r) for r in rider_list_filtered]
+
+    # -----------------------------------------------------------------------
+    # RACE TRACE (gap to leader per lap)
+    # -----------------------------------------------------------------------
+    _section_header("Race Trace — Gap to Leader")
+
     median_ms = valid["lap_time_ms"].median() if not valid.empty else None
-    clean_df = valid.copy()
-    if median_ms:
-        clean_df = clean_df[clean_df["lap_time_ms"] <= median_ms * 1.07]
-
-    if alt is not None and not clean_df.empty:
-        rider_list = clean_df["rider_name"].dropna().unique().tolist()
-        color_range = [_fallback_color(str(r)) for r in rider_list]
-        pace_chart = (
-            alt.Chart(clean_df)
-            .mark_line(point=True, strokeWidth=2)
-            .encode(
-                x=alt.X("lap_number:Q", title="Lap"),
-                y=alt.Y("lap_time_s:Q", title="Lap time (s)", scale=alt.Scale(zero=False)),
-                color=alt.Color(
-                    "rider_name:N",
-                    title="Rider",
-                    scale=alt.Scale(domain=rider_list, range=color_range),
-                ),
-                tooltip=[
-                    alt.Tooltip("rider_name:N", title="Rider"),
-                    alt.Tooltip("lap_number:Q", title="Lap"),
-                    alt.Tooltip("lap_time:N", title="Time"),
-                    alt.Tooltip("speed:Q", title="Speed (km/h)"),
-                ],
-            )
-            .properties(height=400)
-        )
-        st.altair_chart(pace_chart, use_container_width=True)
+    if median_ms and median_ms > 0:
+        df_clean = valid[valid["lap_time_ms"] <= median_ms * 1.15].copy()
     else:
-        pivot = clean_df.pivot_table(index="lap_number", columns="rider_name", values="lap_time_s")
-        st.line_chart(pivot)
+        df_clean = valid.copy()
 
-    # --- Best lap ranking ---
-    st.markdown("#### Best lap per rider")
+    if not df_clean.empty and df_clean["lap_number"].notna().any():
+        df_clean = df_clean.sort_values(["rider_name", "lap_number"])
+        df_clean["cumulative_ms"] = df_clean.groupby("rider_name")["lap_time_ms"].cumsum()
+        leader = (
+            df_clean.groupby("lap_number")["cumulative_ms"]
+            .min()
+            .rename("leader_ms")
+        )
+        df_clean = df_clean.join(leader, on="lap_number")
+        df_clean["gap_s"] = (df_clean["cumulative_ms"] - df_clean["leader_ms"]) / 1000
+
+        if alt is not None:
+            trace_riders = df_clean["rider_name"].dropna().unique().tolist()
+            trace_colors = [_rider_color(r) for r in trace_riders]
+            trace_chart = (
+                alt.Chart(df_clean)
+                .mark_line(strokeWidth=2, point=alt.OverlayMarkDef(size=30, filled=True))
+                .encode(
+                    x=alt.X("lap_number:Q", title="Lap"),
+                    y=alt.Y(
+                        "gap_s:Q",
+                        title="Gap to leader (s)",
+                        scale=alt.Scale(reverse=True),
+                        axis=alt.Axis(format=".1f"),
+                    ),
+                    color=alt.Color(
+                        "rider_name:N",
+                        title="Rider",
+                        scale=alt.Scale(domain=trace_riders, range=trace_colors),
+                    ),
+                    tooltip=[
+                        alt.Tooltip("rider_name:N", title="Rider"),
+                        alt.Tooltip("lap_number:Q", title="Lap"),
+                        alt.Tooltip("gap_s:Q", title="Gap (s)", format=".3f"),
+                        alt.Tooltip("lap_time_s:Q", title="Lap time (s)", format=".3f"),
+                    ],
+                )
+                .properties(height=400)
+                .interactive()
+            )
+            st.altair_chart(trace_chart, use_container_width=True)
+        else:
+            pivot = df_clean.pivot_table(index="lap_number", columns="rider_name", values="gap_s")
+            st.line_chart(pivot)
+    else:
+        st.info("Not enough laps to compute race trace.")
+
+    # -----------------------------------------------------------------------
+    # PACE DISTRIBUTION (box plot)
+    # -----------------------------------------------------------------------
+    _section_header("Pace Distribution")
+
+    if not valid.empty and alt is not None:
+        box_median = valid["lap_time_ms"].median()
+        clean_for_pace = valid[valid["lap_time_ms"] <= box_median * 1.07].copy()
+        clean_for_pace["lap_time_s"] = clean_for_pace["lap_time_ms"] / 1000
+
+        if not clean_for_pace.empty:
+            # Compute median per rider to sort the axis
+            rider_medians = (
+                clean_for_pace.groupby("rider_name")["lap_time_s"]
+                .median()
+                .sort_values()
+            )
+            rider_order = rider_medians.index.tolist()
+            pace_riders = clean_for_pace["rider_name"].dropna().unique().tolist()
+            pace_colors = [_rider_color(r) for r in pace_riders]
+
+            box_chart = (
+                alt.Chart(clean_for_pace)
+                .mark_boxplot(extent="min-max", size=14)
+                .encode(
+                    x=alt.X(
+                        "lap_time_s:Q",
+                        title="Lap time (s)",
+                        scale=alt.Scale(zero=False),
+                    ),
+                    y=alt.Y(
+                        "rider_name:N",
+                        title="",
+                        sort=rider_order,
+                        axis=alt.Axis(labelLimit=300),
+                    ),
+                    color=alt.Color(
+                        "rider_name:N",
+                        scale=alt.Scale(domain=pace_riders, range=pace_colors),
+                        legend=None,
+                    ),
+                    tooltip=[
+                        alt.Tooltip("rider_name:N", title="Rider"),
+                        alt.Tooltip("lap_time_s:Q", title="Lap time (s)", format=".3f"),
+                    ],
+                )
+                .properties(height=max(320, len(rider_order) * 22))
+            )
+            st.altair_chart(box_chart, use_container_width=True)
+        else:
+            st.info("Not enough clean laps for pace distribution.")
+    elif alt is None:
+        st.info("Install altair for pace distribution chart.")
+
+    # -----------------------------------------------------------------------
+    # BEST LAP COMPARISON
+    # -----------------------------------------------------------------------
+    _section_header("Best Lap Ranking")
+
     best_laps = df[df["is_best_lap"] == 1].copy()
     if best_laps.empty:
-        best_laps = df.loc[df.groupby("rider_name")["lap_time_ms"].idxmin()].copy()
+        best_laps = df.loc[
+            df[df["lap_time_ms"].notna() & (df["lap_time_ms"] > 0)]
+            .groupby("rider_name")["lap_time_ms"]
+            .idxmin()
+        ].copy()
     best_laps = best_laps.sort_values("lap_time_ms").reset_index(drop=True)
-    best_laps["BarColor"] = best_laps["rider_name"].apply(lambda r: _fallback_color(str(r)))
+    best_laps["BarColor"] = best_laps["rider_name"].apply(lambda r: _rider_color(str(r)))
     best_laps["Rider"] = best_laps["rider_name"]
     best_laps["Best Lap (s)"] = best_laps["lap_time_ms"] / 1000
-    render_colored_bar_chart(best_laps, value_col="Best Lap (s)", title="Best lap ranking", top_n=30)
 
-    # --- Sector comparison ---
+    if alt is not None and not best_laps.empty:
+        bl_sorted = best_laps.sort_values("Best Lap (s)", ascending=True).head(30)
+        bl_chart = (
+            alt.Chart(bl_sorted)
+            .mark_bar(cornerRadiusEnd=4)
+            .encode(
+                x=alt.X("Best Lap (s):Q", title="Best lap time (s)", scale=alt.Scale(zero=False)),
+                y=alt.Y("Rider:N", sort=list(bl_sorted["Rider"]), title=""),
+                color=alt.Color("BarColor:N", scale=None, legend=None),
+                tooltip=[
+                    alt.Tooltip("Rider:N"),
+                    alt.Tooltip("Best Lap (s):Q", format=".3f"),
+                ],
+            )
+            .properties(height=max(280, len(bl_sorted) * 22), title="Best lap per rider")
+        )
+        st.altair_chart(bl_chart, use_container_width=True)
+    else:
+        render_colored_bar_chart(best_laps, value_col="Best Lap (s)", title="Best lap ranking", top_n=30)
+
+    # -----------------------------------------------------------------------
+    # SECTOR TIMES (T1–T4 grouped bar)
+    # -----------------------------------------------------------------------
     sector_df = best_laps.dropna(subset=["t1_ms"]).copy()
     if not sector_df.empty and alt is not None:
-        st.markdown("#### Sector times (best lap)")
+        _section_header("Sector Times — Best Lap")
         melted = sector_df.melt(
             id_vars="rider_name",
             value_vars=["t1_ms", "t2_ms", "t3_ms", "t4_ms"],
@@ -1018,44 +1266,48 @@ def render_lap_times_tab(year: int, category_id: str, category_name: str, events
             alt.Chart(melted)
             .mark_bar()
             .encode(
-                x=alt.X("time_s:Q", title="Time (s)"),
+                x=alt.X("time_s:Q", title="Sector time (s)"),
                 y=alt.Y("rider_name:N", title="", sort="-x"),
-                color=alt.Color("sector:N", title="Sector"),
+                color=alt.Color(
+                    "sector:N",
+                    title="Sector",
+                    scale=alt.Scale(
+                        domain=["T1", "T2", "T3", "T4"],
+                        range=["#E8002D", "#FF6B35", "#FFC72C", "#44B8A8"],
+                    ),
+                ),
                 tooltip=[
                     alt.Tooltip("rider_name:N", title="Rider"),
                     alt.Tooltip("sector:N", title="Sector"),
                     alt.Tooltip("time_s:Q", title="Time (s)", format=".3f"),
                 ],
             )
-            .properties(height=max(300, len(sector_df) * 22))
+            .properties(height=max(300, len(sector_df) * 22), title="Sector breakdown (best lap)")
         )
         st.altair_chart(sector_chart, use_container_width=True)
 
-    # --- Speed trap ---
-    speed_df = best_laps[best_laps["speed"].notna() & (best_laps["speed"] > 0)].copy()
-    if not speed_df.empty:
-        st.markdown("#### Top speed (best lap)")
-        speed_df["BarColor"] = speed_df["rider_name"].apply(lambda r: _fallback_color(str(r)))
-        speed_df["Rider"] = speed_df["rider_name"]
-        speed_df["Speed (km/h)"] = speed_df["speed"]
-        render_colored_bar_chart(speed_df, value_col="Speed (km/h)", title="Top speed", top_n=30)
-
-    # --- Full table ---
-    with st.expander("Full lap data table"):
+    # -----------------------------------------------------------------------
+    # FULL LAP TABLE
+    # -----------------------------------------------------------------------
+    with st.expander("Full Lap Data Table"):
         show_cols = ["rider_name", "lap_number", "lap_time", "t1", "t2", "t3", "t4", "speed", "is_best_lap"]
         available = [c for c in show_cols if c in df.columns]
         st.dataframe(
-            df[available].rename(columns={
-                "rider_name": "Rider", "lap_number": "Lap", "lap_time": "Time",
-                "is_best_lap": "Best",
-            }),
+            df[available].rename(
+                columns={
+                    "rider_name": "Rider",
+                    "lap_number": "Lap",
+                    "lap_time": "Time",
+                    "is_best_lap": "Best",
+                }
+            ),
             hide_index=True,
             use_container_width=True,
         )
 
 
 def render_stats_lab(standings_df: pd.DataFrame) -> None:
-    st.subheader("Stats Lab")
+    _section_header("Stats Lab")
     st.caption("Experimental metrics calculated from local DB data.")
     if standings_df.empty:
         st.info("Standings data is required to compute these stats.")
@@ -1063,25 +1315,27 @@ def render_stats_lab(standings_df: pd.DataFrame) -> None:
 
     col1, col2 = st.columns(2)
     with col1:
-        render_colored_bar_chart(standings_df, value_col="Power Index", title="Power Index Top 10", top_n=10)
+        render_colored_bar_chart(standings_df, value_col="Power Index", title="Power Index — Top 10", top_n=10)
     with col2:
-        render_colored_bar_chart(standings_df, value_col="Consistency", title="Consistency Top 10", top_n=10)
+        render_colored_bar_chart(standings_df, value_col="Consistency", title="Consistency — Top 10", top_n=10)
 
     col3, col4 = st.columns(2)
     with col3:
-        render_colored_bar_chart(standings_df, value_col="Wins", title="Wins Top 10", top_n=10)
+        render_colored_bar_chart(standings_df, value_col="Wins", title="Wins — Top 10", top_n=10)
     with col4:
-        render_colored_bar_chart(standings_df, value_col="Podiums", title="Podiums Top 10", top_n=10)
+        render_colored_bar_chart(standings_df, value_col="Podiums", title="Podiums — Top 10", top_n=10)
 
     scatter_df = standings_df.copy()
     if not scatter_df.empty and alt is not None:
+        _section_header("Points vs Consistency")
         scatter_chart = (
             alt.Chart(scatter_df)
-            .mark_circle(size=85)
+            .mark_circle(size=90, opacity=0.85)
             .encode(
-                x=alt.X("Consistency:Q", title="Consistency"),
-                y=alt.Y("Points:Q", title="Points"),
+                x=alt.X("Consistency:Q", title="Consistency score"),
+                y=alt.Y("Points:Q", title="Championship points"),
                 color=alt.Color("BarColor:N", scale=None, legend=None),
+                size=alt.Size("Wins:Q", legend=None, scale=alt.Scale(range=[60, 400])),
                 tooltip=[
                     alt.Tooltip("Rider:N"),
                     alt.Tooltip("Points:Q"),
@@ -1090,37 +1344,109 @@ def render_stats_lab(standings_df: pd.DataFrame) -> None:
                     alt.Tooltip("Podiums:Q"),
                 ],
             )
-            .properties(title="Points vs Consistency", height=360)
+            .properties(title="Bubble size = Wins", height=380)
         )
         st.altair_chart(scatter_chart, use_container_width=True)
 
     st.caption("Charts are calculated from synchronized local DB data.")
 
 
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
 def main() -> None:
-    st.set_page_config(page_title="MotoGP Race Hub", page_icon="🏁", layout="wide")
+    st.set_page_config(
+        page_title="MotoGP Race Hub",
+        page_icon="\U0001f3c1",
+        layout="wide",
+        initial_sidebar_state="expanded",
+    )
+
+    # Professional dark-accent motorsport theme injected on top of default Streamlit
     st.markdown(
         """
         <style>
-            .block-container {padding-top: 1.2rem; padding-bottom: 2rem;}
-            .stMetric {border: 1px solid #e8e8e8; border-radius: 10px; padding: 8px 12px;}
-            .app-subtitle {color: #4f4f4f; margin-top: -8px;}
+        .block-container {padding-top: 0.8rem; padding-bottom: 2rem;}
+
+        /* Metric cards */
+        [data-testid="metric-container"] {
+            border: 1px solid #e8e8e8;
+            border-radius: 10px;
+            padding: 12px 16px;
+            background: rgba(232, 0, 45, 0.04);
+            border-left: 3px solid #E8002D;
+        }
+        [data-testid="stMetricValue"] {
+            font-size: 1.5rem !important;
+            font-weight: 800 !important;
+        }
+        [data-testid="stMetricLabel"] {
+            font-size: 0.7rem !important;
+            font-weight: 700 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #888 !important;
+        }
+
+        /* Tab bar */
+        .stTabs [data-baseweb="tab"] {
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .stTabs [aria-selected="true"] {
+            color: #E8002D !important;
+            border-bottom: 3px solid #E8002D !important;
+        }
+
+        /* Sidebar header */
+        [data-testid="stSidebarContent"] h2,
+        [data-testid="stSidebarContent"] h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #E8002D;
+        }
+
+        /* App title accent */
+        .mgp-title {
+            font-size: 1.9rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+        .mgp-title span {
+            color: #E8002D;
+        }
+        .mgp-subtitle {
+            color: #888;
+            font-size: 0.88rem;
+            margin-top: -6px;
+            margin-bottom: 0.6rem;
+        }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
-    st.title("MotoGP Race Hub")
     st.markdown(
-        '<p class="app-subtitle">Results, standings, and advanced stats from your local database.</p>',
+        '<div class="mgp-title">MotoGP <span>Race Hub</span></div>'
+        '<div class="mgp-subtitle">Results, standings & telemetry analytics from your local database</div>',
         unsafe_allow_html=True,
     )
 
     with st.sidebar:
-        st.header("Controls")
-        if st.button("Refresh data now"):
+        st.markdown(
+            f'<div style="color:{MOTOGP_RED};font-weight:900;font-size:1.1rem;'
+            f'letter-spacing:0.04em;margin-bottom:0.5rem;">CONTROLS</div>',
+            unsafe_allow_html=True,
+        )
+        if st.button("Refresh Data", use_container_width=True):
             st.cache_data.clear()
             st.rerun()
+
+        st.divider()
 
         years = get_available_years()
         if not years:
@@ -1150,12 +1476,13 @@ def main() -> None:
         selected_category_id = str(selected_category["id"])
         selected_category_name = str(selected_category.get("name") or "")
 
-        st.caption("Data source: local MySQL DB")
+        st.divider()
+        st.caption(f"DB source: local MySQL\n\nSeason: **{selected_year}** | {selected_category_name}")
 
     events = get_events_for_year(selected_year)
 
     tab_overview, tab_standings, tab_results, tab_lap_times, tab_stats = st.tabs(
-        ["Overview", "Standings", "Results", "Lap Times", "Stats Lab"]
+        ["\U0001f4c5  Overview", "\U0001f3c6  Standings", "\U0001f3c1  Results", "⏱️  Lap Times", "\U0001f9ea  Stats Lab"]
     )
 
     with tab_overview:
