@@ -12,6 +12,7 @@ import io
 import logging
 import re
 import time as time_module
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional
 
 import requests
@@ -424,22 +425,80 @@ def _insert_laps(cursor, session_row: dict, riders: list) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Per-session worker (runs in a thread)
+# ---------------------------------------------------------------------------
+
+def _process_session(sess: dict, http) -> dict:
+    """
+    Download, parse, resolve and insert one session.
+    Opens its own DB connection so it is safe to run in a thread.
+    Returns a result dict with keys: session_id, laps, skipped, error.
+    """
+    session_id   = sess["id"]
+    analysis_url = sess["analysis_url"]
+
+    with get_db_connection() as cnx:
+        with cnx.cursor() as cursor:
+            # Skip if already imported
+            cursor.execute(
+                "SELECT COUNT(*) AS cnt FROM lap_times WHERE session_id = %s",
+                (session_id,),
+            )
+            if cursor.fetchone()["cnt"] > 0:
+                return {"session_id": session_id, "laps": 0, "skipped": True, "error": None}
+
+            # Download
+            try:
+                resp = http.get(analysis_url, timeout=30)
+                resp.raise_for_status()
+            except Exception as exc:
+                return {"session_id": session_id, "laps": 0, "skipped": False, "error": str(exc)}
+
+            # Parse
+            try:
+                riders = parse_analysis_pdf(resp.content)
+            except Exception as exc:
+                return {"session_id": session_id, "laps": 0, "skipped": False, "error": f"parse: {exc}"}
+
+            if not riders:
+                return {"session_id": session_id, "laps": 0, "skipped": False, "error": "no data parsed"}
+
+            # Resolve + insert
+            riders = _resolve_riders(session_id, riders, cursor)
+            n = _insert_laps(cursor, sess, riders)
+
+        cnx.commit()
+
+    return {"session_id": session_id, "laps": n, "skipped": False, "error": None,
+            "event_name": sess.get("event_name", ""), "type": sess.get("type", ""),
+            "riders": len(riders)}
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
 def main() -> int:
+    import argparse
     setup_logging()
-    target_year = parse_year_arg()
+
+    parser = argparse.ArgumentParser(add_help=True)
+    parser.add_argument("--year", type=int, default=None)
+    parser.add_argument("--workers", type=int, default=4,
+                        help="Parallel download workers (default: 4)")
+    args = parser.parse_args()
+
+    from runtime import get_target_year
+    target_year = get_target_year(args.year)
+    workers = max(1, min(args.workers, 16))
 
     if pdfplumber is None:
         logging.error("pdfplumber is required. Install with: pip install pdfplumber")
         return 1
 
     http = get_http_session()
-    total_sessions = 0
-    total_laps = 0
-    total_skipped = 0
 
+    # Fetch session list (single connection, read-only)
     with get_db_connection() as cnx:
         with cnx.cursor() as cursor:
             cursor.execute(
@@ -459,65 +518,46 @@ def main() -> int:
             )
             sessions = cursor.fetchall()
 
-            for sess in sessions:
-                session_id  = sess["id"]
-                analysis_url = sess["analysis_url"]
+    logging.info("Sessions to process: %s | workers: %s", len(sessions), workers)
 
-                # Skip if we already have lap data for this session
-                cursor.execute(
-                    "SELECT COUNT(*) AS cnt FROM lap_times WHERE session_id = %s",
-                    (session_id,),
-                )
-                existing = cursor.fetchone()["cnt"]
-                if existing > 0:
-                    logging.debug("Skip session %s (already %s laps)", session_id, existing)
-                    total_skipped += 1
-                    continue
+    total_sessions = 0
+    total_laps = 0
+    total_skipped = 0
+    total_errors = 0
 
-                # Download PDF
-                try:
-                    resp = http.get(analysis_url, timeout=30)
-                    resp.raise_for_status()
-                except Exception as exc:
-                    logging.warning("Cannot fetch PDF for session %s: %s", session_id, exc)
-                    continue
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(_process_session, sess, http): sess for sess in sessions}
+        for future in as_completed(futures):
+            try:
+                result = future.result()
+            except Exception as exc:
+                logging.error("Unexpected worker error: %s", exc)
+                total_errors += 1
+                continue
 
-                # Parse
-                try:
-                    riders = parse_analysis_pdf(resp.content)
-                except Exception as exc:
-                    logging.error("PDF parse error session %s: %s", session_id, exc)
-                    continue
-
-                if not riders:
-                    logging.warning("No data parsed for session %s (%s)", session_id, analysis_url)
-                    continue
-
-                # Resolve anonymous riders
-                riders = _resolve_riders(session_id, riders, cursor)
-
-                # Insert
-                n = _insert_laps(cursor, sess, riders)
-                total_laps += n
+            if result["skipped"]:
+                total_skipped += 1
+            elif result["error"]:
+                logging.warning("Session %s error: %s", result["session_id"], result["error"])
+                total_errors += 1
+            else:
+                total_laps += result["laps"]
                 total_sessions += 1
-
                 logging.info(
                     "Session %s | %s %s | riders=%s laps=%s",
-                    session_id,
-                    sess.get("event_name", ""),
-                    sess.get("type", ""),
-                    len(riders),
-                    n,
+                    result["session_id"],
+                    result.get("event_name", ""),
+                    result.get("type", ""),
+                    result.get("riders", 0),
+                    result["laps"],
                 )
-                time_module.sleep(0.3)
-
-        cnx.commit()
 
     logging.info(
-        "Lap times import anno %s | sessions=%s skipped=%s total_laps=%s",
+        "Lap times import anno %s | sessions=%s skipped=%s errors=%s total_laps=%s",
         target_year,
         total_sessions,
         total_skipped,
+        total_errors,
         total_laps,
     )
     return 0
