@@ -18,7 +18,7 @@ export async function GET(
        LEFT JOIN TeamRiders tr
          ON tr.year = sr.year
          AND tr.category_id = sr.category_id
-         AND tr.rider_full_name = sr.rider_full_name
+         AND tr.rider_id = sr.rider_id
        WHERE sr.year = ? AND sr.category_id = ?
        ORDER BY sr.position ASC`,
       [year, categoryId]
