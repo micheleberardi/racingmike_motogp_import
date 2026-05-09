@@ -1,12 +1,12 @@
 export interface Category {
-  id: number
+  id: string
   name: string
   year: number
   legacy_id?: string
 }
 
 export interface Event {
-  id: number
+  id: string
   name: string
   sponsored_name?: string
   year: number
@@ -18,11 +18,11 @@ export interface Event {
 }
 
 export interface Session {
-  id: number
+  id: string
   type: string
   year: number
-  event_id: number
-  category_id: number
+  event_id: string
+  category_id: string
   category_name: string
   event_name: string
   circuit_name: string
@@ -32,7 +32,7 @@ export interface Session {
 }
 
 export interface Result {
-  session_id: number
+  session_id: string
   rider_id: string
   rider_full_name: string
   rider_number: string
@@ -46,15 +46,15 @@ export interface Result {
   top_speed: number
   average_speed: number
   year: number
-  event_id: number
-  category_id: number
+  event_id: string
+  category_id: string
   session_type: string
   team_color?: string
 }
 
 export interface Standing {
   year: number
-  category_id: number
+  category_id: string
   category_name: string
   position: number
   rider_id: string
@@ -67,7 +67,7 @@ export interface Standing {
 }
 
 export interface LapTime {
-  session_id: number
+  session_id: string
   rider_name: string
   rider_number: string
   lap_number: number
@@ -84,8 +84,8 @@ export interface LapTime {
   speed?: number
   is_best_lap: number
   year: number
-  event_id: number
-  category_id: number
+  event_id: string
+  category_id: string
   event_name: string
   circuit_name: string
   session_type: string
@@ -117,7 +117,7 @@ export interface LapTimesResponse {
 
 export interface TeamRider {
   year: number
-  category_id: number
+  category_id: string
   category_name: string
   team_name: string
   team_color?: string

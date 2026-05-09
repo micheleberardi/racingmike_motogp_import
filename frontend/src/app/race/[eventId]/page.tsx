@@ -22,7 +22,7 @@ function formatDate(dateStr: string) {
 
 export default function RacePage() {
   const params = useParams()
-  const eventId = parseInt(params.eventId as string)
+  const eventId = params.eventId as string
 
   const [event, setEvent] = useState<Event | null>(null)
   const [sessions, setSessions] = useState<Session[]>([])
@@ -72,10 +72,10 @@ export default function RacePage() {
           if (!sess) return
           setSessions(sess)
           // Auto-select race session, or last completed
-          const race = sess.find((s) => s.type === 'RAC' && s.status === 'Finished')
+          const race = sess.find((s) => s.type === 'RAC' && s.status?.toUpperCase() === 'FINISHED')
           const lastCompleted = [...sess]
             .reverse()
-            .find((s) => s.status === 'Finished' || s.status === 'completed')
+            .find((s) => s.status?.toUpperCase() === 'FINISHED')
           setSelectedSession(race || lastCompleted || sess[sess.length - 1] || null)
           setLoading(false)
         })

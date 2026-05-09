@@ -34,9 +34,10 @@ export default function HomePage() {
   useEffect(() => {
     fetch('/api/years')
       .then((r) => r.json())
-      .then((data: number[]) => {
-        setYears(data)
-        if (data.length > 0) setSelectedYear(data[0])
+      .then((data) => {
+        const arr: number[] = Array.isArray(data) ? data : []
+        setYears(arr)
+        if (arr.length > 0) setSelectedYear(arr[0])
       })
       .catch(() => setError('Failed to load years'))
   }, [])
@@ -48,10 +49,11 @@ export default function HomePage() {
     setSelectedCategory(null)
     fetch(`/api/categories/${selectedYear}`)
       .then((r) => r.json())
-      .then((data: Category[]) => {
-        setCategories(data)
-        const motogp = data.find((c) => c.name.toLowerCase().includes('motogp'))
-        setSelectedCategory(motogp || data[0] || null)
+      .then((data) => {
+        const arr: Category[] = Array.isArray(data) ? data : []
+        setCategories(arr)
+        const motogp = arr.find((c) => c.name.toLowerCase().includes('motogp'))
+        setSelectedCategory(motogp || arr[0] || null)
       })
       .catch(() => setError('Failed to load categories'))
   }, [selectedYear])
@@ -60,7 +62,7 @@ export default function HomePage() {
     if (!selectedYear) return
     fetch(`/api/events/${selectedYear}`)
       .then((r) => r.json())
-      .then((data: Event[]) => setEvents(data))
+      .then((data) => setEvents(Array.isArray(data) ? data : []))
       .catch(() => {})
   }, [selectedYear])
 
@@ -69,8 +71,8 @@ export default function HomePage() {
     setLoading(true)
     fetch(`/api/standings/${selectedYear}/${selectedCategory.id}`)
       .then((r) => r.json())
-      .then((data: Standing[]) => {
-        setStandings(data)
+      .then((data) => {
+        setStandings(Array.isArray(data) ? data : [])
         setLoading(false)
       })
       .catch(() => {
