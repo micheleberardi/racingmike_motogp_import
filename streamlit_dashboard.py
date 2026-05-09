@@ -401,6 +401,38 @@ def get_sessions_for_event(year: int, event_id: str, category_id: str) -> List[D
 
 
 @st.cache_data(ttl=180, show_spinner=False)
+def get_lap_times_for_session(session_id: str) -> List[Dict[str, Any]]:
+    return _db_fetchall(
+        """
+        SELECT rider_name, rider_number, lap_number,
+               lap_time, lap_time_ms,
+               t1, t1_ms, t2, t2_ms, t3, t3_ms, t4, t4_ms,
+               speed, is_best_lap
+        FROM lap_times
+        WHERE session_id = %s
+        ORDER BY rider_name, lap_number
+        """,
+        (session_id,),
+    )
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_sessions_with_laps(year: int, event_id: str, category_id: str) -> List[str]:
+    rows = _db_fetchall(
+        """
+        SELECT DISTINCT lt.session_id
+        FROM lap_times lt
+        JOIN sessions s ON s.id = lt.session_id
+        WHERE lt.year = %s
+          AND lt.event_id = %s
+          AND lt.category_id = %s
+        """,
+        (year, event_id, category_id),
+    )
+    return [str(r["session_id"]) for r in rows]
+
+
+@st.cache_data(ttl=180, show_spinner=False)
 def get_session_results(session_id: str) -> List[Dict[str, Any]]:
     return _db_fetchall(
         """
@@ -847,6 +879,181 @@ def render_results_tab(year: int, category_id: str, category_name: str, events: 
         render_colored_bar_chart(speed_df, value_col="Top Speed", title="Top speed by rider", top_n=10)
 
 
+def render_lap_times_tab(year: int, category_id: str, category_name: str, events: Sequence[Dict[str, Any]]) -> None:
+    st.subheader("Lap Times Analysis")
+
+    if not events:
+        st.info("No events available.")
+        return
+
+    ordered_events = sorted(
+        [e for e in events if e.get("id")],
+        key=lambda e: _as_date(e.get("date_end")) or date.min,
+        reverse=True,
+    )
+
+    selected_event = st.selectbox(
+        "Select round",
+        ordered_events,
+        key="lt_event",
+        format_func=lambda e: (
+            f"{_as_date(e.get('date_start')) or '-'} | "
+            f"{e.get('circuit_name') or 'Unknown'} | "
+            f"{_event_title(e)}"
+        ),
+    )
+
+    sessions = get_sessions_for_event(year, str(selected_event["id"]), category_id)
+    sessions_sorted = sorted(
+        [s for s in sessions if s.get("session_id")],
+        key=lambda s: (
+            _as_date(s.get("session_date")) or date.min,
+            _safe_int(s.get("session_number"), 999),
+        ),
+    )
+
+    sessions_with_laps = set(get_sessions_with_laps(year, str(selected_event["id"]), category_id))
+    sessions_with_data = [s for s in sessions_sorted if str(s["session_id"]) in sessions_with_laps]
+
+    if not sessions_with_data:
+        st.info("No lap time data available for this round yet. Run `lap_times.py` to import.")
+        return
+
+    selected_session = st.selectbox(
+        "Select session",
+        sessions_with_data,
+        key="lt_session",
+        index=len(sessions_with_data) - 1,
+        format_func=_session_label,
+    )
+
+    laps = get_lap_times_for_session(str(selected_session["session_id"]))
+    if not laps:
+        st.info("No lap data found for this session.")
+        return
+
+    df = pd.DataFrame(laps)
+    df["lap_time_s"] = pd.to_numeric(df["lap_time_ms"], errors="coerce") / 1000
+
+    riders_all = sorted(df["rider_name"].dropna().unique().tolist())
+    selected_riders = st.multiselect("Filter riders (all = everyone)", riders_all, default=riders_all, key="lt_riders")
+    if selected_riders:
+        df = df[df["rider_name"].isin(selected_riders)]
+
+    if df.empty:
+        st.info("No data for selected riders.")
+        return
+
+    # --- Metrics ---
+    valid = df[df["lap_time_ms"].notna() & (df["lap_time_ms"] > 0)]
+    best_row = valid.loc[valid["lap_time_ms"].idxmin()] if not valid.empty else None
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Total laps", len(df))
+    col2.metric("Riders", df["rider_name"].nunique())
+    col3.metric("Fastest lap", best_row["lap_time"] if best_row is not None else "-")
+    col4.metric("Fastest rider", best_row["rider_name"] if best_row is not None else "-")
+
+    # --- Pace chart ---
+    st.markdown("#### Race pace")
+    median_ms = valid["lap_time_ms"].median() if not valid.empty else None
+    clean_df = valid.copy()
+    if median_ms:
+        clean_df = clean_df[clean_df["lap_time_ms"] <= median_ms * 1.07]
+
+    if alt is not None and not clean_df.empty:
+        rider_list = clean_df["rider_name"].dropna().unique().tolist()
+        color_range = [_fallback_color(str(r)) for r in rider_list]
+        pace_chart = (
+            alt.Chart(clean_df)
+            .mark_line(point=True, strokeWidth=2)
+            .encode(
+                x=alt.X("lap_number:Q", title="Lap"),
+                y=alt.Y("lap_time_s:Q", title="Lap time (s)", scale=alt.Scale(zero=False)),
+                color=alt.Color(
+                    "rider_name:N",
+                    title="Rider",
+                    scale=alt.Scale(domain=rider_list, range=color_range),
+                ),
+                tooltip=[
+                    alt.Tooltip("rider_name:N", title="Rider"),
+                    alt.Tooltip("lap_number:Q", title="Lap"),
+                    alt.Tooltip("lap_time:N", title="Time"),
+                    alt.Tooltip("speed:Q", title="Speed (km/h)"),
+                ],
+            )
+            .properties(height=400)
+        )
+        st.altair_chart(pace_chart, use_container_width=True)
+    else:
+        pivot = clean_df.pivot_table(index="lap_number", columns="rider_name", values="lap_time_s")
+        st.line_chart(pivot)
+
+    # --- Best lap ranking ---
+    st.markdown("#### Best lap per rider")
+    best_laps = df[df["is_best_lap"] == 1].copy()
+    if best_laps.empty:
+        best_laps = df.loc[df.groupby("rider_name")["lap_time_ms"].idxmin()].copy()
+    best_laps = best_laps.sort_values("lap_time_ms").reset_index(drop=True)
+    best_laps["BarColor"] = best_laps["rider_name"].apply(lambda r: _fallback_color(str(r)))
+    best_laps["Rider"] = best_laps["rider_name"]
+    best_laps["Best Lap (s)"] = best_laps["lap_time_ms"] / 1000
+    render_colored_bar_chart(best_laps, value_col="Best Lap (s)", title="Best lap ranking", top_n=30)
+
+    # --- Sector comparison ---
+    sector_df = best_laps.dropna(subset=["t1_ms"]).copy()
+    if not sector_df.empty and alt is not None:
+        st.markdown("#### Sector times (best lap)")
+        melted = sector_df.melt(
+            id_vars="rider_name",
+            value_vars=["t1_ms", "t2_ms", "t3_ms", "t4_ms"],
+            var_name="sector",
+            value_name="time_ms",
+        )
+        melted = melted.dropna(subset=["time_ms"])
+        melted["time_s"] = melted["time_ms"] / 1000
+        melted["sector"] = melted["sector"].str.replace("_ms", "").str.upper()
+        melted["rider_name"] = melted["rider_name"].astype(str)
+
+        sector_chart = (
+            alt.Chart(melted)
+            .mark_bar()
+            .encode(
+                x=alt.X("time_s:Q", title="Time (s)"),
+                y=alt.Y("rider_name:N", title="", sort="-x"),
+                color=alt.Color("sector:N", title="Sector"),
+                tooltip=[
+                    alt.Tooltip("rider_name:N", title="Rider"),
+                    alt.Tooltip("sector:N", title="Sector"),
+                    alt.Tooltip("time_s:Q", title="Time (s)", format=".3f"),
+                ],
+            )
+            .properties(height=max(300, len(sector_df) * 22))
+        )
+        st.altair_chart(sector_chart, use_container_width=True)
+
+    # --- Speed trap ---
+    speed_df = best_laps[best_laps["speed"].notna() & (best_laps["speed"] > 0)].copy()
+    if not speed_df.empty:
+        st.markdown("#### Top speed (best lap)")
+        speed_df["BarColor"] = speed_df["rider_name"].apply(lambda r: _fallback_color(str(r)))
+        speed_df["Rider"] = speed_df["rider_name"]
+        speed_df["Speed (km/h)"] = speed_df["speed"]
+        render_colored_bar_chart(speed_df, value_col="Speed (km/h)", title="Top speed", top_n=30)
+
+    # --- Full table ---
+    with st.expander("Full lap data table"):
+        show_cols = ["rider_name", "lap_number", "lap_time", "t1", "t2", "t3", "t4", "speed", "is_best_lap"]
+        available = [c for c in show_cols if c in df.columns]
+        st.dataframe(
+            df[available].rename(columns={
+                "rider_name": "Rider", "lap_number": "Lap", "lap_time": "Time",
+                "is_best_lap": "Best",
+            }),
+            hide_index=True,
+            use_container_width=True,
+        )
+
+
 def render_stats_lab(standings_df: pd.DataFrame) -> None:
     st.subheader("Stats Lab")
     st.caption("Experimental metrics calculated from local DB data.")
@@ -947,7 +1154,9 @@ def main() -> None:
 
     events = get_events_for_year(selected_year)
 
-    tab_overview, tab_standings, tab_results, tab_stats = st.tabs(["Overview", "Standings", "Results", "Stats Lab"])
+    tab_overview, tab_standings, tab_results, tab_lap_times, tab_stats = st.tabs(
+        ["Overview", "Standings", "Results", "Lap Times", "Stats Lab"]
+    )
 
     with tab_overview:
         render_overview_tab(selected_year, events)
@@ -957,6 +1166,9 @@ def main() -> None:
 
     with tab_results:
         render_results_tab(selected_year, selected_category_id, selected_category_name, events)
+
+    with tab_lap_times:
+        render_lap_times_tab(selected_year, selected_category_id, selected_category_name, events)
 
     with tab_stats:
         render_stats_lab(standings_df if "standings_df" in locals() else pd.DataFrame())
