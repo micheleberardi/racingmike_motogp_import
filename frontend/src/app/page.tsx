@@ -236,48 +236,55 @@ export default function HomePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {lastRaceResults.map((result, idx) => (
-                    <tr
-                      key={idx}
-                      className="border-b border-[#1a1a1a] hover:bg-[#1a1a1a] transition-colors"
-                    >
-                      <td className="py-2 pr-3">
-                        <span
-                          className="inline-flex items-center justify-center w-6 h-6 rounded text-xs font-bold"
-                          style={{
-                            background: getPositionColor(result.position) + '22',
-                            color: getPositionColor(result.position),
-                          }}
-                        >
-                          {result.position ?? '-'}
-                        </span>
-                      </td>
-                      <td className="py-2 pr-3 text-[#555555] font-mono text-xs">
-                        {result.rider_number}
-                      </td>
-                      <td className="py-2">
-                        <span
-                          style={{
-                            borderLeft: result.team_color
-                              ? `3px solid ${result.team_color}`
-                              : '3px solid #333',
-                            paddingLeft: 8,
-                          }}
-                        >
-                          {result.rider_full_name}
-                        </span>
-                      </td>
-                      <td className="py-2 text-[#888888] hidden md:table-cell text-xs">
-                        {result.team_name}
-                      </td>
-                      <td className="py-2 text-right font-bold text-[#E8002D]">
-                        {result.points || 0}
-                      </td>
-                      <td className="py-2 text-right text-[#888888] text-xs hidden sm:table-cell">
-                        {result.gap_first || '-'}
-                      </td>
-                    </tr>
-                  ))}
+                  {lastRaceResults.map((result, idx) => {
+                    const rowBg = result.team_color ? `${result.team_color}12` : 'transparent'
+                    const rowHover = result.team_color ? `${result.team_color}22` : '#1a1a1a'
+                    return (
+                      <tr
+                        key={idx}
+                        className="border-b border-[#1a1a1a] transition-colors"
+                        style={{ backgroundColor: rowBg }}
+                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = rowHover)}
+                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = rowBg)}
+                      >
+                        <td className="py-2 pr-3">
+                          <span
+                            className="inline-flex items-center justify-center w-6 h-6 rounded text-xs font-bold"
+                            style={{
+                              background: getPositionColor(result.position) + '33',
+                              color: getPositionColor(result.position),
+                            }}
+                          >
+                            {result.position ?? '-'}
+                          </span>
+                        </td>
+                        <td className="py-2 pr-3 text-[#555555] font-mono text-xs">
+                          {result.rider_number}
+                        </td>
+                        <td className="py-2">
+                          <span
+                            style={{
+                              borderLeft: result.team_color
+                                ? `3px solid ${result.team_color}`
+                                : '3px solid #333',
+                              paddingLeft: 8,
+                            }}
+                          >
+                            {result.rider_full_name}
+                          </span>
+                        </td>
+                        <td className="py-2 text-[#888888] hidden md:table-cell text-xs">
+                          {result.team_name}
+                        </td>
+                        <td className="py-2 text-right font-bold text-[#E8002D]">
+                          {result.points || 0}
+                        </td>
+                        <td className="py-2 text-right text-[#888888] text-xs hidden sm:table-cell">
+                          {result.gap_first || '-'}
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

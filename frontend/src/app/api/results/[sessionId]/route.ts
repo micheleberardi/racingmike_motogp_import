@@ -23,7 +23,7 @@ export async function GET(
          AND tr.category_id = r.category_id
          AND tr.team_name = r.team_name
        WHERE r.session_id = ?
-       ORDER BY r.position ASC`,
+       ORDER BY r.position IS NULL ASC, r.position ASC`,
       [sessionId]
     )
 

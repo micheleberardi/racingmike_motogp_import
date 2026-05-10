@@ -283,51 +283,65 @@ export default function RacePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {results.map((result, idx) => (
-                    <tr
-                      key={idx}
-                      className="border-b border-[#1a1a1a] hover:bg-[#1a1a1a] transition-colors"
-                    >
-                      <td className="px-5 py-3">
-                        <span
-                          className="inline-flex items-center justify-center w-7 h-7 rounded font-bold text-sm"
-                          style={{
-                            background: getPositionColor(result.position) + '22',
-                            color: getPositionColor(result.position),
-                          }}
-                        >
-                          {result.position ?? 'DNF'}
-                        </span>
-                      </td>
-                      <td className="px-2 py-3 text-[#555555] font-mono text-xs">
-                        {result.rider_number}
-                      </td>
-                      <td className="py-3">
-                        <div
-                          style={{
-                            borderLeft: result.team_color
-                              ? `3px solid ${result.team_color}`
-                              : '3px solid #333333',
-                            paddingLeft: 10,
-                          }}
-                        >
-                          <div className="text-white font-medium">{result.rider_full_name}</div>
-                        </div>
-                      </td>
-                      <td className="py-3 text-[#888888] text-xs hidden md:table-cell">
-                        {result.team_name}
-                      </td>
-                      <td className="py-3 text-[#888888] text-xs hidden lg:table-cell">
-                        {result.constructor_name}
-                      </td>
-                      <td className="py-3 text-right font-bold text-[#E8002D]">
-                        {result.points || 0}
-                      </td>
-                      <td className="py-3 pr-5 text-right text-[#888888] text-xs hidden sm:table-cell">
-                        {result.gap_first || '-'}
-                      </td>
-                    </tr>
-                  ))}
+                  {results.map((result, idx) => {
+                    const isDnf = result.position === null
+                    const rowBg = result.team_color
+                      ? `${result.team_color}12`
+                      : 'transparent'
+                    const rowHover = result.team_color
+                      ? `${result.team_color}22`
+                      : '#1a1a1a'
+                    return (
+                      <tr
+                        key={idx}
+                        className="border-b border-[#1a1a1a] transition-colors"
+                        style={{ backgroundColor: rowBg }}
+                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = rowHover)}
+                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = rowBg)}
+                      >
+                        <td className="px-5 py-3">
+                          <span
+                            className="inline-flex items-center justify-center w-7 h-7 rounded font-bold text-sm"
+                            style={{
+                              background: getPositionColor(result.position) + '33',
+                              color: isDnf ? '#555555' : getPositionColor(result.position),
+                            }}
+                          >
+                            {result.position ?? 'DNF'}
+                          </span>
+                        </td>
+                        <td className="px-2 py-3 text-[#555555] font-mono text-xs">
+                          {result.rider_number}
+                        </td>
+                        <td className="py-3">
+                          <div
+                            style={{
+                              borderLeft: result.team_color
+                                ? `3px solid ${result.team_color}`
+                                : '3px solid #333333',
+                              paddingLeft: 10,
+                            }}
+                          >
+                            <div className={`font-medium ${isDnf ? 'text-[#666666]' : 'text-white'}`}>
+                              {result.rider_full_name}
+                            </div>
+                          </div>
+                        </td>
+                        <td className={`py-3 text-xs hidden md:table-cell ${isDnf ? 'text-[#555555]' : 'text-[#888888]'}`}>
+                          {result.team_name}
+                        </td>
+                        <td className={`py-3 text-xs hidden lg:table-cell ${isDnf ? 'text-[#555555]' : 'text-[#888888]'}`}>
+                          {result.constructor_name}
+                        </td>
+                        <td className="py-3 text-right font-bold text-[#E8002D]">
+                          {result.points || 0}
+                        </td>
+                        <td className="py-3 pr-5 text-right text-xs hidden sm:table-cell" style={{ color: isDnf ? '#555555' : '#888888' }}>
+                          {isDnf ? 'DNF' : (result.gap_first || '-')}
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
