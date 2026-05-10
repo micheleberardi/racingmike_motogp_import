@@ -10,7 +10,7 @@ export async function GET(
     const categoryId = params.categoryId
 
     const [rows] = await pool.execute(
-      `SELECT sr.year, sr.category_id, sr.category_name, sr.position,
+      `SELECT sr.year, sr.category_id, sr.position,
               sr.rider_id, sr.rider_full_name, sr.rider_number,
               sr.team_name, sr.constructor_name, sr.points,
               tr.team_color
