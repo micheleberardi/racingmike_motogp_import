@@ -1,6 +1,7 @@
 import logging
 
 from runtime import get_db_connection, get_http_session, parse_year_arg, request_json, setup_logging
+from add_timezone import get_timezone
 
 
 def main() -> int:
@@ -49,17 +50,18 @@ def main() -> int:
                             circuit_id, circuit_name, circuit_legacy_id,
                             circuit_place, circuit_nation, test, sponsored_name,
                             date_end, toad_api_uuid, date_start, name,
-                            season_id, year, season_current, short_name
+                            season_id, year, season_current, short_name, timezone
                         ) VALUES (
                             %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                         )
                         ON DUPLICATE KEY UPDATE
                             name = VALUES(name),
                             date_start = VALUES(date_start),
                             date_end = VALUES(date_end),
                             sponsored_name = VALUES(sponsored_name),
-                            short_name = VALUES(short_name)
+                            short_name = VALUES(short_name),
+                            timezone = VALUES(timezone)
                         """,
                         (
                             event.get("id"),
@@ -91,6 +93,7 @@ def main() -> int:
                             season_info.get("year", year),
                             season_info.get("current"),
                             event.get("short_name"),
+                            get_timezone(country.get("iso"), circuit.get("place")),
                         ),
                     )
                     total_events += 1

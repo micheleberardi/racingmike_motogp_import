@@ -15,6 +15,7 @@ export interface Event {
   circuit_name: string
   country_name: string
   test: number
+  timezone?: string
 }
 
 export interface Session {
@@ -55,7 +56,6 @@ export interface Result {
 export interface Standing {
   year: number
   category_id: string
-  category_name: string
   position: number
   rider_id: string
   rider_full_name: string

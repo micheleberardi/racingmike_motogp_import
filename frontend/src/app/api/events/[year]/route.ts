@@ -8,7 +8,8 @@ export async function GET(
   try {
     const year = parseInt(params.year)
     const [rows] = await pool.execute(
-      `SELECT id, name, sponsored_name, year, date_start, date_end, circuit_name, country_name, test
+      `SELECT id, name, sponsored_name, year, date_start, date_end, circuit_name, country_name, test,
+              COALESCE(timezone, 'UTC') AS timezone
        FROM events
        WHERE year = ? AND test = 0
        ORDER BY date_start ASC`,

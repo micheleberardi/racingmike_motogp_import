@@ -21,6 +21,33 @@ function formatDate(dateStr: string) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
+function formatLocalDate(dateStr: string, timezone: string) {
+  if (!dateStr || !timezone) return ''
+  try {
+    const d = new Date(dateStr)
+    return d.toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'long', year: 'numeric',
+      timeZone: timezone,
+    })
+  } catch {
+    return formatDate(dateStr)
+  }
+}
+
+function formatLocalTime(dateStr: string, timezone: string) {
+  if (!dateStr || !timezone) return ''
+  try {
+    const d = new Date(dateStr)
+    return d.toLocaleTimeString('en-GB', {
+      hour: '2-digit', minute: '2-digit',
+      timeZone: timezone,
+      timeZoneName: 'short',
+    })
+  } catch {
+    return ''
+  }
+}
+
 export default function RacePage() {
   const params = useParams()
   const eventId = params.eventId as string
@@ -178,6 +205,13 @@ export default function RacePage() {
               <p className="text-[#888888] text-sm mt-1">
                 {event.country_name} — {formatDate(event.date_start)} to {formatDate(event.date_end)}
               </p>
+              {event.timezone && event.timezone !== 'UTC' && (
+                <p className="text-[#555555] text-xs mt-1">
+                  🕐 Local timezone: <span className="text-[#888888]">{event.timezone}</span>
+                  {' · '}Race week: {formatLocalDate(event.date_start, event.timezone)}
+                  {' – '}{formatLocalDate(event.date_end, event.timezone)}
+                </p>
+              )}
             </div>
           </div>
         ) : (
@@ -207,6 +241,11 @@ export default function RacePage() {
             <span className="text-[#888888] text-sm ml-2">
               {selectedSession.event_name} — {selectedSession.category_name}
             </span>
+            {selectedSession.session_datetime && event?.timezone && (
+              <span className="text-[#555555] text-xs ml-3">
+                {formatLocalTime(selectedSession.session_datetime, event.timezone)}
+              </span>
+            )}
           </div>
           <Link
             href={`/lap-times/${selectedSession.id}`}
