@@ -15,10 +15,13 @@ export async function GET(
               sr.team_name, sr.constructor_name, sr.points,
               tr.team_color
        FROM standing_riders sr
-       LEFT JOIN TeamRiders tr
+       LEFT JOIN (
+         SELECT DISTINCT year, category_id, team_name, team_color
+         FROM TeamRiders
+       ) tr
          ON tr.year = sr.year
          AND tr.category_id = sr.category_id
-         AND tr.rider_id = sr.rider_id
+         AND tr.team_name = sr.team_name
        WHERE sr.year = ? AND sr.category_id = ?
        ORDER BY sr.position ASC`,
       [year, categoryId]
